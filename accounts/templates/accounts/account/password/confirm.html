@@ -1,0 +1,160 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Sign Up - GECU{% endblock %}
+
+{% block content %}
+
+
+<div class="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden" 
+     x-data="passwordResetConfirmForm()">
+    <div class="px-6 py-4 bg-indigo-600">
+        <h2 class="text-xl font-semibold text-white">Set New Password</h2>
+    </div>
+    
+    <form @submit.prevent="submit" class="px-6 py-4">
+        <!-- New Password Field -->
+        <div class="mb-4">
+            <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            <div class="relative">
+                <input 
+                    :type="showPassword ? 'text' : 'password'"
+                    id="new-password" 
+                    x-model="form.new_password1"
+                    @input="validatePassword"
+                    :class="{'border-red-500': errors.new_password1}"
+                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                >
+                <button 
+                    type="button" 
+                    @click="showPassword = !showPassword"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                >
+                    <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                </button>
+            </div>
+            <p x-show="errors.new_password1" class="mt-1 text-sm text-red-600" x-text="errors.new_password1"></p>
+            <div class="mt-1 text-xs text-gray-500">
+                <p :class="{'text-green-600': hasMinLength}">✓ At least 8 characters</p>
+                <p :class="{'text-green-600': hasNumber}">✓ Contains a number</p>
+                <p :class="{'text-green-600': hasSpecialChar}">✓ Contains a special character</p>
+            </div>
+        </div>
+        
+        <!-- Confirm New Password Field -->
+        <div class="mb-4">
+            <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+            <div class="relative">
+                <input 
+                    :type="showPassword ? 'text' : 'password'"
+                    id="confirm-password" 
+                    x-model="form.new_password2"
+                    @input="validatePasswordMatch"
+                    :class="{'border-red-500': errors.new_password2 || passwordMismatch}"
+                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                >
+            </div>
+            <p x-show="errors.new_password2" class="mt-1 text-sm text-red-600" x-text="errors.new_password2"></p>
+            <p x-show="passwordMismatch && form.new_password2" class="mt-1 text-sm text-red-600">Passwords do not match</p>
+        </div>
+        
+        <!-- Hidden UID and Token Fields (typically from URL) -->
+        <input type="hidden" x-model="form.uid">
+        <input type="hidden" x-model="form.token">
+        
+        <!-- Submit Button -->
+        <button 
+            type="submit" 
+            :disabled="loading || passwordMismatch"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            <span x-show="!loading">Reset Password</span>
+            <span x-show="loading">
+                <i class="fas fa-circle-notch fa-spin mr-2"></i> Processing...
+            </span>
+        </button>
+        
+        <!-- Success/Error Message -->
+        <div x-show="message" class="mt-4">
+            <p 
+                x-text="message"
+                :class="{'text-green-600': isSuccess, 'text-red-600': !isSuccess}"
+                class="text-sm text-center"
+            ></p>
+            <p x-show="isSuccess" class="mt-2 text-sm text-center">
+                <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">Return to login</a>
+            </p>
+        </div>
+    </form>
+</div>
+
+<script>
+function passwordResetConfirmForm() {
+    return {
+        loading: false,
+        showPassword: false,
+        isSuccess: false,
+        message: '',
+        errors: {},
+        passwordMismatch: false,
+        hasMinLength: false,
+        hasNumber: false,
+        hasSpecialChar: false,
+        form: {
+            new_password1: '',
+            new_password2: '',
+            uid: new URLSearchParams(window.location.search).get('uid'),
+            token: new URLSearchParams(window.location.search).get('token')
+        },
+        validatePassword() {
+            this.hasMinLength = this.form.new_password1.length >= 8;
+            this.hasNumber = /\d/.test(this.form.new_password1);
+            this.hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(this.form.new_password1);
+            this.validatePasswordMatch();
+        },
+        validatePasswordMatch() {
+            this.passwordMismatch = this.form.new_password1 !== this.form.new_password2;
+        },
+        submit() {
+            if (this.passwordMismatch) return;
+            
+            this.loading = true;
+            this.message = '';
+            this.errors = {};
+            
+            fetch('/api/auth/password/reset/confirm/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(this.form)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.isSuccess = true;
+                this.message = 'Password reset successfully! You can now log in with your new password.';
+            })
+            .catch(error => {
+                this.isSuccess = false;
+                if (error.detail) {
+                    this.message = error.detail;
+                } else {
+                    this.errors = error;
+                }
+            })
+            .finally(() => {
+                this.loading = false;
+            });
+        }
+    }
+}
+</script>
+
+{% endblock %}

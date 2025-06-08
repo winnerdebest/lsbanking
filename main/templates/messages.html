@@ -1,0 +1,31 @@
+<div class="mb-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div x-data="{ show: true }" x-show="show" x-transition
+                 class="{% if message.tags == 'error' %}bg-red-50 border-red-200 text-red-800{% else %}bg-green-50 border-green-200 text-green-800{% endif %} border rounded-md p-4 mb-4">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        {% if message.tags == 'error' %}
+                            <i class="fas fa-exclamation-circle h-5 w-5"></i>
+                        {% else %}
+                            <i class="fas fa-check-circle h-5 w-5"></i>
+                        {% endif %}
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">{{ message }}</p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <div class="-mx-1.5 -my-1.5">
+                            <button @click="show = false" type="button"
+                                    class="inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2
+                                           {% if message.tags == 'error' %}bg-red-50 text-red-500 hover:bg-red-100 focus:ring-red-600 focus:ring-offset-red-50{% else %}bg-green-50 text-green-500 hover:bg-green-100 focus:ring-green-600 focus:ring-offset-green-50{% endif %}">
+                                <span class="sr-only">Dismiss</span>
+                                <i class="fas fa-times h-5 w-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>

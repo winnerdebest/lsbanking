@@ -1,0 +1,55 @@
+<!-- Cash App Tab -->
+<div x-show="activeTab === 'cashapp'" x-transition class="p-6">
+    <div class="max-w-md mx-auto">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Cash App Deposit</h3>
+
+        <!-- Display the active CashApp tag -->
+        {% if deposit_accounts.cashapp %}
+            <div class="mb-4 bg-gray-100 border p-3 rounded text-sm text-gray-700">
+                Send your Cash App payment to: 
+                <span class="font-semibold text-indigo-600">{{ deposit_accounts.cashapp.cashapp_tag }}</span>
+            </div>
+        {% else %}
+            <div class="mb-4 text-sm text-red-600">
+                No active Cash App account available. Please try another method.
+            </div>
+        {% endif %}
+
+        <!-- Deposit Form -->
+        <form method="post" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            {{ cashapp_form.non_field_errors }}
+
+            <div>
+                {{ cashapp_form.amount.label_tag }}
+                {{ cashapp_form.amount }}
+                {{ cashapp_form.amount.errors }}
+            </div>
+
+            <div>
+                {{ cashapp_form.sender_info.label_tag }}
+                {{ cashapp_form.sender_info }}
+                {{ cashapp_form.sender_info.errors }}
+            </div>
+
+            <div>
+                {{ cashapp_form.proof_image.label_tag }}
+                {{ cashapp_form.proof_image }}
+                {{ cashapp_form.proof_image.errors }}
+            </div>
+
+            <input type="hidden" name="tab" value="cashapp">
+
+            <div class="pt-2">
+                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                    Submit Deposit
+                </button>
+            </div>
+        </form>
+
+        <div class="text-xs text-gray-500 mt-2">
+            <p>1.5% fee for Cash App deposits.</p>
+            <p class="mt-1">Upload your payment proof to process your deposit faster.</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+<!-- email_confirmation_signup_message.html -->
+{% load account %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Complete Your Signup</title>
+  <style>
+    body { background-color: #f3f4f6; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    .header { font-size: 24px; font-weight: bold; color: #111827; margin-bottom: 20px; }
+    .text { font-size: 16px; color: #4b5563; line-height: 1.6; margin-bottom: 24px; }
+    .button { display: inline-block; background-color: #3b82f6; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; }
+    .footer { font-size: 12px; color: #9ca3af; text-align: center; margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Complete Your Signup</div>
+    <div class="text">
+      Welcome {{ user.full_name }},
+      <br><br>
+      Thanks for signing up! Please confirm your email to complete your registration:
+    </div>
+    <div style="text-align: center; margin: 24px 0;">
+      <a href="{{ activate_url }}" class="button">Verify My Email</a>
+    </div>
+    <div class="text">
+      If this wasn't you, feel free to ignore this email.
+    </div>
+    <div class="footer">
+      &copy; GECU — All rights reserved.
+    </div>
+  </div>
+</body>
+</html>

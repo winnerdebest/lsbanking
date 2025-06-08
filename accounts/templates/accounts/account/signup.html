@@ -1,0 +1,245 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Sign Up - GECU{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/css/intlTelInput.min.css">
+
+<div class="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden"
+     x-data="registerForm()">
+    <div class="px-6 py-4 bg-indigo-600">
+        <h2 class="text-xl font-semibold text-white">Create Account</h2>
+    </div>
+
+    <form @submit.prevent="submit" class="px-6 py-4">
+        <div class="mb-4">
+            <label for="register-full-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <input
+                type="text"
+                id="register-full-name"
+                x-model="form.full_name"
+                :class="{'border-red-500': errors.full_name}"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                required
+            >
+            <p x-show="errors.full_name" class="mt-1 text-sm text-red-600" x-text="errors.full_name"></p>
+        </div>
+
+        <div class="mb-4">
+            <label for="register-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+                type="email"
+                id="register-email"
+                x-model="form.email"
+                :class="{'border-red-500': errors.email}"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                required
+            >
+            <p x-show="errors.email" class="mt-1 text-sm text-red-600" x-text="errors.email"></p>
+        </div>
+
+        <div class="mb-4">
+            <label for="register-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
+            <input
+                type="tel" {# Changed to type="tel" for better mobile keyboard #}
+                id="register-phone"
+                x-model="form.phone"
+                :class="{'border-red-500': errors.phone}"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+            <p x-show="errors.phone" class="mt-1 text-sm text-red-600" x-text="errors.phone"></p>
+        </div>
+
+        <div class="mb-4">
+            <label for="register-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <div class="relative">
+                <input
+                    :type="showPassword ? 'text' : 'password'"
+                    id="register-password"
+                    x-model="form.password1"
+                    @input="validatePassword"
+                    :class="{'border-red-500': errors.password1}"
+                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                >
+                <button
+                    type="button"
+                    @click="showPassword = !showPassword"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                >
+                    <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                </button>
+            </div>
+            <p x-show="errors.password1" class="mt-1 text-sm text-red-600" x-text="errors.password1"></p>
+            <div class="mt-1 text-xs text-gray-500">
+                <p :class="{'text-green-600': hasMinLength, 'text-gray-500': !hasMinLength}">✓ At least 8 characters</p>
+                <p :class="{'text-green-600': hasNumber, 'text-gray-500': !hasNumber}">✓ Contains a number</p>
+                <p :class="{'text-green-600': hasSpecialChar, 'text-gray-500': !hasSpecialChar}">✓ Contains a special character</p>
+                <p :class="{'text-green-600': hasUppercase, 'text-gray-500': !hasUppercase}">✓ Contains an uppercase letter</p>
+                <p :class="{'text-green-600': hasLowercase, 'text-gray-500': !hasLowercase}">✓ Contains a lowercase letter</p>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="register-password2" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <div class="relative">
+                <input
+                    :type="showPassword ? 'text' : 'password'"
+                    id="register-password2"
+                    x-model="form.password2"
+                    @input="validatePasswordMatch"
+                    :class="{'border-red-500': errors.password2 || passwordMismatch}"
+                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                >
+            </div>
+            <p x-show="errors.password2" class="mt-1 text-sm text-red-600" x-text="errors.password2"></p>
+            <p x-show="passwordMismatch && form.password2" class="mt-1 text-sm text-red-600">Passwords do not match</p>
+        </div>
+
+        <button
+            type="submit"
+            :disabled="loading || passwordMismatch || !formIsValid"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            <span x-show="!loading">Create Account</span>
+            <span x-show="loading">
+                <i class="fas fa-circle-notch fa-spin mr-2"></i> Processing...
+            </span>
+        </button>
+
+        <div x-show="message" class="mt-4">
+            <p
+                x-text="message"
+                :class="{'text-green-600': isSuccess, 'text-red-600': !isSuccess}"
+                class="text-sm text-center"
+            ></p>
+        </div>
+    </form>
+
+    <div class="px-6 py-4 bg-gray-50 text-center">
+        <p class="text-sm text-gray-600">
+            Already have an account?
+            <a href="{% url 'login' %}" class="font-medium text-indigo-600 hover:text-indigo-500">Sign in</a> {# Assuming 'login' is your login URL name #}
+        </p>
+    </div>
+</div>
+
+<script>
+function registerForm() {
+    return {
+        loading: false,
+        showPassword: false,
+        isSuccess: false,
+        message: '',
+        errors: {},
+        passwordMismatch: false,
+        hasMinLength: false,
+        hasNumber: false,
+        hasSpecialChar: false,
+        hasUppercase: false,
+        hasLowercase: false,
+        form: {
+            full_name: '', // Added full_name
+            email: '',
+            phone: '', // Added phone
+            password1: '',
+            password2: ''
+        },
+        init() {
+            // Initial validation for password strength if password1 is pre-filled (unlikely for register)
+            this.$watch('form.password1', () => this.validatePassword());
+            // Initial validation for password match
+            this.$watch('form.password2', () => this.validatePasswordMatch());
+        },
+        validatePassword() {
+            const p = this.form.password1;
+            this.hasMinLength = p.length >= 8;
+            this.hasNumber = /\d/.test(p);
+            this.hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(p);
+            this.hasUppercase = /[A-Z]/.test(p);
+            this.hasLowercase = /[a-z]/.test(p);
+            this.validatePasswordMatch(); // Always validate match when password1 changes
+        },
+        validatePasswordMatch() {
+            this.passwordMismatch = this.form.password1 !== this.form.password2;
+        },
+        get formIsValid() {
+            // Basic client-side validation for required fields and password strength
+            return this.form.full_name.trim() !== '' &&
+                   this.form.email.trim() !== '' &&
+                   this.hasMinLength &&
+                   this.hasNumber &&
+                   this.hasSpecialChar &&
+                   this.hasUppercase &&
+                   this.hasLowercase &&
+                   !this.passwordMismatch;
+        },
+        submit() {
+            if (!this.formIsValid) {
+                this.message = 'Please correct the errors in the form.';
+                this.isSuccess = false;
+                return;
+            }
+
+            this.loading = true;
+            this.message = '';
+            this.errors = {};
+
+            fetch('/api/auth/registration/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(this.form)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.isSuccess = true;
+                this.message = 'Registration successful! Please check your email to verify your account.';
+                // Optionally clear the form after successful submission
+                this.form.full_name = '';
+                this.form.email = '';
+                this.form.phone = '';
+                this.form.password1 = '';
+                this.form.password2 = '';
+                // You might want to redirect here:
+                // window.location.href = '/accounts/login/';
+            })
+            .catch(error => {
+                this.isSuccess = false;
+                if (error.detail) {
+                    this.message = error.detail;
+                } else if (error.email && error.email[0] === 'user with this email already exists.') {
+                    this.message = 'An account with this email already exists. Please try logging in or using a different email.';
+                }
+                 else {
+                    // Assign specific errors to fields if available
+                    for (const key in error) {
+                        if (this.form.hasOwnProperty(key)) {
+                            this.errors[key] = error[key][0]; // Assuming first error message
+                        } else {
+                            // Catch-all for non-field errors
+                            this.message = this.message ? this.message + ' ' + error[key][0] : error[key][0];
+                        }
+                    }
+                     if (!this.message && Object.keys(this.errors).length === 0) {
+                        this.message = 'An unexpected error occurred during registration. Please try again.';
+                    }
+                }
+            })
+            .finally(() => {
+                this.loading = false;
+            });
+        }
+    }
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,153 @@
+<!-- Crypto Tab -->
+<div x-show="activeTab === 'crypto'" x-transition class="p-6">
+    <div class="max-w-md mx-auto">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Crypto Deposit</h3>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="tab" value="crypto">
+            
+            <div class="space-y-4">
+                <!-- Amount Field -->
+                <div>
+                    <label for="{{ crypto_form.amount.id_for_label }}" class="block text-sm font-medium text-gray-700">Amount (USD)</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">$</span>
+                        </div>
+                        <input type="number" 
+                               name="amount"
+                               id="{{ crypto_form.amount.id_for_label }}"
+                               class="block w-full pl-7 pr-12 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                               placeholder="0.00"
+                               step="0.01"
+                               min="10"
+                               required>
+                        <div class="absolute inset-y-0 right-0 flex items-center">
+                            <span class="text-gray-500 sm:text-sm mr-3">USD</span>
+                        </div>
+                    </div>
+                    {% if crypto_form.amount.errors %}
+                        <p class="text-sm text-red-600">{{ crypto_form.amount.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Currency Select -->
+                <div>
+                    <label for="{{ crypto_form.crypto_type.id_for_label }}" class="block text-sm font-medium text-gray-700">Cryptocurrency</label>
+                    <select name="crypto_type"
+                            id="{{ crypto_form.crypto_type.id_for_label }}"
+                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        {% for value, label in crypto_form.crypto_type.field.choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if crypto_form.crypto_type.errors %}
+                        <p class="text-sm text-red-600">{{ crypto_form.crypto_type.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Wallet Address Display -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">To GECU Crypto Wallet</label>
+                    
+                    {% if deposit_accounts.crypto %}
+                    <div class="mt-2 bg-gray-50 p-4 rounded-md border border-gray-200">
+                        <p class="text-sm font-medium text-gray-700 mb-2">Your Deposit Address</p>
+
+                        <div x-data="{ copied: false }" class="flex items-center justify-between bg-white p-2 rounded border border-gray-300">
+                            <code class="text-xs truncate">{{ deposit_accounts.crypto.crypto_address }}</code>
+                            <button
+                                type="button"
+                                @click="
+                                    navigator.clipboard.writeText('{{ deposit_accounts.crypto.crypto_address }}');
+                                    copied = true;
+                                    setTimeout(() => copied = false, 2000);
+                                "
+                                class="ml-2 text-indigo-600 hover:text-indigo-800"
+                            >
+                                <i class="far fa-copy"></i>
+                                <span x-show="!copied">Copy</span>
+                                <span x-show="copied" class="text-green-600">Copied!</span>
+                            </button>
+                        </div>
+
+                        <div class="mt-3 flex justify-center">
+                            <div class="bg-white p-2 rounded border border-gray-200">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ deposit_accounts.crypto.crypto_address }}" 
+                                     alt="QR Code" 
+                                     class="h-24 w-24">
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2 text-center">
+                            Send only the selected cryptocurrency to this address
+                        </p>
+                    </div>
+                    {% else %}
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                        <div class="flex">
+                            <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-2"></i>
+                            <p class="text-sm text-yellow-800">
+                                Crypto deposits are temporarily unavailable. Please try another deposit method.
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Proof Upload -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Upload Transaction Proof
+                        <span class="text-xs text-gray-500 font-normal">(Screenshot or transaction hash)</span>
+                    </label>
+                    <div class="mt-1">
+                        <input type="file" 
+                               name="proof_image"
+                               class="block w-full text-sm text-gray-500
+                                      file:mr-4 file:py-2 file:px-4
+                                      file:rounded-md file:border-0
+                                      file:text-sm file:font-semibold
+                                      file:bg-indigo-50 file:text-indigo-700
+                                      hover:file:bg-indigo-100">
+                    </div>
+                    {% if crypto_form.proof_image.errors %}
+                        <p class="text-sm text-red-600 mt-1">{{ crypto_form.proof_image.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Notes -->
+                <div>
+                    <label for="{{ crypto_form.note.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Additional Notes (Optional)
+                    </label>
+                    <textarea name="note"
+                              id="{{ crypto_form.note.id_for_label }}"
+                              rows="3"
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ crypto_form.note.value|default_if_none:'' }}</textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-2">
+                    <button type="submit" 
+                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            {% if not deposit_accounts.crypto %}disabled{% endif %}>
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Submit Deposit Request
+                    </button>
+                </div>
+
+                <!-- Info -->
+                <div class="text-xs text-gray-500 mt-4 pt-4 border-t border-gray-200">
+                    <h4 class="font-medium text-gray-700 mb-1">Processing Information:</h4>
+                    <ul class="space-y-1 list-disc list-inside">
+                        <li>1% fee for crypto conversions</li>
+                        <li>Minimum deposit: $10 USD equivalent</li>
+                        <li>Processing time: 10-30 minutes after confirmation</li>
+                        <li>Double-check the wallet address before sending</li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

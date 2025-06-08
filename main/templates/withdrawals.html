@@ -1,0 +1,474 @@
+{% extends "base.html" %}
+
+{% block title %}Withdraw Funds | GRAND ELITE CREDIT UNION{% endblock %}
+{% block header %}Withdraw Funds{% endblock %}
+
+{% block content %}
+<div class="space-y-6" x-data="{ 
+    activeTab: 'bank', 
+    withdrawalAmount: '', 
+    processingFee: 0,
+    showVerificationModal: false,
+    accountVerified: false, // Set this based on user's actual verification status
+    attemptedWithdrawal: false
+}">
+    <!-- Verification Modal -->
+    <div x-show="showVerificationModal" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+            <!-- Modal content -->
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                Account Verification Required
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">
+                                    Your account hasn't been verified yet. To complete withdrawals, please verify your account by contacting our support team.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <a href="mailto:support@grandelitecreditunion.com" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Contact Support
+                    </a>
+                    <button @click="showVerificationModal = false" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Withdrawal Methods Tabs -->
+    <div class="bg-white shadow rounded-lg overflow-hidden" x-data="{ activeTab: 'bank', withdrawalAmount: '', processingFee: 0 }">
+        <div class="border-b border-gray-200">
+            <nav class="-mb-px flex overflow-x-auto hide-scrollbar">
+                <button
+                    @click="activeTab = 'cashapp'; processingFee = 1.50"
+                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'cashapp', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'cashapp' }"
+                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                >
+                    <i class="fas fa-money-bill-wave mr-2"></i>
+                    Cash App
+                </button>
+                <button
+                    @click="activeTab = 'paypal'; processingFee = 2.50"
+                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'paypal', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'paypal' }"
+                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                >
+                    <i class="fab fa-paypal mr-2"></i>
+                    PayPal
+                </button>
+                <button
+                    @click="activeTab = 'crypto'; processingFee = 0.50"
+                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'crypto', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'crypto' }"
+                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                >
+                    <i class="fab fa-bitcoin mr-2"></i>
+                    Crypto
+                </button>
+                <button
+                    @click="activeTab = 'wire'; processingFee = 25.00"
+                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'wire', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'wire' }"
+                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                >
+                    <i class="fas fa-exchange-alt mr-2"></i>
+                    Wire Transfer
+                </button>
+            </nav>
+        </div>
+
+        
+
+        <!-- Cash App Tab -->
+        <div x-show="activeTab === 'cashapp'" x-transition class="p-6">
+            <div class="max-w-md mx-auto">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Cash App Withdrawal</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="cashapp-withdraw-amount" class="block text-sm font-medium text-gray-700">Amount</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            <input 
+                                type="number" 
+                                id="cashapp-withdraw-amount" 
+                                x-model="withdrawalAmount"
+                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" 
+                                placeholder="0.00"
+                            >
+                            <div class="absolute inset-y-0 right-0 flex items-center">
+                                <span class="text-gray-500 sm:text-sm mr-3">USD</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="cashapp-from" class="block text-sm font-medium text-gray-700">From GECU Account</label>
+                        <select id="cashapp-from" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option>Checking</option>
+                            
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="cashapp-tag" class="block text-sm font-medium text-gray-700">Cash App $Tag or Email</label>
+                        <input 
+                            type="text" 
+                            id="cashapp-tag" 
+                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
+                            placeholder="$YourTag or email@example.com"
+                        >
+                    </div>
+                    
+                    <!-- Fee and Total -->
+                    <div class="bg-gray-50 p-4 rounded-md">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Processing Fee:</span>
+                            <span x-text="'$' + processingFee.toFixed(2)"></span>
+                        </div>
+                        <div class="flex justify-between font-medium mt-1" x-show="withdrawalAmount">
+                            <span>Total Amount:</span>
+                            <span x-text="'$' + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-2">
+                <button 
+                    @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    :disabled="attemptedWithdrawal && !accountVerified"
+                >
+                    <span x-show="!attemptedWithdrawal || accountVerified">Send to Cash App</span>
+                    <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Verification Required
+                    </span>
+                </button>
+            </div>
+
+                    
+                    <div class="text-xs text-gray-500 mt-2">
+                        <p>Transfers typically complete within 24 hours.</p>
+                        <p class="mt-1">$1.50 processing fee per transfer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PayPal Tab -->
+        <div x-show="activeTab === 'paypal'" x-transition class="p-6">
+            <div class="max-w-md mx-auto">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">PayPal Withdrawal</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="paypal-withdraw-amount" class="block text-sm font-medium text-gray-700">Amount</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            <input 
+                                type="number" 
+                                id="paypal-withdraw-amount" 
+                                x-model="withdrawalAmount"
+                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" 
+                                placeholder="0.00"
+                            >
+                            <div class="absolute inset-y-0 right-0 flex items-center">
+                                <span class="text-gray-500 sm:text-sm mr-3">USD</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="paypal-from" class="block text-sm font-medium text-gray-700">From GECU Account</label>
+                        <select id="paypal-from" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option>Checking</option>
+                            
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="paypal-email" class="block text-sm font-medium text-gray-700">PayPal Email</label>
+                        <input 
+                            type="email" 
+                            id="paypal-email" 
+                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
+                            placeholder="your@paypal.email"
+                        >
+                    </div>
+                    
+                    <!-- Fee and Total -->
+                    <div class="bg-gray-50 p-4 rounded-md">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Processing Fee:</span>
+                            <span x-text="'$' + processingFee.toFixed(2)"></span>
+                        </div>
+                        <div class="flex justify-between font-medium mt-1" x-show="withdrawalAmount">
+                            <span>Total Amount:</span>
+                            <span x-text="'$' + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-2">
+                <button 
+                    @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    :disabled="attemptedWithdrawal && !accountVerified"
+                >
+                    <span x-show="!attemptedWithdrawal || accountVerified">Send to PayPal</span>
+                    <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Verification Required
+                    </span>
+                </button>
+            </div>
+
+                    
+                    <div class="text-xs text-gray-500 mt-2">
+                        <p>Transfers typically complete within 1 business day.</p>
+                        <p class="mt-1">$2.50 processing fee per transfer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crypto Tab -->
+        <div x-show="activeTab === 'crypto'" x-transition class="p-6">
+            <div class="max-w-md mx-auto">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Crypto Withdrawal</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="crypto-withdraw-amount" class="block text-sm font-medium text-gray-700">Amount (USD)</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            <input 
+                                type="number" 
+                                id="crypto-withdraw-amount" 
+                                x-model="withdrawalAmount"
+                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" 
+                                placeholder="0.00"
+                            >
+                            <div class="absolute inset-y-0 right-0 flex items-center">
+                                <span class="text-gray-500 sm:text-sm mr-3">USD</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="crypto-from" class="block text-sm font-medium text-gray-700">From GECU Account</label>
+                        <select id="crypto-from" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option>Checking</option>
+                            
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="crypto-currency" class="block text-sm font-medium text-gray-700">Cryptocurrency</label>
+                        <select id="crypto-currency" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="btc">Bitcoin (BTC)</option>
+                            <option value="eth">Ethereum (ETH)</option>
+                            <option value="usdt">Tether (USDT)</option>
+                            <option value="usdc">USD Coin (USDC)</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="crypto-wallet" class="block text-sm font-medium text-gray-700">Wallet Address</label>
+                        <input 
+                            type="text" 
+                            id="crypto-wallet" 
+                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
+                            placeholder="Enter your wallet address"
+                        >
+                    </div>
+                    
+                    <!-- Fee and Total -->
+                    <div class="bg-gray-50 p-4 rounded-md">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Processing Fee:</span>
+                            <span x-text="'$' + processingFee.toFixed(2)"></span>
+                        </div>
+                        <div class="flex justify-between font-medium mt-1" x-show="withdrawalAmount">
+                            <span>Total Amount:</span>
+                            <span x-text="'$' + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-2" x-show="withdrawalAmount">
+                            <p>You'll receive approximately: <span x-text="(parseFloat(withdrawalAmount || 0) / 30000"></span> BTC</p>
+                            <p class="mt-1">Rate: 1 BTC ≈ $30,000</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-2">
+                <button 
+                    @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    :disabled="attemptedWithdrawal && !accountVerified"
+                >
+                    <span x-show="!attemptedWithdrawal || accountVerified">Send</span>
+                    <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Verification Required
+                    </span>
+                </button>
+            </div>
+
+                    
+                    <div class="text-xs text-gray-500 mt-2">
+                        <p>Processing may take 10-30 minutes.</p>
+                        <p class="mt-1">$0.50 network fee + exchange spread.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wire Transfer Tab -->
+        <div x-show="activeTab === 'wire'" x-transition class="p-6">
+            <div class="max-w-md mx-auto">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Wire Transfer</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="wire-withdraw-amount" class="block text-sm font-medium text-gray-700">Amount</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            <input 
+                                type="number" 
+                                id="wire-withdraw-amount" 
+                                x-model="withdrawalAmount"
+                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" 
+                                placeholder="0.00"
+                            >
+                            <div class="absolute inset-y-0 right-0 flex items-center">
+                                <span class="text-gray-500 sm:text-sm mr-3">USD</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="wire-from" class="block text-sm font-medium text-gray-700">From GECU Account</label>
+                        <select id="wire-from" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option>Checking</option>
+                            
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="wire-bank-name" class="block text-sm font-medium text-gray-700">Receiving Bank Name</label>
+                        <input 
+                            type="text" 
+                            id="wire-bank-name" 
+                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
+                            placeholder="Bank Name"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="wire-account" class="block text-sm font-medium text-gray-700">Account Number</label>
+                        <input 
+                            type="text" 
+                            id="wire-account" 
+                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
+                            placeholder="Account Number"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="wire-routing" class="block text-sm font-medium text-gray-700">Routing Number</label>
+                        <input 
+                            type="text" 
+                            id="wire-routing" 
+                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
+                            placeholder="Routing Number"
+                        >
+                    </div>
+                    
+                    <!-- Fee and Total -->
+                    <div class="bg-gray-50 p-4 rounded-md">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Processing Fee:</span>
+                            <span x-text="'$' + processingFee.toFixed(2)"></span>
+                        </div>
+                        <div class="flex justify-between font-medium mt-1" x-show="withdrawalAmount">
+                            <span>Total Amount:</span>
+                            <span x-text="'$' + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-2">
+                <button 
+                    @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    :disabled="attemptedWithdrawal && !accountVerified"
+                >
+                    <span x-show="!attemptedWithdrawal || accountVerified">Initiate Wire Transfer</span>
+                    <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Verification Required
+                    </span>
+                </button>
+            </div>
+
+                    
+                    <div class="text-xs text-gray-500 mt-2">
+                        <p>Domestic wires complete same day if initiated before 3pm ET.</p>
+                        <p class="mt-1">$25.00 processing fee per transfer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<style>
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    [x-cloak] { display: none !important; }
+</style>
+
+<script>
+// You might want to fetch the actual verification status from your backend
+document.addEventListener('DOMContentLoaded', function() {
+    // Example of how you might check verification status
+    // In a real app, you'd make an AJAX request to your backend
+    // const accountVerified = await checkVerificationStatus();
+    // Alpine.store('accountVerified', accountVerified);
+});
+</script>
+{% endblock %}

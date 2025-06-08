@@ -1,0 +1,36 @@
+{% for transaction in transactions %}
+<li>
+    <a href="{% url "transactions-details" %}" class="block hover:bg-gray-50">
+        <div class="px-4 py-4 sm:px-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center min-w-0">
+                    <div class="mr-3 flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center bg-gray-100 text-gray-600">
+                        <i class="fas fa-{{ transaction_icon(transaction) }} text-lg"></i>
+                    </div>
+                    <p class="text-sm font-medium text-indigo-600 truncate">
+                        {{ transaction.description|default:"Transaction" }}
+                    </p>
+                </div>
+                <div class="ml-2 flex flex-shrink-0">
+                    <p class="inline-flex rounded-full px-2 text-xs font-semibold leading-5 {{ "bg-green-100 text-green-800" if transaction.transaction_type == "CREDIT" else "bg-red-100 text-red-800" }}">
+                        {{ transaction.amount|floatformat:2 }}
+                    </p>
+                </div>
+            </div>
+            <div class="mt-2 sm:flex sm:justify-between">
+                <div class="sm:flex">
+                    <p class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-calendar-alt mr-1.5 h-5 w-5 text-gray-400"></i>
+                        {{ transaction.created_at|naturaltime }}
+                    </p>
+                </div>
+                <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Completed
+                    </span>
+                </div>
+            </div>
+        </div>
+    </a>
+</li>
+{% endfor %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            margin-top: 15px;
+            background-color: #1e90ff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>New Deposit Submitted</h2>
+    <p><strong>User:</strong> {{ user.full_name }} ({{ user.email }})</p>
+    <p><strong>Amount:</strong> ${{ amount }}</p>
+    <p><strong>Method:</strong> {{ method }}</p>
+    <p><strong>Status:</strong> {{ status }}</p>
+    <p><strong>Submitted at:</strong> {{ created_at }}</p>
+
+    <a href="{{ approve_url }}" class="btn">Review & Approve</a>
+</body>
+</html>

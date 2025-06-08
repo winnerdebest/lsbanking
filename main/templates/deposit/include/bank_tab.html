@@ -1,0 +1,141 @@
+<!-- _bank_tab.html -->
+<div x-show="activeTab === 'bank'" x-transition class="p-6">
+    <div class="max-w-md mx-auto">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Bank Transfer Instructions</h3>
+        
+        {% if deposit_accounts.bank %}
+        <!-- Bank Account Details Card -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h4 class="font-medium text-blue-800 mb-3">Send your transfer to:</h4>
+            
+            <div class="space-y-3">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 bg-blue-100 p-2 rounded-lg mr-3">
+                        <i class="fas fa-university text-blue-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-700">Bank Name</p>
+                        <p class="text-sm text-gray-900">{{ deposit_accounts.bank.bank_name }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 bg-blue-100 p-2 rounded-lg mr-3">
+                        <i class="fas fa-user text-blue-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-700">Account Name</p>
+                        <p class="text-sm text-gray-900">{{ deposit_accounts.bank.account_name }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 bg-blue-100 p-2 rounded-lg mr-3">
+                        <i class="fas fa-credit-card text-blue-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-700">Account Number</p>
+                        <p class="text-sm text-gray-900 font-mono">{{ deposit_accounts.bank.account_number }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-white rounded border border-blue-200">
+                <h5 class="text-sm font-medium text-blue-800 mb-1">Important:</h5>
+                <ul class="text-xs text-gray-700 space-y-1 list-disc list-inside">
+                    <li>Make the transfer from a bank account in your name</li>
+                    <li>Use your account number as reference</li>
+                    <li>Transfers may take 1-3 business days</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="tab" value="bank">
+            
+            <div class="space-y-4">
+                <!-- Amount Field -->
+                <div>
+                    <label for="{{ bank_form.amount.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Amount Transferred
+                    </label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">$</span>
+                        </div>
+                        <input type="number" 
+                               id="{{ bank_form.amount.id_for_label }}" 
+                               name="{{ bank_form.amount.html_name }}"
+                               class="block w-full pl-7 pr-12 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                               placeholder="0.00"
+                               value="{{ bank_form.amount.value|default_if_none:'' }}">
+                    </div>
+                    {% if bank_form.amount.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ bank_form.amount.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Proof Image Field -->
+                <div>
+                    <label for="{{ bank_form.proof_image.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Upload Transfer Receipt
+                    </label>
+                    <p class="text-xs text-gray-500 mt-1 mb-2">
+                        Upload a clear screenshot or photo of your bank transfer confirmation
+                    </p>
+                    <div class="mt-1">
+                        <input type="file" 
+                               id="{{ bank_form.proof_image.id_for_label }}" 
+                               name="{{ bank_form.proof_image.html_name }}"
+                               class="block w-full text-sm text-gray-500
+                                      file:mr-4 file:py-2 file:px-4
+                                      file:rounded-md file:border-0
+                                      file:text-sm file:font-semibold
+                                      file:bg-indigo-50 file:text-indigo-700
+                                      hover:file:bg-indigo-100">
+                    </div>
+                </div>
+                
+                <!-- Note Field -->
+                <div>
+                    <label for="{{ bank_form.note.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Additional Reference (Optional)
+                    </label>
+                    <p class="text-xs text-gray-500 mt-1 mb-2">
+                        Include any additional transfer reference numbers or notes
+                    </p>
+                    <textarea id="{{ bank_form.note.id_for_label }}" 
+                              name="{{ bank_form.note.html_name }}"
+                              rows="3"
+                              class="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ bank_form.note.value|default_if_none:'' }}</textarea>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    {% if deposit_accounts.bank %}
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <i class="fas fa-paper-plane mr-2"></i> Submit Transfer Details
+                    </button>
+                    {% else %}
+                    <div class="p-3 bg-red-50 border border-red-200 rounded-md text-center">
+                        <p class="text-sm text-red-600">Bank transfers are currently unavailable</p>
+                        <p class="text-xs text-red-500 mt-1">Please try another deposit method or contact support</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="text-xs text-gray-500 mt-4 pt-4 border-t border-gray-200">
+                    <h4 class="font-medium text-gray-700 mb-1">Processing Information:</h4>
+                    <ul class="space-y-1 list-disc list-inside">
+                        <li>Standard processing time: 1-3 business days</li>
+                        <li>$0.25 fee for external transfers</li>
+                        <li>Funds will be credited after we verify your transfer</li>
+                        <li>Contact support@gecu.com for urgent transfers</li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Transactions - {{ block.super }}{% endblock %}
+
+{% block header %}Transaction Details{% endblock %}
+
+{% block content %}
+<div class="space-y-6" x-data="{
+    showCopied: false,
+    copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                this.showCopied = true;
+                setTimeout(() => { this.showCopied = false }, 2000);
+            }).catch(err => console.error('Failed to copy: ', err));
+        } else {
+            // Fallback for browsers that don't support navigator.clipboard
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed'; // Prevent scrolling to bottom of page in MS Edge.
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                this.showCopied = true;
+                setTimeout(() => { this.showCopied = false }, 2000);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            document.body.removeChild(textArea);
+        }
+    }
+}">
+    <div>
+        <a href="{% url 'transactions' %}" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Transactions
+        </a>
+    </div>
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6">
+            <div class="flex flex-wrap items-center justify-between -mt-2 -ml-4 sm:flex-nowrap">
+                <div class="mt-2 ml-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        {{ transaction.description|default:"Transaction" }}
+                    </h3>
+                    <p class="text-sm text-gray-500">
+                        ID: <span id="transactionId">{{ transaction.reference_code }}</span>
+                        <button @click="copyToClipboard(document.getElementById('transactionId').innerText)" title="Copy ID" class="ml-1 text-indigo-500 hover:text-indigo-700 focus:outline-none">
+                            <i class="far fa-copy text-xs"></i>
+                        </button>
+                        <span x-show="showCopied" x-transition class="ml-1 text-xs text-green-600">Copied!</span>
+                    </p>
+                </div>
+                <div class="mt-2 ml-4 flex-shrink-0">
+                    <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Completed
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
+            <dl class="sm:divide-y sm:divide-gray-200">
+                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Amount</dt>
+                    <dd class="mt-1 text-lg sm:text-xl font-semibold sm:col-span-2 sm:mt-0 {% if is_credit %}text-green-600{% else %}text-red-600{% endif %}">
+                        {% if is_credit %}+{% else %}-{% endif %}{{ transaction.amount|intcomma }}
+                    </dd>
+                </div>
+
+                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Date & Time</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ transaction.created_at|date:"F d, Y, h:i A" }}</dd>
+                </div>
+
+                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Type</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ transaction.get_transaction_type_display }}</dd>
+                </div>
+
+                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">From Account</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                        {{ transaction.wallet.get_account_type_display }} ({{ transaction.wallet.account_number|slice:"-4:" }})
+                    </dd>
+                </div>
+
+                {% if transaction.related_wallet %}
+                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">
+                        {% if is_credit %}From{% else %}To{% endif %} Account
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                        {{ transaction.related_wallet.get_account_type_display }} ({{ transaction.related_wallet.account_number|slice:"-4:" }})
+                        {% if other_party %}
+                        <p class="text-gray-500 text-sm mt-1">({{ other_party }})</p>
+                        {% endif %}
+                    </dd>
+                </div>
+                {% endif %}
+
+                {% if transaction.deposit_method %}
+                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Method</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ transaction.deposit_method }}</dd>
+                </div>
+                {% endif %}
+
+                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Reference Number</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ transaction.reference_code }}</dd>
+                </div>
+
+                {% if transaction.description %}
+                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Description</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ transaction.description }}</dd>
+                </div>
+                {% endif %}
+            </dl>
+        </div>
+        <div class="border-t border-gray-200 px-4 py-4 sm:px-6 flex items-center justify-end space-x-3">
+            <button type="button" @click="window.print()" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <i class="fas fa-print mr-2"></i> Print
+            </button>
+            <a href="#" download="transaction-{{ transaction.reference_code }}.pdf" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <i class="fas fa-download mr-2"></i> Download PDF
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

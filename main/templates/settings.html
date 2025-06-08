@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}Account Settings | GRAND ELITE CREDIT UNION{% endblock %}
+{% block header %}Account Settings{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Profile Information Section -->
+    <div class="bg-white shadow rounded-lg overflow-hidden" x-data="{ editingProfile: false }">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg font-medium leading-6 text-gray-900">Profile Information</h3>
+            <p class="mt-1 text-sm text-gray-500">Manage your personal details and contact information</p>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+            <div x-show="!editingProfile">
+                <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div class="sm:col-span-3">
+                        <p class="text-sm font-medium text-gray-500">Full Name</p>
+                        <p class="mt-1 text-sm text-gray-900">{{ request.user.full_name|default:"Member" }}</p>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <p class="text-sm font-medium text-gray-500">Date of Birth</p>
+                        <p class="mt-1 text-sm text-gray-900">N/A</p>
+                    </div>
+                    <div class="sm:col-span-4">
+                        <p class="text-sm font-medium text-gray-500">Email Address</p>
+                        <p class="mt-1 text-sm text-gray-900">john.doe@example.com</p>
+                    </div>
+                    <div class="sm:col-span-4">
+                        <p class="text-sm font-medium text-gray-500">Phone Number</p>
+                        <p class="mt-1 text-sm text-gray-900">{{ request.user.phone|default:"N/A" }}</p>
+                    </div>
+                    <!--<div class="sm:col-span-4">
+                        <p class="text-sm font-medium text-gray-500">Mailing Address</p>
+                        <p class="mt-1 text-sm text-gray-900">123 Main St, Apt 4B</p>
+                        <p class="text-sm text-gray-900">New York, NY 10001</p>
+                    </div>-->
+                </div>
+                <div class="mt-6">
+                    <button 
+                        @click="editingProfile = true"
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                        <i class="fas fa-pencil-alt mr-2"></i>
+                        Edit Profile
+                    </button>
+                </div>
+            </div>
+
+            <div x-show="editingProfile" x-transition>
+                <form class="space-y-6">
+                    <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div class="sm:col-span-3">
+                            <label for="first-name" class="block text-sm font-medium text-gray-700">First name</label>
+                            <input type="text" name="first-name" id="first-name" autocomplete="given-name" value="John" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+
+                        <div class="sm:col-span-3">
+                            <label for="last-name" class="block text-sm font-medium text-gray-700">Last name</label>
+                            <input type="text" name="last-name" id="last-name" autocomplete="family-name" value="Doe" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+
+                        <div class="sm:col-span-4">
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+                            <input type="email" name="email" id="email" autocomplete="email" value="john.doe@example.com" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+
+                        <div class="sm:col-span-4">
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone number</label>
+                            <input type="text" name="phone" id="phone" autocomplete="tel" value="(555) 123-4567" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+
+                        <div class="sm:col-span-4">
+                            <label for="address" class="block text-sm font-medium text-gray-700">Street address</label>
+                            <input type="text" name="address" id="address" autocomplete="street-address" value="123 Main St, Apt 4B" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="city" class="block text-sm font-medium text-gray-700">City</label>
+                            <input type="text" name="city" id="city" autocomplete="address-level2" value="New York" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="state" class="block text-sm font-medium text-gray-700">State</label>
+                            <select id="state" name="state" autocomplete="address-level1" class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <option value="NY" selected>New York</option>
+                                <option value="CA">California</option>
+                                <option value="FL">Florida</option>
+                                <option value="TX">Texas</option>
+                            </select>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="zip" class="block text-sm font-medium text-gray-700">ZIP / Postal code</label>
+                            <input type="text" name="zip" id="zip" autocomplete="postal-code" value="10001" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <button 
+                            @click="editingProfile = false"
+                            type="button" 
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Settings Section -->
+    <div class="bg-white shadow rounded-lg overflow-hidden" x-data="{ changingPassword: false }">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg font-medium leading-6 text-gray-900">Security Settings</h3>
+            <p class="mt-1 text-sm text-gray-500">Manage your password and security preferences</p>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+            <div x-show="!changingPassword">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Password</p>
+                            <p class="text-sm text-gray-500">Last changed 3 months ago</p>
+                        </div>
+                        <button 
+                            @click="changingPassword = true"
+                            class="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                        >
+                            Change
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Two-Factor Authentication</p>
+                            <p class="text-sm text-gray-500">Currently enabled via SMS</p>
+                        </div>
+                        <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                            Manage
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Login Alerts</p>
+                            <p class="text-sm text-gray-500">Enabled for new devices</p>
+                        </div>
+                        <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                            Configure
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Connected Devices</p>
+                            <p class="text-sm text-gray-500">3 active sessions</p>
+                        </div>
+                        <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                            View All
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="changingPassword" x-transition>
+                <form class="space-y-6">
+                    <div>
+                        <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <input type="password" id="current-password" name="current-password" class="block w-full pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 py-2 px-3" placeholder="Enter current password">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <input type="password" id="new-password" name="new-password" class="block w-full pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 py-2 px-3" placeholder="Enter new password">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-500">Must be at least 8 characters</p>
+                    </div>
+
+                    <div>
+                        <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <input type="password" id="confirm-password" name="confirm-password" class="block w-full pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 py-2 px-3" placeholder="Confirm new password">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <button 
+                            @click="changingPassword = false"
+                            type="button" 
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Preferences -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg font-medium leading-6 text-gray-900">Notification Preferences</h3>
+            <p class="mt-1 text-sm text-gray-500">Manage how you receive notifications</p>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+            <div class="space-y-4">
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="email-notifications" name="email-notifications" type="checkbox" checked class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="email-notifications" class="font-medium text-gray-700">Email Notifications</label>
+                        <p class="text-gray-500">Receive important account notifications via email</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="sms-notifications" name="sms-notifications" type="checkbox" checked class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="sms-notifications" class="font-medium text-gray-700">SMS Notifications</label>
+                        <p class="text-gray-500">Receive security alerts and one-time codes via text</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="push-notifications" name="push-notifications" type="checkbox" checked class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="push-notifications" class="font-medium text-gray-700">Push Notifications</label>
+                        <p class="text-gray-500">Receive app notifications on your device</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="marketing-emails" name="marketing-emails" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="marketing-emails" class="font-medium text-gray-700">Marketing Communications</label>
+                        <p class="text-gray-500">Receive promotional emails and offers</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Save Preferences
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Management -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg font-medium leading-6 text-gray-900">Account Management</h3>
+            <p class="mt-1 text-sm text-gray-500">Advanced account options</p>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Download Account Data</p>
+                        <p class="text-sm text-gray-500">Request a copy of your personal data</p>
+                    </div>
+                    <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                        Request
+                    </button>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Close Account</p>
+                        <p class="text-sm text-gray-500">Permanently delete your account</p>
+                    </div>
+                    <button class="text-sm font-medium text-red-600 hover:text-red-500">
+                        Begin Process
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

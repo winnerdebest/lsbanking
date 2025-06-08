@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Deposit Funds | GRAND ELITE CREDIT UNION{% endblock %}
+{% block header %}Deposit Funds{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Deposit Methods Tabs -->
+    <div class="bg-white shadow rounded-lg overflow-hidden" x-data="{ activeTab: 'bank' }">
+        <div class="border-b border-gray-200">
+            <nav class="-mb-px flex overflow-x-auto hide-scrollbar">
+                <button
+                    @click="activeTab = 'bank'"
+                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'bank', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'bank' }"
+                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                >
+                    <i class="fas fa-university mr-2"></i>
+                    Bank Transfer
+                </button>
+                <button
+                    @click="activeTab = 'gift'"
+                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'gift', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'gift' }"
+                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                >
+                    <i class="fas fa-gift mr-2"></i>
+                    Gift Cards
+                </button>
+                <button
+                    @click="activeTab = 'cashapp'"
+                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'cashapp', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'cashapp' }"
+                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                >
+                    <i class="fas fa-money-bill-wave mr-2"></i>
+                    Cash App
+                </button>
+                <button
+                    @click="activeTab = 'crypto'"
+                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'crypto', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'crypto' }"
+                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                >
+                    <i class="fab fa-bitcoin mr-2"></i>
+                    Crypto
+                </button>
+            </nav>
+        </div>
+
+        <!-- Include tab contents -->
+        {% include "deposit/include/bank_tab.html" %}
+
+        {% include "deposit/include/gift_tab.html" %}
+        {% include "deposit/include/cashapp_tab.html" %}
+        {% include "deposit/include/crypto_tab.html" %}
+    </div>
+    
+</div>
+{% endblock %}

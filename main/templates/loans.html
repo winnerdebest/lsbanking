@@ -1,0 +1,388 @@
+{% extends "base.html" %}
+
+{% block title %}Loans | GRAND ELITE CREDIT UNION{% endblock %}
+{% block header %}Loans Management{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Active Loans Section -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg font-medium leading-6 text-gray-900">Your Active Loans</h3>
+            <p class="mt-1 text-sm text-gray-500">View and manage your current loan accounts</p>
+        </div>
+        <div class="bg-white divide-y divide-gray-200">
+            <!-- Loan Cards -->
+            <!--<div class="p-4" x-data="{ showDetails: false }">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h4 class="font-medium text-gray-900">Personal Loan</h4>
+                        <p class="text-sm text-gray-500">Account #LN-7894-2023</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-indigo-600">$15,000.00</p>
+                        <p class="text-xs text-gray-500">5.9% APR</p>
+                    </div>
+                </div>-->
+                
+                <!-- Loan Details (Collapsible) -->
+                <!--<div x-show="showDetails" x-transition class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="text-gray-500">Original Amount</p>
+                            <p class="font-medium">$15,000.00</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Current Balance</p>
+                            <p class="font-medium">$12,345.67</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Next Payment</p>
+                            <p class="font-medium">$287.50 (Jun 15)</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Term</p>
+                            <p class="font-medium">60 months</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex space-x-2">
+                        <button class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700">
+                            Make Payment
+                        </button>
+                        <button class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50">
+                            View Schedule
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mt-2 flex justify-between items-center">
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-indigo-600 h-2 rounded-full" style="width: 82%"></div>
+                    </div>
+                    <button @click="showDetails = !showDetails" class="ml-4 text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                        <span x-text="showDetails ? 'Hide Details' : 'View Details'"></span>
+                        <i class="fas ml-1" :class="showDetails ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-4" x-data="{ showDetails: false }">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h4 class="font-medium text-gray-900">Auto Loan</h4>
+                        <p class="text-sm text-gray-500">Account #LN-4567-2022</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-indigo-600">$28,500.00</p>
+                        <p class="text-xs text-gray-500">3.9% APR</p>
+                    </div>
+                </div>
+                
+                <div x-show="showDetails" x-transition class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="text-gray-500">Original Amount</p>
+                            <p class="font-medium">$28,500.00</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Current Balance</p>
+                            <p class="font-medium">$18,765.43</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Next Payment</p>
+                            <p class="font-medium">$523.75 (Jun 10)</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Term</p>
+                            <p class="font-medium">72 months</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex space-x-2">
+                        <button class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700">
+                            Make Payment
+                        </button>
+                        <button class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50">
+                            View Schedule
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mt-2 flex justify-between items-center">
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-indigo-600 h-2 rounded-full" style="width: 66%"></div>
+                    </div>
+                    <button @click="showDetails = !showDetails" class="ml-4 text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                        <span x-text="showDetails ? 'Hide Details' : 'View Details'"></span>
+                        <i class="fas ml-1" :class="showDetails ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+    
+    <!-- Apply for New Loan Section -->
+     <div class="bg-white shadow rounded-lg overflow-hidden" x-data="loanApplication()">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg font-medium leading-6 text-gray-900">Apply for a New Loan</h3>
+            <p class="mt-1 text-sm text-gray-500">Get competitive rates and flexible terms</p>
+        </div>
+        
+        <div class="p-6">
+            <!-- Loan Type Selection -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Loan Type</label>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <template x-for="loan in loanTypes" :key="loan.id">
+                        <button 
+                            @click="selectLoanType(loan)"
+                            class="p-3 border rounded-md text-center hover:border-indigo-500 transition-colors"
+                            :class="{
+                                'border-indigo-500 bg-indigo-50': selectedLoanType.id === loan.id,
+                                'border-gray-300': selectedLoanType.id !== loan.id
+                            }"
+                        >
+                            <i :class="loan.icon" class="text-indigo-600 text-xl mb-1"></i>
+                            <p class="text-sm font-medium" x-text="loan.name"></p>
+                            <p class="text-xs text-gray-500" x-text="loan.rate"></p>
+                        </button>
+                    </template>
+                </div>
+            </div>
+            
+            <!-- Loan Application Form -->
+            <div x-show="selectedLoanType" x-transition class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="amount" class="block text-sm font-medium text-gray-700">Loan Amount</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            <input 
+                                type="number" 
+                                id="amount" 
+                                x-model="loanAmount" 
+                                @input="calculatePayment()"
+                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" 
+                                placeholder="0.00"
+                            >
+                            <div class="absolute inset-y-0 right-0 flex items-center">
+                                <span class="text-gray-500 sm:text-sm mr-3">USD</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="term" class="block text-sm font-medium text-gray-700">Loan Term</label>
+                        <select 
+                            id="term" 
+                            x-model="loanTerm" 
+                            @change="calculatePayment()"
+                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                        >
+                            <option value="12">12 months</option>
+                            <option value="24">24 months</option>
+                            <option value="36">36 months</option>
+                            <option value="48">48 months</option>
+                            <option value="60">60 months</option>
+                            <option value="72">72 months</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Purpose Field -->
+                <div>
+                    <label for="purpose" class="block text-sm font-medium text-gray-700">Loan Purpose</label>
+                    <input 
+                        type="text" 
+                        id="purpose" 
+                        x-model="loanPurpose"
+                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md py-2 px-3"
+                        placeholder="Briefly describe what you need the loan for"
+                    >
+                </div>
+                
+                <!-- Estimated Payment -->
+                <div class="bg-gray-50 p-4 rounded-md">
+                    <h4 class="text-sm font-medium text-gray-700 mb-2">Estimated Payment</h4>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <p class="text-xs text-gray-500">Monthly Payment</p>
+                            <p class="font-medium" x-text="estimatedPayment ? '$' + estimatedPayment.toFixed(2) : '--'"></p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Interest Rate</p>
+                            <p class="font-medium" x-text="selectedLoanType ? selectedLoanType.rate : '--'"></p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Total Interest</p>
+                            <p class="font-medium" x-text="totalInterest ? '$' + totalInterest.toFixed(2) : '--'"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button 
+                        @click="submitApplication()"
+                        :disabled="!canSubmit"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Submit Application
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Account Not Verified Modal -->
+    <div 
+        x-show="showVerificationModal" 
+        x-transition 
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+        style="display: none;"
+    >
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <i class="fas fa-exclamation-triangle text-red-600"></i>
+                </div>
+                <h3 class="mt-3 text-lg font-medium text-gray-900">Account Not Verified</h3>
+                <div class="mt-2 text-sm text-gray-500">
+                    <p>Your account needs to be verified before you can apply for loans.</p>
+                    <p class="mt-2">Please contact our support team at:</p>
+                    <p class="mt-1 font-medium">support@grandelitecreditunion.com</p>
+                    <p class="mt-2">or call (800) 555-1234 for assistance.</p>
+                </div>
+                <div class="mt-5">
+                    <button 
+                        @click="showVerificationModal = false"
+                        type="button" 
+                        class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loan Application Success Modal -->
+    <div 
+        x-show="showSuccessModal" 
+        x-transition 
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+        style="display: none;"
+    >
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <i class="fas fa-check text-green-600"></i>
+                </div>
+                <h3 class="mt-3 text-lg font-medium text-gray-900">Application Submitted!</h3>
+                <div class="mt-2 text-sm text-gray-500">
+                    <p>Your <span x-text="selectedLoanType.name"></span> application for <span x-text="'$' + loanAmount"></span> has been received.</p>
+                    <p class="mt-2">Our loan officer will contact you within 2 business days.</p>
+                </div>
+                <div class="mt-5">
+                    <button 
+                        @click="showSuccessModal = false"
+                        type="button" 
+                        class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loanApplication() {
+        return {
+            loanTypes: [
+                { id: 1, name: 'Personal Loan', rate: '5.9% - 12.9% APR', icon: 'fa-user' },
+                { id: 2, name: 'Auto Loan', rate: '3.9% - 7.9% APR', icon: 'fa-car' },
+                { id: 3, name: 'Home Loan', rate: '4.5% - 6.5% APR', icon: 'fa-home' },
+                { id: 4, name: 'Education Loan', rate: '4.9% - 8.9% APR', icon: 'fa-graduation-cap' }
+            ],
+            selectedLoanType: null,
+            loanAmount: '',
+            loanTerm: '36',
+            loanPurpose: '',
+            estimatedPayment: null,
+            totalInterest: null,
+            showSuccessModal: false,
+            showVerificationModal: false,
+            // Set this based on actual user verification status
+            isAccountVerified: false,
+            
+            selectLoanType(loan) {
+                this.selectedLoanType = loan;
+                this.calculatePayment();
+            },
+            
+            calculatePayment() {
+                if (!this.selectedLoanType || !this.loanAmount) {
+                    this.estimatedPayment = null;
+                    this.totalInterest = null;
+                    return;
+                }
+                
+                // Extract the lower rate from the range (e.g., "5.9% - 12.9%" becomes 5.9)
+                const rate = parseFloat(this.selectedLoanType.rate.split('%')[0]);
+                const amount = parseFloat(this.loanAmount);
+                const term = parseInt(this.loanTerm);
+                
+                if (isNaN(amount) || amount <= 0) {
+                    this.estimatedPayment = null;
+                    this.totalInterest = null;
+                    return;
+                }
+                
+                // Simple loan payment calculation (PMT formula)
+                const monthlyRate = (rate / 100) / 12;
+                const payment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term));
+                this.estimatedPayment = payment;
+                this.totalInterest = (payment * term) - amount;
+            },
+            
+            submitApplication() {
+                if (!this.canSubmit) return;
+                
+                // Check if account is verified
+                if (!this.isAccountVerified) {
+                    this.showVerificationModal = true;
+                    return;
+                }
+                
+                // In a real app, this would send data to the server
+                console.log('Submitting loan application:', {
+                    type: this.selectedLoanType.name,
+                    amount: this.loanAmount,
+                    term: this.loanTerm,
+                    purpose: this.loanPurpose
+                });
+                
+                // Show success modal
+                this.showSuccessModal = true;
+                
+                // Reset form (but keep loan type selected)
+                this.loanAmount = '';
+                this.loanTerm = '36';
+                this.loanPurpose = '';
+                this.estimatedPayment = null;
+                this.totalInterest = null;
+            },
+            
+            get canSubmit() {
+                return this.selectedLoanType && 
+                       this.loanAmount && 
+                       parseFloat(this.loanAmount) > 0 && 
+                       this.loanPurpose.trim().length > 0;
+            }
+        }
+    }
+</script>
+{% endblock %}
