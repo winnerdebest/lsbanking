@@ -31,7 +31,7 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = True
 
-ALLOWED_HOSTS = ["localhost', '127.0.0.1', 'grandelitecreditunion.com'"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'grandelitecreditunion.com',]
 
 
 CSRF_TRUSTED_ORIGINS = [
