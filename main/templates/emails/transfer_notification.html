@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>You've received a transfer</title>
+</head>
+<body style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 30px;">
+  <table width="100%" style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <tr>
+      <td style="text-align: center;">
+        <h2 style="color: #1a1a1a;">{{ bank_name }}</h2>
+        <p style="font-size: 20px; color: green;">💰 Transfer Received</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>Hi {{ recipient_name }},</p>
+        <p>You’ve just received <strong>{{ amount }}</strong> from <strong>{{ sender_name }}</strong> on <strong>{{ transfer_time }}</strong>.</p>
+        <p>Log in to your dashboard to view the transaction details.</p>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="{{ dashboard_url }}" style="padding: 12px 24px; background-color: #1a73e8; color: white; text-decoration: none; border-radius: 6px;">View Dashboard</a>
+        </div>
+
+        <p>Thanks for banking with us,<br>{{ bank_name }} Team</p>
+        <hr style="margin: 30px 0;">
+        <p style="font-size: 12px; color: #888;">This is an automated message. Please do not reply to this email.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

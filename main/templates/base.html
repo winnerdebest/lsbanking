@@ -68,6 +68,8 @@
             margin-right: 1rem;
             border-radius: 1rem;
         }
+     
+        
     </style>
 </head>
 <body class="h-full" x-data="{ mobileMenuOpen: false, activeTab: 'dashboard' }">
@@ -145,6 +147,13 @@
             <i class="fas fa-paper-plane text-xl"></i>
         </a>
 
+        <!-- More -->
+        <button @click="showMoreMenu = !showMoreMenu" 
+                class="p-2 rounded-full" 
+                :class="{ 'bg-indigo-50 text-indigo-600': showMoreMenu, 'text-gray-500': !showMoreMenu }">
+            <i class="fas fa-ellipsis-h text-xl"></i>
+        </button>
+        
         <!-- Loans -->
         <a href="{% url 'loans' %}" @click="activeTab = 'loans'; showMoreMenu = false" 
            class="p-2 rounded-full" 
@@ -152,12 +161,7 @@
             <i class="fas fa-hand-holding-usd text-xl"></i>
         </a>
 
-        <!-- More -->
-        <button @click="showMoreMenu = !showMoreMenu" 
-                class="p-2 rounded-full" 
-                :class="{ 'bg-indigo-50 text-indigo-600': showMoreMenu, 'text-gray-500': !showMoreMenu }">
-            <i class="fas fa-ellipsis-h text-xl"></i>
-        </button>
+        
     </div>
 </div>
 
@@ -382,5 +386,33 @@
           //  }, 50);//
         });
     </script>
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/68474c0f36e09c190b3fc83c/1itb827tf';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    
+    // Set up callback to add user info when widget loads
+    Tawk_API.onLoad = function(){
+        Tawk_API.setWidgetPosition('right', '300px');
+        {% if request.user.is_authenticated %}
+            Tawk_API.setAttributes({
+                'name' : '{{ request.user.full_name|default:"Member" }}',
+                'email': '{{ request.user.email }}',
+                'user_id': '{{ request.user.id }}',
+                'account_number': '{{ request.user.account_number|default:"N/A" }}',
+                'account_type': '{{ request.user.account_type|default:"Standard" }}'
+            }, function(error){});
+        {% endif %}
+    };
+})();
+</script>
+
+<!--End of Tawk.to Script-->
 </body>
 </html>

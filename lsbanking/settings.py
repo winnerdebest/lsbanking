@@ -31,7 +31,7 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'grandelitecreditunion.com',]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'grandelitecreditunion.com','.ngrok-free.app']
 
 
 CSRF_TRUSTED_ORIGINS = [
@@ -107,7 +107,7 @@ DATABASES = {
 }
 
 
-POSTGRESS_LOCALLY = True
+POSTGRESS_LOCALLY = False
 if ENVIRONMENT == 'production' or POSTGRESS_LOCALLY == True:
         DATABASES['default'] = dj_database_url.parse(env('DATABASE_URL'))
 
@@ -163,7 +163,9 @@ SESSION_SAVE_EVERY_REQUEST = True
 
 # Email backend for development (prints emails to console)
 
-if ENVIRONMENT == 'development':
+EMAIL_CONFIG_LOCAL = False  # Change to True if you want to test email locally
+
+if ENVIRONMENT == 'development' and not EMAIL_CONFIG_LOCAL:
     EMAIL_BACKEND = env('DEV_EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
 else:
     EMAIL_BACKEND = env('EMAIL_BACKEND')

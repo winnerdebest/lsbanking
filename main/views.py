@@ -17,6 +17,9 @@ from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ValidationError
 from .forms import *
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
+from django.utils.timezone import now
 
 
 def landing_page(request):
@@ -154,18 +157,29 @@ def process_transfer(request):
     try:
         transaction = TransactionService.transfer(from_wallet, to_wallet, amount, description)
         
-        # Send email notification to recipient
         recipient_user = to_wallet.user
+        transfer_time = now().strftime("%b %d, %Y at %I:%M %p")
+
         try:
-            send_mail(
-                subject="You've received a transfer",
-                message=f"Hi {recipient_user.full_name},\n\nYou received ${amount:,.2f} from {request.user.full_name}.\n\nCheck your wallet for details.",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[recipient_user.email],
-                fail_silently=True,
-            )
+            subject = "📥 New Credit Alert: You've Received a Transfer"
+            from_email = settings.DEFAULT_FROM_EMAIL
+            to = [recipient_user.email]
+
+            html_content = render_to_string("emails/transfer_notification.html", {
+                "recipient_name": recipient_user.full_name,
+                "sender_name": request.user.full_name,
+                "amount": f"${amount:,.2f}",
+                "transfer_time": transfer_time,
+                "dashboard_url": "https://grandelitecreditunion.com/dashboard",  # update accordingly
+                "bank_name": "GECU"
+            })
+            text_content = strip_tags(html_content)
+
+            email = EmailMultiAlternatives(subject, text_content, from_email, to)
+            email.attach_alternative(html_content, "text/html")
+            email.send(fail_silently=True)
+
         except Exception as e:
-            # Log the error but continue with the process
             print(f"Email sending failed: {str(e)}")
         
         # Get the transaction ID for redirect

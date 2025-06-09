@@ -31,12 +31,11 @@
                     {% else %}bg-gradient-to-r from-purple-500 to-purple-600{% endif %}">
                 </div>
 
-                <!-- Overlay ONLY if this account is frozen -->
                 {% if not wallet.is_active %}
-                <div class="absolute inset-0 z-10 bg-black bg-opacity-80 backdrop-blur-sm text-white flex flex-col items-center justify-center p-6 rounded-xl border-4 border-red-500">
+                <div class="absolute inset-0 z-50 bg-black bg-opacity-95 text-white flex flex-col items-center justify-center p-6 rounded-xl border-4 border-red-500">
                     <p class="text-xl font-extrabold text-center tracking-wide">🚫 Account Frozen</p>
-                    <p class="text-sm text-center mt-3 opacity-90">Account was frozen cause of some unusual activities.</p>
-                    <p class="text-xs text-center mt-2 opacity-75">
+                    <p class="text-sm text-center mt-3">Account was frozen cause of some unusual activities.</p>
+                    <p class="text-xs text-center mt-2">
                         Contact <a href="mailto:support@grandelitecreditunion.com" class="underline hover:text-red-300">support@grandelitecreditunion.com</a>
                     </p>
                 </div>
@@ -291,4 +290,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 {% endblock %}
