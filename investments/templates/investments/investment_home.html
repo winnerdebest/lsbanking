@@ -27,7 +27,7 @@
                 
                 <div class="auth-buttons">
                     <a href="{% url "investment_login" %}" class="btn btn-outline">Login</a>
-                    <a href="#" class="btn btn-primary">Register</a>
+                    <a href="{% url 'investment_signup' %}" class="btn btn-primary">Register</a>
                 </div>
             </div>
         </div>
@@ -45,7 +45,7 @@
                     <p class="hero-subtitle">Experience banking redefined with our exclusive services backed by Deutsche International Banking Group's global infrastructure and security.</p>
                     
                     <div class="hero-cta">
-                        <a href="#" class="btn btn-primary btn-large">Begin Your Application</a>
+                        <a href="{% url 'investment_signup' %}" class="btn btn-primary btn-large">Begin Your Application</a>
                         <a href="#" class="btn btn-outline btn-large">Explore Services</a>
                     </div>
                 </div>
@@ -205,7 +205,7 @@
                     
                     <div class="founder-card">
                         <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face" alt="David Okafor" class="founder-img">
-                        <h3 class="founder-name">David Okafor</h3>
+                        <h3 class="founder-name">David Mayers</h3>
                         <p class="founder-title">Chief Investment Officer</p>
                         <p class="founder-bio">PhD in Economics from MIT, former Federal Reserve analyst with expertise in quantitative strategies and emerging markets.</p>
                     </div>
@@ -229,7 +229,7 @@
                     <p class="section-subtitle">Our relationship managers are ready to discuss how we can help achieve your financial aspirations with tailored solutions.</p>
                     
                     <div class="cta-buttons">
-                        <a href="#" class="btn btn-primary btn-large">Register</a>
+                        <a href="{% url 'investment_signup' %}" class="btn btn-primary btn-large">Register</a>
                     </div>
                 </div>
             </div>
@@ -260,7 +260,7 @@
                 <div class="footer-column">
                     <h3>Resources</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Client Login</a></li>
+                        <li><a href="{% url 'investment_signup' %}">Client Login</a></li>
                         <li><a href="#">Fee Schedule</a></li>
                         <li><a href="#">Regulatory Disclosures</a></li>
                         <li><a href="#">Contact Us</a></li>
