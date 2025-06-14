@@ -13,7 +13,7 @@
             {% if request.user.profile_picture %}
                 <img src="{{ request.user.profile_picture.url|default:"" }}" alt="Profile Picture" class="h-10 w-10 rounded-full object-cover">
             {% else %}
-                <img src="{% static 'default_field.png' %}" alt="Default Profile Picture" class="h-10 w-10 rounded-full object-cover">
+                <img src="https://res.cloudinary.com/dvlfnmxxw/image/upload/v1749936199/default_field_zcaicu.png" alt="Default Profile Picture" class="h-10 w-10 rounded-full object-cover">
             {% endif %}
 
             <!-- Welcome Text -->
