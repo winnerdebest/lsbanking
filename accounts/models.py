@@ -30,7 +30,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     if settings.USE_CLOUDINARY:
         profile_picture = CloudinaryField('profile_pics/', transformation=[
                 {'width': 800, 'height': 800, 'crop': 'limit', 'quality': 'auto', 'fetch_format': 'webp'}
-            ], default='static/default_field.png')
+            ],)
     else:
         profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     is_email_verified = models.BooleanField(default=False)
