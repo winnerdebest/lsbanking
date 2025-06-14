@@ -1,0 +1,136 @@
+{% extends "investments/main/ibase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-md mx-auto my-8 bg-white rounded-2xl overflow-hidden shadow-xl">
+    <!-- Header with gradient background -->
+    <div class="bg-gradient-to-r from-blue-500 to-emerald-600 p-6 text-white text-center">
+        <div class="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        <h2 class="text-2xl font-bold">Withdraw Funds</h2>
+        <p class="text-white/90 mt-1">Transfer to your wallet balance</p>
+    </div>
+
+    <!-- Form content -->
+    <div class="p-6">
+        <form method="post"
+              action="{% url 'investments:withdraw' %}" 
+              hx-post="{% url 'investments:withdraw' %}"
+              hx-trigger="submit"
+              hx-target="#withdraw-status"
+              hx-swap="innerHTML"
+              class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Requirements card -->
+            <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-lg">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-amber-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-amber-700">
+                            Minimum withdrawal: <span class="font-bold">$1000</span><br>
+                            Investment duration must be completed
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Balance display -->
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600 font-medium">Available Balance:</span>
+                    <span class="text-2xl font-bold text-gray-800">${{ current_balance|default:"0.00" }}</span>
+                </div>
+            </div>
+
+            <!-- Withdrawal button -->
+            <button type="submit"
+                    class="w-full flex justify-center items-center py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-xl shadow-md transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    {% if current_balance < 1000 %}disabled{% endif %}>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+                Withdraw to Wallet
+            </button>
+
+            <!-- Status messages will appear here -->
+            <div id="withdraw-status" class="text-center"></div>
+        </form>
+
+        <!-- Additional help section -->
+        <div class="mt-6 pt-6 border-t border-gray-200">
+            <div class="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-600">
+                        Withdrawals are processed within <span class="font-medium">24-48 hours</span>. 
+                        Contact support if you encounter any issues.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success modal template (will be injected by HTMX) -->
+<div id="success-modal-template" class="hidden">
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl overflow-hidden shadow-xl transform transition-all max-w-sm w-full">
+            <div class="p-6 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Withdrawal Requested!</h3>
+                <div class="mt-2 text-sm text-gray-500">
+                    <p>Your withdrawal of <span class="font-bold">${{ current_balance }}</span> has been submitted.</p>
+                    <p class="mt-2">You'll receive confirmation shortly.</p>
+                </div>
+                <div class="mt-5">
+                    <button type="button" onclick="closeModal()" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:text-sm">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to close modal (used by HTMX responses)
+    function closeModal() {
+        const modal = document.querySelector('.fixed.inset-0.bg-black');
+        if (modal) modal.remove();
+    }
+
+    // Disable button if balance is insufficient
+    document.addEventListener('DOMContentLoaded', function() {
+        const withdrawBtn = document.querySelector('button[type="submit"]');
+        const currentBalance = parseFloat('{{ current_balance|default:"0" }}');
+        
+        if (currentBalance < 1000) {
+            withdrawBtn.disabled = true;
+            withdrawBtn.classList.remove('from-green-500', 'to-emerald-600', 'hover:from-green-600', 'hover:to-emerald-700');
+            withdrawBtn.classList.add('from-gray-400', 'to-gray-500', 'cursor-not-allowed');
+        }
+    });
+</script>
+
+<style>
+    /* Smooth transitions for disabled state */
+    button[disabled] {
+        opacity: 0.7;
+        transform: none !important;
+    }
+</style>
+{% endblock %}

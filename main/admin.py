@@ -7,10 +7,14 @@ from .services import TransactionService
 from django.utils.html import format_html
 from decimal import Decimal
 from django import forms
-from django.shortcuts import render, redirect
+from datetime import timedelta
+from django.utils import timezone
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import path
 from .models import Wallet, Transaction
-
+from django.urls import reverse
+import random
+import uuid
 
 class ManualCreditForm(forms.Form):
     _selected_action = forms.CharField(widget=forms.MultipleHiddenInput)
@@ -27,27 +31,27 @@ def freeze_wallets(modeladmin, request, queryset):
 
 
 
+
 @admin.register(Wallet)
 class WalletAdmin(admin.ModelAdmin):
     list_display = ('user', 'account_type', 'account_number', 'currency', 'balance', 'is_active', 'created_at')
     list_filter = ('account_type', 'currency', 'is_active', 'user__is_suspended', 'user__is_active')
     search_fields = ('user__email', 'user__full_name', 'account_number')
-    readonly_fields = ('created_at', 'updated_at', 'balance', 'account_number')
+    readonly_fields = ('created_at', 'updated_at', 'balance', 'account_number', 'seed_fake_transactions_button')
     ordering = ('user', 'account_type')
-    #actions = [freeze_wallets]
     actions = ['manual_credit', freeze_wallets]
 
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
             path('manual-credit/', self.admin_site.admin_view(self.manual_credit_view), name='manual-credit'),
+            path('seed-fake-transactions/<int:wallet_id>/', self.admin_site.admin_view(self.seed_fake_transactions_view), name='seed-fake-transactions'),
         ]
         return custom_urls + urls
 
     def manual_credit(self, request, queryset):
         selected = request.POST.getlist('_selected_action')
         return redirect(f'./manual-credit/?ids={",".join(selected)}')
-
 
     manual_credit.short_description = "Manually Credit Selected Wallets"
 
@@ -63,11 +67,9 @@ class WalletAdmin(admin.ModelAdmin):
                 method = form.cleaned_data['deposit_method']
 
                 for wallet in wallets:
-                    # Update balance
                     wallet.balance += amount
                     wallet.save()
 
-                    # Log transaction
                     Transaction.objects.create(
                         wallet=wallet,
                         transaction_type='CREDIT',
@@ -76,7 +78,7 @@ class WalletAdmin(admin.ModelAdmin):
                         deposit_method=method or "Manual"
                     )
                 self.message_user(request, f"Credited {len(wallets)} wallet(s) with ${amount}")
-                return redirect('..')  # Go back to wallet list
+                return redirect('..')
         else:
             form = ManualCreditForm(initial={'_selected_action': wallet_ids})
 
@@ -85,6 +87,75 @@ class WalletAdmin(admin.ModelAdmin):
             'form': form,
             'title': 'Manually Credit Wallets'
         })
+
+    def seed_fake_transactions_button(self, obj):
+        url = reverse('admin:seed-fake-transactions', args=[obj.pk])
+        return format_html('<a class="button" href="{}">Seed Fake Transactions</a>', url)
+        
+    seed_fake_transactions_button.short_description = "Seed Transactions"
+
+    def seed_fake_transactions_view(self, request, wallet_id):
+        wallet = get_object_or_404(Wallet, pk=wallet_id)
+        user = wallet.user
+
+        descriptions = [
+            "Transfer", "Deposit", "Venmo Payment", "PayPal Transaction", "Zelle Payment",
+            "Wire Transfer", "ACH Transfer", "Crypto Trade", "Loan Payment", "Loan Disbursement",
+            "Reimbursement", "Invoice", "Wallet Funding", "Wallet Withdrawal", "Stock Trade",
+            "Bank Adjustment", "Payment", "P2P Transfer", "Account Credit", "Account Debit"
+        ]
+
+        methods = [
+            "ACH Transfer", "Zelle Payment", "Wire Transfer", 
+            "Direct Deposit", "Cash App Payment", "Bank Transfer", None
+        ]
+        
+        other_wallets = Wallet.objects.exclude(id=wallet.id).order_by('?')[:10]
+
+        now = timezone.now()
+        txs = []
+        running_balance = Decimal(wallet.balance)
+
+        for _ in range(50):
+            raw_tx_type = random.choices(['CREDIT', 'DEBIT'], weights=[3, 4])[0]
+            amount = Decimal(random.randint(2000, 300000)) / Decimal("100")
+            days_ago = random.randint(1, 730)
+            created_at = now - timedelta(days=days_ago, hours=random.randint(0, 23), minutes=random.randint(0, 59))
+
+            description = random.choice(descriptions)
+            deposit_method = random.choice(methods) if raw_tx_type == "CREDIT" else None
+            related_wallet = random.choice(other_wallets) if other_wallets and random.random() < 0.3 else None
+
+            # Ensure balance never goes negative
+            if raw_tx_type == 'DEBIT' and running_balance < amount:
+                tx_type = 'CREDIT'
+            else:
+                tx_type = raw_tx_type
+
+            tx = Transaction(
+                wallet=wallet,
+                transaction_type=tx_type,
+                amount=amount,
+                description=description,
+                deposit_method=deposit_method if tx_type == 'CREDIT' else None,
+                related_wallet=related_wallet if tx_type == 'DEBIT' else None,
+                reference_code=str(uuid.uuid4()),
+                created_at=created_at
+            )
+
+            txs.append(tx)
+            running_balance += amount if tx_type == 'CREDIT' else -amount
+
+        Transaction.objects.bulk_create(txs)
+        wallet.balance = running_balance.quantize(Decimal("0.01"))
+        wallet.save()
+
+        self.message_user(
+            request,
+            f"✅ Seeded 50 transactions for {wallet.user.full_name}. New balance: ${wallet.balance}",
+            messages.SUCCESS
+        )
+        return redirect(f"/admin/main/wallet/{wallet.id}/change/")
 
 
 

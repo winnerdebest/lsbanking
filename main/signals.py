@@ -48,6 +48,9 @@ def notify_staff_on_deposit(sender, instance, created, **kwargs):
     subject = "🧾 New Deposit Pending Approval"
     approve_url = f"{settings.SITE_URL}/admin/main/deposit/{instance.id}/change/"
 
+    # Get Cloudinary image URL
+    proof_image_url = instance.proof_image.url if instance.proof_image else None
+
     context = {
         'user': instance.user,
         'amount': instance.amount,
@@ -55,9 +58,10 @@ def notify_staff_on_deposit(sender, instance, created, **kwargs):
         'status': instance.status,
         'approve_url': approve_url,
         'created_at': instance.created_at,
+        'proof_image_url': proof_image_url,
     }
 
-    # Text fallback
+    # Text-only fallback email
     text_content = f"""
 New deposit submitted:
 
@@ -65,6 +69,7 @@ User: {instance.user.full_name} ({instance.user.email})
 Amount: {instance.amount}
 Method: {instance.method}
 Status: {instance.status}
+Submitted at: {instance.created_at}
 
 Review and Approve: {approve_url}
 """
@@ -78,23 +83,4 @@ Review and Approve: {approve_url}
         to=list(staff_emails),
     )
     email.attach_alternative(html_content, "text/html")
-
-    # Attach image with detected MIME type
-    if instance.proof_image and hasattr(instance.proof_image, 'path'):
-        try:
-            file_path = instance.proof_image.path
-            mime_type, _ = mimetypes.guess_type(file_path)
-
-            if mime_type is None:
-                mime_type = "application/octet-stream"  # fallback
-
-            with open(file_path, 'rb') as f:
-                email.attach(
-                    filename=os.path.basename(file_path),
-                    content=f.read(),
-                    mimetype=mime_type
-                )
-        except Exception as e:
-            print(f"Failed to attach proof image: {e}")
-
     email.send(fail_silently=True)

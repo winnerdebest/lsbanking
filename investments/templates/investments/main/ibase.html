@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GECU Investments Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans" x-data="dashboard">
+    <!-- Header -->
+    <header class="bg-indigo-900 text-white shadow-lg">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <!-- Brand -->
+        <div class="flex items-center space-x-2">
+            <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center font-bold text-indigo-900">
+                G
+            </div>
+            <span class="text-xl font-bold">GECU Investments</span>
+        </div>
+
+       
+
+        <!-- Profile dropdown -->
+        <div class="flex items-center space-x-4">
+            <div class="relative group">
+                <button class="flex items-center space-x-2 focus:outline-none">
+                    <div class="w-8 h-8 rounded-full bg-indigo-700 flex items-center justify-center">
+                        <i class="fas fa-user text-sm"></i>
+                    </div>
+                    <span class="hidden md:inline"> {{ request.user.full_name|default:"Member" }} </span>
+                </button>
+
+                <div
+                    class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                    <a href="{% url "user_dashboard" %}" class="block px-4 py-2 text-gray-800 hover:bg-indigo-100">Banking</a>
+                    
+                    <a href="{% url 'account_logout' %}" class="block px-4 py-2 text-gray-800 hover:bg-indigo-100">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+{% block content %}
+
+{% endblock content %}
+
+
+<!-- Modern Bottom Navigation -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 shadow-lg z-10">
+        <div class="flex justify-around items-center h-16 px-2">
+            <a href="{% url "investments:investment_dashboard" %}" class="flex flex-col items-center justify-center text-indigo-600 px-3 py-2 rounded-lg bg-indigo-50">
+                <i class="fas fa-home text-lg"></i>
+                <span class="text-xs mt-1">Home</span>
+            </a>
+            <a href="#invest" class="flex flex-col items-center justify-center text-gray-500 px-3 py-2 rounded-lg hover:bg-gray-50">
+                <i class="fas fa-chart-pie text-lg"></i>
+                <span class="text-xs mt-1">Invest</span>
+            </a>
+            <a href="{% url 'investments:withdraw' %}" class="flex flex-col items-center justify-center text-gray-500 px-3 py-2 rounded-lg hover:bg-gray-50">
+                <i class="fas fa-wallet text-lg"></i>
+                <span class="text-xs mt-1">Withdraw</span>
+            </a>
+            <a href="/account" class="flex flex-col items-center justify-center text-gray-500 px-3 py-2 rounded-lg hover:bg-gray-50">
+                <i class="fas fa-user text-lg"></i>
+                <span class="text-xs mt-1">Account</span>
+            </a>
+        </div>
+
+        
+    </div>
+
+
+
+    <!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/68474c0f36e09c190b3fc83c/1itb827tf';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    
+    // Set up callback to add user info when widget loads
+    Tawk_API.onLoad = function(){
+        Tawk_API.setWidgetPosition('right', '300px');
+        {% if request.user.is_authenticated %}
+            Tawk_API.setAttributes({
+                'name' : '{{ request.user.full_name|default:"Member" }}',
+                'email': '{{ request.user.email }}',
+                'user_id': '{{ request.user.id }}',
+                'account_number': '{{ request.user.account_number|default:"N/A" }}',
+                'account_type': '{{ request.user.account_type|default:"Standard" }}'
+            }, function(error){});
+        {% endif %}
+    };
+})();
+</script>
+
+<!--End of Tawk.to Script-->
+</html>
+</body>

@@ -24,7 +24,7 @@
                     </div>
                     <div class="sm:col-span-4">
                         <p class="text-sm font-medium text-gray-500">Email Address</p>
-                        <p class="mt-1 text-sm text-gray-900">john.doe@example.com</p>
+                        <p class="mt-1 text-sm text-gray-900">{{ request.user.email|default:"N/A" }}</p>
                     </div>
                     <div class="sm:col-span-4">
                         <p class="text-sm font-medium text-gray-500">Phone Number</p>

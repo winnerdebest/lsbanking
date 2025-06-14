@@ -27,6 +27,9 @@ def landing_page(request):
 
 
 
+
+
+
 @login_required
 def dashboard(request):
     user = request.user
@@ -305,9 +308,7 @@ def load_more_transactions(request):
 
 
 
-def transactions_details(request):
-    return render(request, 'transaction_details.html')
-
+@login_required
 def loans(request):
     return render(request, 'loans.html')
 
@@ -384,14 +385,8 @@ def deposit_success(request, deposit_id):
     return render(request, 'deposit_success.html', {'deposit': deposit})
 
 
-
-"""def deposit(request):
-    return render(request, 'deposit/deposit.html')"""
-
 def withdrawals(request):
     return render(request, 'withdrawals.html')
 
 def settings_view(request):
     return render(request, 'settings.html')
-
- # Or 'main/home.html' if you prefer

@@ -1,0 +1,281 @@
+ {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Elite Credit Union | Premium Wealth Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+   
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/investments" class="logo">
+                    <div class="logo-icon">G</div>
+                    Investments
+                </a>
+                
+                <nav class="nav-links">
+                    <a href="/">Personal Banking</a>
+                    <a href="#">About Us</a>
+                </nav>
+                
+                <div class="auth-buttons">
+                    <a href="{% url "investment_login" %}" class="btn btn-outline">Login</a>
+                    <a href="#" class="btn btn-primary">Register</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="security-badge">
+                        <div class="shield-icon">✓</div>
+                        <span>FDIC Insured • Global Banking Standards</span>
+                    </div>
+                    <h1>Elevated Wealth Management for Discerning Clients</h1>
+                    <p class="hero-subtitle">Experience banking redefined with our exclusive services backed by Deutsche International Banking Group's global infrastructure and security.</p>
+                    
+                    <div class="hero-cta">
+                        <a href="#" class="btn btn-primary btn-large">Begin Your Application</a>
+                        <a href="#" class="btn btn-outline btn-large">Explore Services</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="stats-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Trusted by Clients Worldwide</h2>
+                    <p class="section-subtitle">Our global reach and financial strength provide unparalleled stability for your assets</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">€50B+</div>
+                        <div class="stat-label">Assets Under Management</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value">150+</div>
+                        <div class="stat-label">Countries Served</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value">85+</div>
+                        <div class="stat-label">Years in Banking</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value">24/7</div>
+                        <div class="stat-label">Client Support</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="security-section">
+            <div class="container">
+                <div class="security-content">
+                    <div class="security-text">
+                        <h2>Institutional-Grade Security</h2>
+                        <p class="section-subtitle">As a subsidiary of Deutsche International Banking Group, we implement the highest security standards used by global financial institutions.</p>
+                        
+                        <div class="security-features">
+                            <div class="feature-item">
+                                <div class="feature-icon">🏦</div>
+                                <div class="feature-text">
+                                    <h3>Global Banking Backing</h3>
+                                    <p>Full regulatory oversight with €50B+ in parent company assets ensuring stability and trust.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <div class="feature-icon">🔒</div>
+                                <div class="feature-text">
+                                    <h3>Advanced Encryption</h3>
+                                    <p>256-bit SSL encryption with biometric authentication for all transactions and account access.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <div class="feature-icon">🛡️</div>
+                                <div class="feature-text">
+                                    <h3>Deposit Protection</h3>
+                                    <p>All deposits insured up to $250,000 through international insurance partnerships.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <div class="feature-icon">🌐</div>
+                                <div class="feature-text">
+                                    <h3>Global Compliance</h3>
+                                    <p>Regulated by multiple international authorities including BaFin, FCA, and SEC.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="security-image">
+                        <div class="icon">🏛️</div>
+                        <h3>Grand Elite Credit Union (GECU)</h3>
+                        <p>Our parent company since forever</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="services-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Exclusive Financial Services</h2>
+                    <p class="section-subtitle">Tailored solutions designed for high-net-worth individuals and institutional clients</p>
+                </div>
+                
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">📊</div>
+                        <h3 class="service-title">AI Portfolio Management</h3>
+                        <p class="service-description">Our proprietary algorithms continuously analyze global markets to optimize your investment allocation, balancing risk and return with institutional-grade precision.</p>
+                    </div>
+                    
+                    <div class="service-card">
+                        <div class="service-icon">🌍</div>
+                        <h3 class="service-title">Global Diversification</h3>
+                        <p class="service-description">Access emerging markets and international opportunities through our parent bank's worldwide network, unavailable to traditional institutions.</p>
+                    </div>
+                    
+                    <div class="service-card">
+                        <div class="service-icon">💼</div>
+                        <h3 class="service-title">Tax Optimization</h3>
+                        <p class="service-description">Sophisticated international tax planning strategies to legally minimize liabilities and maximize after-tax returns on your investments.</p>
+                    </div>
+                    
+                    <div class="service-card">
+                        <div class="service-icon">🏦</div>
+                        <h3 class="service-title">Private Banking</h3>
+                        <p class="service-description">Dedicated relationship managers providing personalized service, exclusive products, and priority access to capital markets.</p>
+                    </div>
+                    
+                    <div class="service-card">
+                        <div class="service-icon">🏡</div>
+                        <h3 class="service-title">Wealth Preservation</h3>
+                        <p class="service-description">Multi-generational wealth strategies including trusts, estate planning, and family office services to protect your legacy.</p>
+                    </div>
+                    
+                    <div class="service-card">
+                        <div class="service-icon">🔐</div>
+                        <h3 class="service-title">Digital Security</h3>
+                        <p class="service-description">Military-grade encryption, multi-factor authentication, and 24/7 monitoring to safeguard your digital assets and transactions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="founders-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Our Executive Leadership</h2>
+                    <p class="section-subtitle">Seasoned professionals with decades of experience in global finance</p>
+                </div>
+                
+                <div class="founders-grid">
+                    <div class="founder-card">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face" alt="Michael Reynolds" class="founder-img">
+                        <h3 class="founder-name">Michael Reynolds</h3>
+                        <p class="founder-title">Chief Executive Officer</p>
+                        <p class="founder-bio">Former Goldman Sachs VP with 18 years in institutional investment management and global market strategy development.</p>
+                    </div>
+                    
+                    <div class="founder-card">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop&crop=face" alt="Sarah Chen" class="founder-img">
+                        <h3 class="founder-name">Sarah Chen</h3>
+                        <p class="founder-title">Chief Financial Officer</p>
+                        <p class="founder-bio">Former Deutsche Bank executive specializing in international financial regulations with CPA and CFA certifications.</p>
+                    </div>
+                    
+                    <div class="founder-card">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face" alt="David Okafor" class="founder-img">
+                        <h3 class="founder-name">David Okafor</h3>
+                        <p class="founder-title">Chief Investment Officer</p>
+                        <p class="founder-bio">PhD in Economics from MIT, former Federal Reserve analyst with expertise in quantitative strategies and emerging markets.</p>
+                    </div>
+                    
+                    <div class="founder-card">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face" alt="Jennifer Martinez" class="founder-img">
+                        <h3 class="founder-name">Jennifer Martinez</h3>
+                        <p class="founder-title">Client Relations Director</p>
+                        <p class="founder-bio">Certified Financial Planner with 15 years experience in high-net-worth client services and wealth preservation strategies.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        
+        
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Begin Your Journey With Grand Elite</h2>
+                    <p class="section-subtitle">Our relationship managers are ready to discuss how we can help achieve your financial aspirations with tailored solutions.</p>
+                    
+                    <div class="cta-buttons">
+                        <a href="#" class="btn btn-primary btn-large">Register</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Grand Elite Credit Union</h3>
+                    <p style="margin-bottom: 20px; font-size: 0.9rem; line-height: 1.6;">A subsidiary of GECU Banking</p>
+                    
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">Private Banking</a></li>
+                        <li><a href="#">Wealth Management</a></li>
+                        <li><a href="#">Investment Solutions</a></li>
+                        <li><a href="#">Tax Optimization</a></li>
+                        <li><a href="#">Estate Planning</a></li>
+                    </ul>
+                </div>
+                
+                
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Client Login</a></li>
+                        <li><a href="#">Fee Schedule</a></li>
+                        <li><a href="#">Regulatory Disclosures</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Global Offices</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2025 Grand Elite Credit Union Investments. All rights reserved.</p>
+                <p style="margin-top: 10px; font-size: 0.8rem;">
+                    Grand Elite Credit Union Investments is a subsidiary of GECU Banking. Authorized and regulated by international financial authorities. Investments involve risk, including possible loss of principal.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

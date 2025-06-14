@@ -1,27 +1,147 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <title>New Deposit Submission</title>
     <style>
-        body { font-family: Arial, sans-serif; color: #333; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e90ff 0%, #0b7bd4 100%);
+            padding: 25px 30px;
+            color: white;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .detail-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .value {
+            color: #212529;
+            font-weight: 500;
+        }
         .btn {
             display: inline-block;
-            padding: 10px 15px;
-            margin-top: 15px;
+            padding: 12px 24px;
+            margin-top: 20px;
             background-color: #1e90ff;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #0b7bd4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(30, 144, 255, 0.3);
+        }
+        .proof-container {
+            margin: 25px 0;
+            text-align: center;
+        }
+        .proof-img {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 12px;
+            border-top: 1px solid #e9ecef;
         }
     </style>
 </head>
 <body>
-    <h2>New Deposit Submitted</h2>
-    <p><strong>User:</strong> {{ user.full_name }} ({{ user.email }})</p>
-    <p><strong>Amount:</strong> ${{ amount }}</p>
-    <p><strong>Method:</strong> {{ method }}</p>
-    <p><strong>Status:</strong> {{ status }}</p>
-    <p><strong>Submitted at:</strong> {{ created_at }}</p>
+    <div class="container">
+        <div class="header">
+            <h1 style="margin: 0; font-size: 24px;">New Deposit Submitted</h1>
+            <p style="margin: 5px 0 0; opacity: 0.9;">Action Required: Review Deposit Details</p>
+        </div>
+        
+        <div class="content">
+            <div class="detail-card">
+                <div class="detail-row">
+                    <span class="label">User:</span>
+                    <span class="value">{{ user.full_name }} ({{ user.email }})</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Amount:</span>
+                    <span class="value" style="color: #28a745; font-weight: 600;">${{ amount }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Method:</span>
+                    <span class="value">{{ method }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Status:</span>
+                    <span class="value" style="color: #ffc107; font-weight: 600;">{{ status }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Submitted at:</span>
+                    <span class="value">{{ created_at }}</span>
+                </div>
+            </div>
 
-    <a href="{{ approve_url }}" class="btn">Review & Approve</a>
+            {% if proof_image_url %}
+                <div class="proof-container">
+                    <p style="font-weight: 600; margin-bottom: 10px; color: #495057;">Proof of Deposit</p>
+                    <img src="{{ proof_image_url }}" class="proof-img" alt="Proof of deposit">
+                </div>
+            {% endif %}
+
+            <div style="text-align: center;">
+                <a href="{{ approve_url }}" class="btn">Review & Approve Deposit</a>
+                <p style="color: #6c757d; font-size: 13px; margin-top: 15px;">
+                    This link expires in 24 hours. Need help? <a href="mailto:support@example.com" style="color: #1e90ff; text-decoration: none;">Contact Support</a>
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p style="margin: 0;">© 2023 Your Company Name. All rights reserved.</p>
+            <p style="margin: 5px 0 0;">
+                <a href="#" style="color: #6c757d; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
+                <a href="#" style="color: #6c757d; text-decoration: none; margin: 0 10px;">Terms of Service</a>
+            </p>
+        </div>
+    </div>
 </body>
 </html>

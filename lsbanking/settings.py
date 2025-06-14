@@ -31,7 +31,7 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'grandelitecreditunion.com','.ngrok-free.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'grandelitecreditunion.com','.ngrok-free.app',]
 
 
 CSRF_TRUSTED_ORIGINS = [
@@ -55,9 +55,11 @@ INSTALLED_APPS = [
     #Third Party Apps 
     'allauth',
     'allauth.account',
-    # 'allauth.socialaccount', # Removed as per your confirmation
+    # 'allauth.socialaccount',
+     
 
     #Apps 
+    'investments',
     'accounts',
     'main',
 ]
@@ -73,6 +75,7 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware', 
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'lsbanking.urls'
@@ -145,7 +148,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional' # Email verification is mandatory
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True # Log in user after email confirmation
 ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
 ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300 # 5 minutes
-LOGIN_REDIRECT_URL = '/dashboard/' # Redirect to dashboard after login
+LOGIN_REDIRECT_URL = '/dashboard/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/' # Redirect to landing page after logout
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_SESSION_REMEMBER = True # Remember user session
@@ -177,7 +180,6 @@ else:
 
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@yourdomain.com')
 SITE_URL = env('SITE_URL', default='http://localhost:8000')
-
 
 
 

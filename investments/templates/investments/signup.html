@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | GECU Investments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .bg-auth {
+            background: linear-gradient(135deg, #0a2540 0%, #1b4a8a 100%);
+        }
+        .btn-primary {
+            background-color: #d4af37;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #c9a227;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+        .input-field:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+        .benefit-item {
+            transition: all 0.3s ease;
+        }
+        .benefit-item:hover {
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-4xl w-full grid md:grid-cols-2 gap-12">
+        <!-- Left Column - Benefits -->
+        <div class="hidden md:block">
+            <div class="flex items-center space-x-3 mb-8">
+                <div class="w-12 h-12 bg-amber-500 rounded-lg flex items-center justify-center font-bold text-indigo-900 text-2xl">G</div>
+                <span class="text-2xl font-bold text-indigo-900">GECU Investments</span>
+            </div>
+            
+            <h2 class="text-3xl font-bold text-indigo-900 mb-6">Start growing your wealth today</h2>
+            
+            <div class="space-y-6">
+                <div class="benefit-item bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800 mb-1">20% Daily Returns</h3>
+                            <p class="text-gray-600">Industry-leading investment growth powered by our AI portfolio management.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="benefit-item bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800 mb-1">Bank-Grade Security</h3>
+                            <p class="text-gray-600">Your assets protected with military-grade encryption and FDIC insurance.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="benefit-item bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800 mb-1">Global Diversification</h3>
+                            <p class="text-gray-600">Access international markets unavailable to traditional investors.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 p-4 bg-indigo-50 rounded-lg border border-indigo-100 flex items-center space-x-3">
+                    <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <p class="text-sm text-indigo-700">
+                        "GECU transformed my financial future. My initial $500 investment grew to over $15,000 in just 3 months." 
+                        <span class="block font-medium mt-1">- Michael R., Private Client</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column - Signup Form -->
+        <div class="bg-white p-8 rounded-xl shadow-md">
+            <div class="text-center md:text-left">
+                <h2 class="text-2xl font-bold text-gray-900">Create your account</h2>
+                <p class="mt-2 text-sm text-gray-600">
+                    Already have an account? 
+                    <a href="{% url 'account_login' %}" class="font-medium text-amber-600 hover:text-amber-500">
+                        Sign in here
+                    </a>
+                </p>
+            </div>
+
+            <form class="mt-8 space-y-6" method="post" action="{% url 'account_signup' %}?next=/investments/dashboard/">
+                {% csrf_token %}
+                <div class="rounded-md shadow-sm space-y-4">
+                    <!-- Full Name Field -->
+
+                    <div>
+                        <label for="id_full_name" class="block text-sm font-medium text-gray-700 mb-1">Full Legal Name</label>
+                        <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            name="full_name"
+                            id="id_full_name"
+                            value="{{ form.full_name.value|default_if_none:'' }}"
+                            class="w-full px-4 py-3 pl-10 rounded-lg border input-field {% if form.full_name.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                            placeholder="As it appears on your ID"
+                            required
+                        >
+                        </div>
+                        {% if form.full_name.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.full_name.errors|first }}</p>
+                        {% endif %}
+                    </div>
+
+                   <!-- <div>
+                        <label for="id_full_name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input id="id_full_name" name="full_name" type="text" autocomplete="name" required
+                                class="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md input-field placeholder-gray-400 focus:outline-none"
+                                placeholder="John Doe">
+                        </div>
+                    </div>-->
+
+                    <!-- Email Field -->
+                    <div>
+                        <label for="id_email" class="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-gray-400"></i>
+                            </div>
+                            <input id="id_email" name="email" type="email" autocomplete="email" required
+                                class="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md input-field placeholder-gray-400 focus:outline-none"
+                                placeholder="your@email.com">
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <label for="id_password1" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                            <input id="id_password1" name="password1" type="password" autocomplete="new-password" required
+                                class="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md input-field placeholder-gray-400 focus:outline-none"
+                                placeholder="••••••••">
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Minimum 8 characters with numbers and symbols
+                        </p>
+                    </div>
+
+                    <!-- Password Confirmation -->
+                    <div>
+                        <label for="id_password2" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                            <input id="id_password2" name="password2" type="password" required
+                                class="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md input-field placeholder-gray-400 focus:outline-none"
+                                placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <!-- Terms Agreement -->
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="terms" name="terms" type="checkbox" required
+                                class="focus:ring-amber-500 h-4 w-4 text-amber-600 border-gray-300 rounded">
+                        </div>
+                        <div class="ml-3">
+                            <label for="terms" class="text-sm text-gray-700">
+                                I agree to the <a href="#" class="font-medium text-amber-600 hover:text-amber-500">Terms of Service</a> and <a href="#" class="font-medium text-amber-600 hover:text-amber-500">Privacy Policy</a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <!-- Hidden Fields for session recongnition -->
+                <!--<input type="hidden" name="login_context" value="investments">-->
+
+
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit"
+                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-user-plus"></i>
+                        </span>
+                        Create Account
+                    </button>
+                </div>
+            </form>
+
+           
+        </div>
+    </div>
+</body>
+</html>

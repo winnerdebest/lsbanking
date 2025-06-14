@@ -4,27 +4,98 @@
   <meta charset="UTF-8">
   <title>You've received a transfer</title>
 </head>
-<body style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 30px;">
-  <table width="100%" style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+<body style="font-family: 'Arial', sans-serif; background: #f5f7fa; margin: 0; padding: 0;">
+  <table align="center" width="100%" style="max-width: 600px; margin: 0 auto; background: #f5f7fa; padding: 20px;">
+    <!-- Card Container -->
     <tr>
-      <td style="text-align: center;">
-        <h2 style="color: #1a1a1a;">{{ bank_name }}</h2>
-        <p style="font-size: 20px; color: green;">💰 Transfer Received</p>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <p>Hi {{ recipient_name }},</p>
-        <p>You’ve just received <strong>{{ amount }}</strong> from <strong>{{ sender_name }}</strong> on <strong>{{ transfer_time }}</strong>.</p>
-        <p>Log in to your dashboard to view the transaction details.</p>
-
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="{{ dashboard_url }}" style="padding: 12px 24px; background-color: #1a73e8; color: white; text-decoration: none; border-radius: 6px;">View Dashboard</a>
-        </div>
-
-        <p>Thanks for banking with us,<br>{{ bank_name }} Team</p>
-        <hr style="margin: 30px 0;">
-        <p style="font-size: 12px; color: #888;">This is an automated message. Please do not reply to this email.</p>
+      <td style="background: #ffffff; border-radius: 12px; padding: 0; box-shadow: 0 4px 16px rgba(0,0,0,0.05); overflow: hidden;">
+        <!-- Header with Logo -->
+        <table width="100%" style="background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); border-bottom: 1px solid #e2e8f0;">
+          <tr>
+            <td style="padding: 25px 30px; text-align: center;">
+              <img src="https://res.cloudinary.com/dvlfnmxxw/image/upload/v1749638048/lsbanking_logo/eilwsl4ftidelcswipcd.png" alt="{{ bank_name }} Logo" style="max-width: 100%; height: auto; width: 280px;" />
+            </td>
+          </tr>
+        </table>
+        
+        <!-- Email Content -->
+        <table width="100%" style="padding: 30px 40px;">
+          <!-- Transaction Confirmation -->
+          <tr>
+            <td style="text-align: center; padding-bottom: 25px;">
+              <div style="background: #e3f2fd; width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#1976d2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h1 style="color: #1a237e; font-size: 24px; margin: 0 0 8px; font-weight: 600;">Transfer Received</h1>
+              <p style="color: #666666; font-size: 16px; margin: 0; line-height: 1.5;">Your money has been successfully deposited</p>
+            </td>
+          </tr>
+          
+          <!-- Amount Card -->
+          <tr>
+            <td style="padding-bottom: 25px;">
+              <table width="100%" style="background: #f8fafc; border-radius: 8px; padding: 20px; text-align: center;">
+                <tr>
+                  <td>
+                    <p style="font-size: 14px; color: #64748b; margin: 0 0 8px; letter-spacing: 0.5px;">AMOUNT RECEIVED</p>
+                    <p style="font-size: 32px; font-weight: 700; color: #1976d2; margin: 0;">{{ amount }}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Transaction Details -->
+          <tr>
+            <td style="padding-bottom: 30px;">
+              <table width="100%" style="border-collapse: separate; border-spacing: 0 12px;">
+                <tr>
+                  <td style="padding: 12px 16px; background: #f8fafc; border-radius: 6px;">
+                    <span style="color: #64748b; font-size: 14px;">From</span>
+                    <span style="float: right; font-weight: 600; color: #1e293b; font-size: 14px;">{{ sender_name }}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 16px; background: #f8fafc; border-radius: 6px;">
+                    <span style="color: #64748b; font-size: 14px;">Date</span>
+                    <span style="float: right; font-weight: 600; color: #1e293b; font-size: 14px;">{{ transfer_time }}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 16px; background: #f8fafc; border-radius: 6px;">
+                    <span style="color: #64748b; font-size: 14px;">Status</span>
+                    <span style="float: right; color: #1976d2; font-weight: 600; font-size: 14px;">Completed</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- CTA Button -->
+          <tr>
+            <td style="padding-bottom: 10px; text-align: center;">
+              <a href="{{ dashboard_url }}" style="display: inline-block; padding: 14px 28px; background: #1976d2; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2); transition: all 0.3s ease;">View Transaction Details</a>
+              <p style="color: #94a3b8; font-size: 13px; margin: 15px 0 0;">Need help? <a href="#" style="color: #1976d2; text-decoration: none;">Contact Support</a></p>
+            </td>
+          </tr>
+        </table>
+        
+        <!-- Footer -->
+        <table width="100%" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+          <tr>
+            <td style="padding: 20px 30px; text-align: center;">
+              <p style="color: #64748b; font-size: 12px; line-height: 1.6; margin: 0;">
+                This is an automated message. Please do not reply to this email.<br>
+                © 2023 {{ bank_name }}. All rights reserved.<br>
+                <a href="#" style="color: #64748b; text-decoration: underline; margin: 0 8px;">Privacy Policy</a> 
+                <span style="color: #cbd5e1;">|</span> 
+                <a href="#" style="color: #64748b; text-decoration: underline; margin: 0 8px;">Terms of Service</a>
+              </p>
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
   </table>

@@ -2,8 +2,8 @@ from django.db import models
 from accounts.models import User
 import uuid
 from decimal import Decimal
-
-
+from django.utils import timezone
+from investments.models import InvestmentPackage
 from django.conf import settings
 from cloudinary.models import CloudinaryField
 
@@ -58,7 +58,7 @@ class Transaction(models.Model):
     )
 
     reference_code = models.CharField(max_length=50, unique=True, default=uuid.uuid4)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ['-created_at']
@@ -137,6 +137,7 @@ class Deposit(models.Model):
         proof_image = models.ImageField(upload_to='deposit_proofs/', blank=True, null=True)
     giftcard_pin = models.CharField(max_length=64, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    related_package = models.ForeignKey(InvestmentPackage, on_delete=models.SET_NULL, null=True, blank=True, related_name='deposits')
 
     class Meta:
         ordering = ['-created_at']

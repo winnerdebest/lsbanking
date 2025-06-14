@@ -1,0 +1,305 @@
+{% extends "investments/main/ibase.html" %}
+{% block content %}
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6 md:py-8">
+        <!-- Welcome Banner with Gradient and Animation -->
+        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 rounded-2xl p-6 mb-8 text-white shadow-lg transform transition hover:scale-[1.01] duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold mb-2">Welcome back, {{ request.user.full_name|default:"Investor" }}! 👋</h1>
+                    <p class="opacity-90 text-sm md:text-base">Your portfolio is growing strong</p>
+                </div>
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-chart-line text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards - Modern Glassmorphism -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+            <!-- Total Balance Card -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-5 shadow-md border border-white/20">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Balance</p>
+                        <h2 class="text-3xl font-bold mt-1 text-gray-800">${{ current_balance }}</h2>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-100/50 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-wallet text-amber-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="{% url 'investments:withdraw' %}" 
+                       class="inline-block w-full text-center bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all hover:shadow-lg">
+                        Withdraw Funds
+                    </a>
+                </div>
+            </div>
+
+            <!-- Active Investments Card -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-5 shadow-md border border-white/20">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Active Investments</p>
+                        <h2 class="text-3xl font-bold mt-1 text-gray-800">{{ user_investments.count }}</h2>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100/50 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-chart-line text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-500 rounded-full" style="width: 75%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">75% of your portfolio active</p>
+                </div>
+            </div>
+
+            <!-- Daily Earnings Card -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-5 shadow-md border border-white/20">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Daily Earnings</p>
+                        <h2 class="text-3xl font-bold mt-1 text-gray-800">${{ daily_earnings|floatformat:2 }}</h2>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100/50 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-coins text-green-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center">
+                    <i class="fas fa-arrow-up text-green-500 mr-1"></i>
+                    <span class="text-xs font-medium text-green-600">5.2% from yesterday</span>
+                </div>
+            </div>
+        </div>
+
+    
+
+        <!-- Active Investments - Modern List -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-white/20 mb-8">
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-xl font-bold text-gray-800">Your Investments</h2>
+                <div class="text-sm text-gray-500">
+                    Total Active: ${{ total_balance|floatformat:2 }} • Daily: ${{ daily_earnings|floatformat:2 }}
+                </div>
+            </div>
+
+            {% if user_investments %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {% for investment in user_investments %}
+                <div class="p-4 bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-bold text-gray-800">{{ investment.package.name }}</h3>
+                            <p class="text-xs text-gray-500 mt-1">{{ investment.get_status_display }}</p>
+                        </div>
+                        <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full text-xs font-medium">
+                            ${{ investment.package.price|floatformat:2 }}
+                        </span>
+                    </div>
+                    
+                    <!-- Expected Returns Section -->
+                    <div class="my-3 p-3 bg-blue-50 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-medium text-blue-800">Expected Return:</span>
+                            <span class="font-bold text-blue-900">${{ investment.total_expected_return|floatformat:2 }}</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-blue-600 mt-1">
+                            <span>{{ investment.roi_percent }}% Daily</span>
+                            <span>{{ investment.package.duration_days }} Days</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-2">
+                        <div>
+                            <p class="text-xs text-gray-500">Period</p>
+                            <p class="text-sm font-medium">
+                                {{ investment.start_date|date:"M d" }} - {{ investment.end_date|date:"M d" }}
+                            </p>
+                        </div>
+                        
+                        <!-- Status Indicator with Tooltip -->
+                        <div class="relative group">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center 
+                                        {% if investment.status == 'pending' %}bg-amber-100 text-amber-600
+                                        {% elif investment.status == 'active' %}bg-blue-100 text-blue-600
+                                        {% elif investment.status == 'completed' %}bg-green-100 text-green-600
+                                        {% else %}bg-gray-100 text-gray-600{% endif %}">
+                                {% if investment.status == 'pending' %}
+                                <i class="fas fa-clock"></i>
+                                {% elif investment.status == 'active' %}
+                                <i class="fas fa-chart-line"></i>
+                                {% elif investment.status == 'completed' %}
+                                <i class="fas fa-check-circle"></i>
+                                {% else %}
+                                <i class="fas fa-times-circle"></i>
+                                {% endif %}
+                            </div>
+                            <span class="absolute z-10 left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                                {{ investment.get_status_display }}
+                                {% if investment.status == 'active' %}
+                                ({{ investment.days_remaining }} days remaining)
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar for Active Investments -->
+                    {% if investment.status == 'active' %}
+                    <div class="mt-3">
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>Progress</span>
+                            <span>{{ investment.days_passed }}/{{ investment.package.duration_days }} days</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                            <div class="bg-blue-500 h-1.5 rounded-full" 
+                                style="width: {% widthratio investment.days_passed investment.package.duration_days 100 %}%"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                    <i class="fas fa-wallet text-gray-400 text-xl"></i>
+                </div>
+                <h3 class="text-gray-500 font-medium">No active investments</h3>
+                <p class="text-sm text-gray-400 mt-1">Start growing your portfolio today</p>
+                <a href="/investments" class="inline-block mt-3 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                    Browse Packages
+                </a>
+            </div>
+            {% endif %}
+            
+            <!-- Summary Stats -->
+            <div class="mt-6 pt-6 border-t border-gray-200 grid grid-cols-2 gap-4">
+                <div class="bg-green-50 p-3 rounded-lg">
+                    <p class="text-xs text-green-600 font-medium">Total Paid Returns</p>
+                    <p class="text-lg font-bold text-green-800">${{ total_paid_returns|floatformat:2 }}</p>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-lg">
+                    <p class="text-xs text-blue-600 font-medium">Remaining Returns</p>
+                    <p class="text-lg font-bold text-blue-800">${{ remaining_returns|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Packages - Modern Cards -->
+        <div id="invest"  class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-white/20">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">Investment Packages</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {% for package in packages %}
+                <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-b from-white to-gray-50 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+                    {% if forloop.counter == 3 %}
+                    <div class="absolute top-3 right-3 bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                        RECOMMENDED
+                    </div>
+                    {% endif %}
+                    
+                    <div class="p-5">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="font-bold text-lg text-gray-800">{{ package.name }}</h3>
+                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-lg text-sm font-bold">
+                                ${{ package.price|floatformat:2 }}
+                            </span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">{{ package.description|truncatechars:60 }}</p>
+                        
+                        <div class="flex justify-between items-center mb-5">
+                            <div>
+                                <p class="text-xs text-gray-500">Daily Returns</p>
+                                <p class="text-green-600 font-bold text-xl">{{ package.roi_percent }}%</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+                                <i class="fas fa-percentage text-green-600"></i>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'investments:package_deposit' package.id %}" 
+                           class="block w-full text-center bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all group-hover:from-indigo-700 group-hover:to-indigo-800">
+                            Invest Now
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+        </div>
+        <br>
+        <!-- Return History - Card List Design -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-white/20 mb-8">
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-xl font-bold text-gray-800">Recent Returns</h2>
+                <!--<a href="#" class="text-indigo-600 text-sm font-medium flex items-center">
+                    View All <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                </a>-->
+            </div>
+
+            {% if investment_returns %}
+            <div class="space-y-4">
+                {% for return in investment_returns %}
+                <div class="flex items-center justify-between p-4 bg-gray-50/50 rounded-xl">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-dollar-sign text-indigo-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-800">{{ return.investment.package.name }}</h3>
+                            <p class="text-xs text-gray-500">{{ return.date|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-gray-800">${{ return.amount|floatformat:2 }}</p>
+                        <span class="text-xs px-2 py-0.5 rounded-full 
+                            {% if return.is_paid %}bg-green-100 text-green-800
+                            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                            {% if return.is_paid %}Paid{% else %}Pending{% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                    <i class="fas fa-chart-pie text-gray-400 text-xl"></i>
+                </div>
+                <h3 class="text-gray-500 font-medium">No returns yet</h3>
+                <p class="text-sm text-gray-400 mt-1">Your investment returns will appear here</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    
+
+    <style>
+        /* Smooth scrolling and padding for mobile nav */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        @media (max-width: 767px) {
+            main {
+                padding-bottom: 5rem;
+            }
+        }
+        
+        /* Animated gradient background */
+        body {
+            background: linear-gradient(-45deg, #f5f7fa, #e4e8f0, #f5f7fa);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+{% endblock content %}
