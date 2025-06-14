@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 <div class="py-2 md:py-4">
@@ -10,11 +11,9 @@
             <div class="flex items-center space-x-4">
             <!-- Profile Picture -->
             {% if request.user.profile_picture %}
-                <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture" class="h-10 w-10 rounded-full object-cover">
+                <img src="{{ request.user.profile_picture.url|default:"" }}" alt="Profile Picture" class="h-10 w-10 rounded-full object-cover">
             {% else %}
-                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium text-white">
-                    {{ request.user.full_name|slice:":1"|default:"M" }}
-                </div>
+                <img src="{% static 'default_field.png' %}" alt="Default Profile Picture" class="h-10 w-10 rounded-full object-cover">
             {% endif %}
 
             <!-- Welcome Text -->
