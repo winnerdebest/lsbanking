@@ -14,28 +14,48 @@
         <div class="px-4 py-5 sm:p-6">
             <div x-show="!editingProfile">
                 <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+
+                    <!-- Profile Picture -->
+                    <div class="sm:col-span-6 flex items-center space-x-4">
+                        {% if request.user.profile_picture %}
+                            <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture" class="h-16 w-16 rounded-full object-cover">
+                        {% else %}
+                            <div class="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                                <span class="text-sm">N/A</span>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Profile Picture</p>
+                            <p class="text-xs text-gray-500">Displayed in your account header.</p>
+                        </div>
+                    </div>
+
+                    <!-- Full Name -->
                     <div class="sm:col-span-3">
                         <p class="text-sm font-medium text-gray-500">Full Name</p>
                         <p class="mt-1 text-sm text-gray-900">{{ request.user.full_name|default:"Member" }}</p>
                     </div>
-                    <div class="sm:col-span-3">
+
+                    <!-- Date of Birth -->
+                    <!--<div class="sm:col-span-3">
                         <p class="text-sm font-medium text-gray-500">Date of Birth</p>
-                        <p class="mt-1 text-sm text-gray-900">N/A</p>
-                    </div>
+                        <p class="mt-1 text-sm text-gray-900">N/A</p> <!-- Replace when you add DOB support -->
+                    <!--</div>-->
+
+                    <!-- Email -->
                     <div class="sm:col-span-4">
                         <p class="text-sm font-medium text-gray-500">Email Address</p>
                         <p class="mt-1 text-sm text-gray-900">{{ request.user.email|default:"N/A" }}</p>
                     </div>
+
+                    <!-- Phone -->
                     <div class="sm:col-span-4">
                         <p class="text-sm font-medium text-gray-500">Phone Number</p>
                         <p class="mt-1 text-sm text-gray-900">{{ request.user.phone|default:"N/A" }}</p>
                     </div>
-                    <!--<div class="sm:col-span-4">
-                        <p class="text-sm font-medium text-gray-500">Mailing Address</p>
-                        <p class="mt-1 text-sm text-gray-900">123 Main St, Apt 4B</p>
-                        <p class="text-sm text-gray-900">New York, NY 10001</p>
-                    </div>-->
                 </div>
+
+                <!-- Edit Button -->
                 <div class="mt-6">
                     <button 
                         @click="editingProfile = true"
@@ -46,53 +66,37 @@
                     </button>
                 </div>
             </div>
+        </div>
+
 
             <div x-show="editingProfile" x-transition>
-                <form class="space-y-6">
+                <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+
                     <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                        <div class="sm:col-span-3">
-                            <label for="first-name" class="block text-sm font-medium text-gray-700">First name</label>
-                            <input type="text" name="first-name" id="first-name" autocomplete="given-name" value="John" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <div class="sm:col-span-6">
+                            <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" name="full_name" id="full_name" value="{{ request.user.full_name }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
-                        <div class="sm:col-span-3">
-                            <label for="last-name" class="block text-sm font-medium text-gray-700">Last name</label>
-                            <input type="text" name="last-name" id="last-name" autocomplete="family-name" value="Doe" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        </div>
-
-                        <div class="sm:col-span-4">
+                        <div class="sm:col-span-6">
                             <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-                            <input type="email" name="email" id="email" autocomplete="email" value="john.doe@example.com" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <input type="email" name="email" id="email" value="{{ request.user.email }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
-                        <div class="sm:col-span-4">
+                        <div class="sm:col-span-6">
                             <label for="phone" class="block text-sm font-medium text-gray-700">Phone number</label>
-                            <input type="text" name="phone" id="phone" autocomplete="tel" value="(555) 123-4567" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <input type="text" name="phone" id="phone" value="{{ request.user.phone }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
 
-                        <div class="sm:col-span-4">
-                            <label for="address" class="block text-sm font-medium text-gray-700">Street address</label>
-                            <input type="text" name="address" id="address" autocomplete="street-address" value="123 Main St, Apt 4B" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="city" class="block text-sm font-medium text-gray-700">City</label>
-                            <input type="text" name="city" id="city" autocomplete="address-level2" value="New York" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="state" class="block text-sm font-medium text-gray-700">State</label>
-                            <select id="state" name="state" autocomplete="address-level1" class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                <option value="NY" selected>New York</option>
-                                <option value="CA">California</option>
-                                <option value="FL">Florida</option>
-                                <option value="TX">Texas</option>
-                            </select>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <label for="zip" class="block text-sm font-medium text-gray-700">ZIP / Postal code</label>
-                            <input type="text" name="zip" id="zip" autocomplete="postal-code" value="10001" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <div class="sm:col-span-6">
+                            <label for="profile_picture" class="block text-sm font-medium text-gray-700">Profile Picture</label>
+                            <input type="file" name="profile_picture" id="profile_picture" class="mt-1 block w-full text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md cursor-pointer focus:outline-none">
+                            {% if request.user.profile_picture %}
+                                <div class="mt-2">
+                                    <img src="{{ request.user.profile_picture.url }}" alt="Current profile picture" class="h-16 w-16 rounded-full object-cover">
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -113,6 +117,7 @@
                     </div>
                 </form>
             </div>
+
         </div>
     </div>
 
@@ -141,10 +146,10 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-900">Two-Factor Authentication</p>
-                            <p class="text-sm text-gray-500">Currently enabled via SMS</p>
+                            <p class="text-sm text-gray-500">Currently enabled via Email</p>
                         </div>
-                        <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                            Manage
+                        <button class="text-sm font-medium text-red-600 hover:text-red-500">
+                            Unavailable
                         </button>
                     </div>
                     
@@ -153,18 +158,18 @@
                             <p class="text-sm font-medium text-gray-900">Login Alerts</p>
                             <p class="text-sm text-gray-500">Enabled for new devices</p>
                         </div>
-                        <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                            Configure
+                        <button class="text-sm font-medium text-red-600 hover:text-red-500">
+                            Unavailable
                         </button>
                     </div>
                     
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-900">Connected Devices</p>
-                            <p class="text-sm text-gray-500">3 active sessions</p>
+                            <p class="text-sm text-gray-500">N/A</p>
                         </div>
-                        <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                            View All
+                        <button class="text-sm font-medium text-red-600 hover:text-red-500">
+                            Unavailable
                         </button>
                     </div>
                 </div>

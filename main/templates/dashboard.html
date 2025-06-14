@@ -7,10 +7,23 @@
     <!-- User Profile Header -->
     <div class="flex items-center justify-between px-4 mb-4">
         <div class="flex items-center">
+            <div class="flex items-center space-x-4">
+            <!-- Profile Picture -->
+            {% if request.user.profile_picture %}
+                <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture" class="h-10 w-10 rounded-full object-cover">
+            {% else %}
+                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium text-white">
+                    {{ request.user.full_name|slice:":1"|default:"M" }}
+                </div>
+            {% endif %}
+
+            <!-- Welcome Text -->
             <div>
-                <h2 class="font-semibold">Welcome, {{ request.user.full_name|default:"Member" }}</h2>
+                <h2 class="font-semibold text-gray-900">Welcome, {{ request.user.full_name|default:"Member" }}</h2>
                 <p class="text-xs text-gray-500">Last login: {{ last_login_time }}</p>
             </div>
+        </div>
+
         </div>
     </div>
 

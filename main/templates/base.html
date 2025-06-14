@@ -86,7 +86,7 @@
              { name: 'Deposit', icon: 'money-bill-wave', url: '{% url "deposit" %}' },
                 { name: 'Investments', icon: 'chart-line', url: '{% url "investments:investment_dashboard" %}' },
              { name: 'Withdraw', icon: 'wallet', url: '{% url "withdrawals" %}' },
-             { name: 'Settings', icon: 'cog', url: '{% url "settings" %}' },
+             { name: 'Settings', icon: 'cog', url: '{% url "account_settings" %}' },
              { name: 'Support', icon: 'headset', url: 'mailto:support@grandelitecreditunion.com' },
              { name: 'Logout', icon: 'sign-out-alt', url: '{% url 'account_logout' %}' }
          ]
@@ -220,7 +220,7 @@
                         <i class="fas fa-headset text-gray-400 mr-3 h-6 w-6"></i>
                         Support
                     </a>
-                    <a href="{% url "settings" %}" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <a href="{% url "account_settings" %}" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                         <i class="fas fa-cog text-gray-400 mr-3 h-6 w-6"></i>
                         Settings
                     </a>

@@ -18,6 +18,8 @@ admin.site.index_title = "Welcome to GECU Admin Portal"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
+    path('profile/', include('accounts.urls')),
+
     # path('api/auth/', include('dj_rest_auth.urls')),
     # path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path('investments/', include('investments.urls')),
