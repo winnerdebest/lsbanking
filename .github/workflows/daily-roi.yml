@@ -9,6 +9,18 @@ jobs:
   generate-daily-returns:
     runs-on: ubuntu-latest
 
+    env:
+      DJANGO_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      ENVIRONMENT: production
+      # Add other secrets if needed, like email config, cloudinary, etc.
+      # EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+      # EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+      # EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+      # CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      # CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      # CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -23,11 +35,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run daily returns
-        env:
-          DJANGO_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          # add any other secrets you need
+      - name: Run migrations and generate ROI
         run: |
           python manage.py migrate
           python manage.py generate_daily_returns
