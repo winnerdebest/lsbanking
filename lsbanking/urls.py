@@ -24,13 +24,13 @@ urlpatterns = [
     # path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path('investments/', include('investments.urls')),
     path('accounts/', include('allauth.urls')), 
+    path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
 
 
     # Path for investments allauth login and registration pages
     path("investments/login/", LoginView.as_view(template_name="investments/login.html"), name="investment_login"),
     
     path("investments/signup/", SignupView.as_view(template_name="investments/signup.html"), name="investment_signup"),
-    
     # path('accounts/', include('accounts.urls')), 
 ]
 
