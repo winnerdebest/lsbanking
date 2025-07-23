@@ -15,5 +15,5 @@ urlpatterns = [
     path('loans/', loans, name='loans'),
     path('deposit/', deposit_funds, name='deposit'),
     path('withdrawals/', withdrawals, name='withdrawals'),
-    path('settings/', settings_view, name='settings'),
+    #path('settings/', settings_view, name='settings'),
 ]

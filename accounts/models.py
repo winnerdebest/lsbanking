@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.hashers import make_password, check_password
 
 from django.conf import settings
 from cloudinary.models import CloudinaryField
@@ -47,3 +48,26 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+
+# Pin User model
+
+from django.core.exceptions import ValidationError
+import re
+# This is necessary for Transactions to have a pin before they can be created
+class TransactionPIN(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="transaction_pin")
+    pin_hash = models.CharField(max_length=128)
+
+    def set_pin(self, raw_pin):
+        if not re.fullmatch(r"\d{4}", raw_pin):
+            raise ValidationError("PIN must be exactly 4 digits.")
+        self.pin_hash = make_password(raw_pin)
+        self.save()
+
+    def check_pin(self, raw_pin):
+        return check_password(raw_pin, self.pin_hash)
+
+    def __str__(self):
+        return f"PIN for {self.user.email}"

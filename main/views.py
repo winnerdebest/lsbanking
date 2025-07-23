@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import *
-from accounts.models import User
+from accounts.models import User, TransactionPIN
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -24,8 +24,6 @@ from django.utils.timezone import now
 
 def landing_page(request):
     return render(request, 'main/index.html')
-
-
 
 
 
@@ -137,11 +135,12 @@ def process_transfer(request):
     from_wallet_id = request.POST.get('from_wallet_id')
     to_wallet_id = request.POST.get('to_wallet_id')
     amount = request.POST.get('amount')
+    pin = request.POST.get('pin')
     description = request.POST.get('description', 'Transfer')
     
     # Validate inputs
-    if not all([from_wallet_id, to_wallet_id, amount]):
-        return JsonResponse({'success': False, 'message': 'Missing required fields'})
+    if not all([from_wallet_id, to_wallet_id, amount, pin]):
+        return JsonResponse({'success': False, 'message': 'Missing required fields (including PIN)'})
     
     try:
         amount = Decimal(amount)
@@ -155,6 +154,14 @@ def process_transfer(request):
         to_wallet = Wallet.objects.get(id=to_wallet_id)
     except Wallet.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'Wallet not found'})
+
+    #Validate PIN
+    try:
+        pin_obj = request.user.transaction_pin
+        if not pin_obj.check_pin(pin):
+            return JsonResponse({'success': False, 'message': 'Invalid transaction PIN'})
+    except TransactionPIN.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Transaction PIN not set, Go to settings to set it up'})
     
     # Process the transfer
     try:
@@ -206,7 +213,7 @@ def process_transfer(request):
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'An error occurred: {str(e)}'})
 
-
+ 
 @login_required
 def transaction_detail(request, transaction_id):
     """View a specific transaction's details"""
@@ -388,5 +395,3 @@ def deposit_success(request, deposit_id):
 def withdrawals(request):
     return render(request, 'withdrawals.html')
 
-def settings_view(request):
-    return render(request, 'settings.html')

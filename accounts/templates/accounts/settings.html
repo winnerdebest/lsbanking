@@ -121,6 +121,128 @@
         </div>
     </div>
 
+
+    <!-- Transaction Pin Change -->
+     <!-- Transaction PIN Section -->
+    <!-- In your Transaction PIN section, change the x-data declaration to: -->
+    <div class="bg-white shadow rounded-lg overflow-hidden" x-data="pinForm">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg font-medium leading-6 text-gray-900">Transaction PIN</h3>
+            <p class="mt-1 text-sm text-gray-500">Secure your transactions with a 4-digit PIN</p>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+            <div x-show="!showPinForm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">Transaction PIN Status</p>
+                        <p class="text-sm text-gray-500">
+                            {% if request.user.transaction_pin %}
+                                PIN is set
+                            {% else %}
+                                No PIN set (required for transfers)
+                            {% endif %}
+                        </p>
+                    </div>
+                    <button 
+                        @click="showPinForm = true; pinError = ''; pinSuccess = ''"
+                        class="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                    >
+                        {% if request.user.transaction_pin %}Change PIN{% else %}Set PIN{% endif %}
+                    </button>
+                </div>
+            </div>
+
+            <div x-show="showPinForm" x-transition class="space-y-4">
+                <form method="POST" @submit.prevent="setPin()">
+                    {% csrf_token %}
+                    <input type="hidden" name="set_pin" value="true">
+                    
+                    <div>
+                        <label for="pin" class="block text-sm font-medium text-gray-700">New 4-digit PIN</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <input x-model="pin" 
+                                   id="pin" 
+                                   name="pin" 
+                                   type="password" 
+                                   maxlength="4" 
+                                   inputmode="numeric" 
+                                   pattern="[0-9]*"
+                                   class="block w-full pr-10 py-2 px-3 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                                   placeholder="••••">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-500">Enter a 4-digit numeric PIN</p>
+                    </div>
+
+                    <div>
+                        <label for="confirm_pin" class="block text-sm font-medium text-gray-700">Confirm PIN</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <input x-model="confirmPin" 
+                                   id="confirm_pin" 
+                                   name="confirm_pin" 
+                                   type="password" 
+                                   maxlength="4" 
+                                   inputmode="numeric" 
+                                   pattern="[0-9]*"
+                                   class="block w-full pr-10 py-2 px-3 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                                   placeholder="••••">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div x-show="pinError" class="bg-red-50 border border-red-100 rounded-lg p-4 flex items-start">
+                        <div class="flex-shrink-0 text-red-500 mt-0.5">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-700" x-text="pinError"></p>
+                        </div>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div x-show="pinSuccess" class="bg-green-50 border border-green-100 rounded-lg p-4 flex items-start">
+                        <div class="flex-shrink-0 text-green-500 mt-0.5">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700" x-text="pinSuccess"></p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 mt-4">
+                        <button 
+                            @click="showPinForm = false; pin = ''; confirmPin = ''; pinError = ''; pinSuccess = ''"
+                            type="button" 
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            :disabled="isSettingPin || !pin || !confirmPin || pin.length !== 4 || confirmPin.length !== 4"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed"
+                        >
+                            <span x-show="!isSettingPin">
+                                {% if request.user.transaction_pin %}Update PIN{% else %}Set PIN{% endif %}
+                            </span>
+                            <span x-show="isSettingPin">
+                                <i class="fas fa-spinner fa-spin mr-1"></i> Processing...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
     <!-- Security Settings Section -->
     <div class="bg-white shadow rounded-lg overflow-hidden" x-data="{ changingPassword: false }">
         <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
@@ -316,4 +438,84 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('pinForm', () => ({
+        showPinForm: false,
+        pin: '',
+        confirmPin: '',
+        pinError: '',
+        pinSuccess: '',
+        isSettingPin: false,
+        
+        setPin() {
+            this.isSettingPin = true;
+            this.pinError = '';
+            this.pinSuccess = '';
+            
+            // Validate PINs match
+            if (this.pin !== this.confirmPin) {
+                this.pinError = 'PINs do not match';
+                this.isSettingPin = false;
+                return;
+            }
+            
+            // Validate PIN is 4 digits
+            if (!/^\d{4}$/.test(this.pin)) {
+                this.pinError = 'PIN must be exactly 4 digits';
+                this.isSettingPin = false;
+                return;
+            }
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('pin', this.pin);
+            formData.append('confirm_pin', this.confirmPin);
+            formData.append('set_pin', 'true');
+            formData.append('csrfmiddlewaretoken', csrfToken);
+            
+            // Send request
+            fetch('{% url "account_settings" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    this.pinSuccess = data.message;
+                    this.pin = '';
+                    this.confirmPin = '';
+                    setTimeout(() => {
+                        this.showPinForm = false;
+                        this.pinSuccess = '';
+                        // Reload to update the status
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    this.pinError = data.message;
+                }
+            })
+            .catch(error => {
+                this.pinError = error.message || 'An error occurred. Please try again.';
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                this.isSettingPin = false;
+            });
+        }
+    }));
+});
+</script>
 {% endblock %}
