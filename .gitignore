@@ -9,3 +9,4 @@ node/
 *.log
 *.req_meta
 activate_django.bat
+activate.bat
