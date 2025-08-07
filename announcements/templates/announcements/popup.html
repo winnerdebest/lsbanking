@@ -1,0 +1,171 @@
+{% load static %}
+
+<!-- Announcements System -->
+<div x-data="announcementSystem()" x-init="init()" class="fixed inset-0 z-50" 
+     x-show="hasUnread" style="display: none;"
+     x-transition:enter="ease-out duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="ease-in duration-200"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0">
+     
+    <!-- Background overlay -->
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-75" @click="dismissCurrent()"></div>
+    
+    <!-- Announcement container -->
+    <div class="fixed inset-0 flex items-center justify-center p-4" x-show="hasUnread">
+        <div class="w-full max-w-md bg-white rounded-xl shadow-xl transform transition-all"
+             x-show="hasUnread"
+             @click.stop
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+            
+            <!-- Current announcement -->
+            <div x-show="hasUnread" class="p-6" x-cloak>
+                <!-- Header with icon -->
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100">
+                        <i class="fas fa-bullhorn text-indigo-600 text-lg"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-gray-900" x-text="unreadAnnouncements[currentIndex]?.title || ''"></h3>
+                    </div>
+                </div>
+                
+                <!-- Message content -->
+                <div class="mt-4">
+                    <p class="text-sm text-gray-600 whitespace-pre-line" 
+                       x-text="unreadAnnouncements[currentIndex]?.message || ''"></p>
+                </div>
+                
+                <!-- Footer with actions -->
+                <div class="mt-6 flex justify-between items-center">
+                    <!-- Progress indicator -->
+                    <div class="text-xs text-gray-500" x-show="unreadAnnouncements.length > 1">
+                        <span x-text="currentIndex + 1"></span> of <span x-text="unreadAnnouncements.length"></span>
+                    </div>
+                    
+                    <!-- Navigation and dismiss buttons -->
+                    <div class="flex space-x-3">
+                        <button x-show="unreadAnnouncements.length > 1 && currentIndex > 0" 
+                                @click="prevAnnouncement()"
+                                class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+                            Previous
+                        </button>
+                        
+                        <button @click="dismissCurrent()"
+                                class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Don't show again
+                        </button>
+                        
+                        <button x-show="unreadAnnouncements.length > 1 && currentIndex < unreadAnnouncements.length - 1" 
+                                @click="nextAnnouncement()"
+                                class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    [x-cloak] { display: none !important; }
+</style>
+
+<script>
+    function announcementSystem() {
+        return {
+            unreadAnnouncements: [],
+            currentIndex: 0,
+            hasUnread: false,
+            
+            async init() {
+                try {
+                    const response = await fetch('{% url "announcements:api_unread_announcements" %}');
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    
+                    const data = await response.json();
+                    this.unreadAnnouncements = data;
+                    this.hasUnread = data.length > 0;
+                    
+                    // Show the modal if there are announcements
+                    if (this.hasUnread) {
+                        document.querySelector('[x-data="announcementSystem()"]').style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Error fetching announcements:', error);
+                }
+            },
+            
+            nextAnnouncement() {
+                if (this.currentIndex < this.unreadAnnouncements.length - 1) {
+                    this.currentIndex++;
+                }
+            },
+            
+            prevAnnouncement() {
+                if (this.currentIndex > 0) {
+                    this.currentIndex--;
+                }
+            },
+            
+            async dismissCurrent() {
+                if (this.unreadAnnouncements.length === 0) return;
+                
+                const currentId = this.unreadAnnouncements[this.currentIndex].id;
+                
+                try {
+                    const response = await fetch(`/announcements/dismiss/${currentId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': this.getCookie('csrftoken'),
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'same-origin'
+                    });
+                    
+                    if (!response.ok) throw new Error('Failed to dismiss announcement');
+                    
+                    // Remove the current announcement
+                    this.unreadAnnouncements = this.unreadAnnouncements.filter(a => a.id !== currentId);
+                    
+                    // Reset index if needed
+                    if (this.currentIndex >= this.unreadAnnouncements.length) {
+                        this.currentIndex = Math.max(0, this.unreadAnnouncements.length - 1);
+                    }
+                    
+                    // Hide if no more announcements
+                    this.hasUnread = this.unreadAnnouncements.length > 0;
+                    
+                    if (!this.hasUnread) {
+                        document.querySelector('[x-data="announcementSystem()"]').style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error dismissing announcement:', error);
+                }
+            },
+            
+            getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        }
+    }
+</script>

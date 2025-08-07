@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import *
-from accounts.models import User, TransactionPIN
+from accounts.models import User, TransactionPIN, KYC
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -20,6 +20,7 @@ from .forms import *
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
 from django.utils.timezone import now
+from announcements.views import get_unread_announcements
 
 
 def landing_page(request):
@@ -31,6 +32,7 @@ def landing_page(request):
 @login_required
 def dashboard(request):
     user = request.user
+    unread = get_unread_announcements(request.user)
 
     # Fetch user's wallets
     wallets = Wallet.objects.filter(user=user)
@@ -61,6 +63,7 @@ def dashboard(request):
         "wallets_json": wallets_data,
         "recent_transactions": recent_transactions,
         "last_login_time": user.last_login.strftime("%b %d, %I:%M %p") if user.last_login else "First login",
+        'unread_announcements': unread,
     }
 
     return render(request, "dashboard.html", context)
@@ -154,6 +157,7 @@ def process_transfer(request):
         to_wallet = Wallet.objects.get(id=to_wallet_id)
     except Wallet.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'Wallet not found'})
+    
 
     #Validate PIN
     try:
@@ -162,6 +166,18 @@ def process_transfer(request):
             return JsonResponse({'success': False, 'message': 'Invalid transaction PIN'})
     except TransactionPIN.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'Transaction PIN not set, Go to settings to set it up'})
+    
+    # Validate KYC, To know if the user has completed KYC
+    try:
+        kyc = KYC.objects.get(user=request.user)
+        if kyc.status == 'pending':
+            return JsonResponse({'success': False, 'message': 'Your KYC is still pending. Please wait for approval before making transfers.'})
+        elif kyc.status == 'rejected':
+            return JsonResponse({'success': False, 'message': 'Your KYC was rejected. Please contact support or resubmit your verification.'})
+        elif kyc.status != 'approved':
+            return JsonResponse({'success': False, 'message': 'Your KYC is not approved. Please complete verification before making transfers.'})
+    except KYC.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'KYC not found. Please complete verification before making transfers.'})
     
     # Process the transfer
     try:

@@ -31,6 +31,9 @@ urlpatterns = [
     path("investments/login/", LoginView.as_view(template_name="investments/login.html"), name="investment_login"),
     
     path("investments/signup/", SignupView.as_view(template_name="investments/signup.html"), name="investment_signup"),
+
+    # This is for announcements app
+    path('announcements/', include('announcements.urls')),
     # path('accounts/', include('accounts.urls')), 
 ]
 

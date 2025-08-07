@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'investments',
     'accounts',
     'main',
+    'announcements',
 ]
 
 MIDDLEWARE = [

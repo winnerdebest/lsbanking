@@ -343,6 +343,8 @@
                         <h1 class="text-xl md:text-2xl font-semibold text-gray-900 px-2 md:px-0">{% block header %}Dashboard{% endblock %}</h1>
                     </div>
                     <div class="mx-auto max-w-7xl px-2 sm:px-4 md:px-8">
+                        <!-- Announcements Popup -->
+                        {% include 'announcements/popup.html' %}
                         <!-- Messages -->
                         {% include 'messages.html' %}
                         
