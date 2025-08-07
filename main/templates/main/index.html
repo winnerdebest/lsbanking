@@ -618,5 +618,33 @@
         </div>
     </div>
 </footer>
+
+
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/68474c0f36e09c190b3fc83c/1itb827tf';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    
+    // Set up callback to add user info when widget loads
+    Tawk_API.onLoad = function(){
+        Tawk_API.setWidgetPosition('right', '300px');
+        {% if request.user.is_authenticated %}
+            Tawk_API.setAttributes({
+                'name' : '{{ request.user.full_name|default:"Member" }}',
+                'email': '{{ request.user.email }}',
+                'user_id': '{{ request.user.id }}',
+            }, function(error){});
+        {% endif %}
+    };
+})();
+</script>
+
+<!-- End of Tawk.to Script -->
 </body>
 </html>
