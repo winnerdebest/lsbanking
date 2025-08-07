@@ -27,6 +27,10 @@ def landing_page(request):
     return render(request, 'main/index.html')
 
 
+def landing_page2(request):
+    """Second landing page, can be used for marketing or additional information"""
+    return render(request, 'main/landing_page2.html')
+
 
 
 @login_required
