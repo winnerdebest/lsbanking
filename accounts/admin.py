@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 from .models import User, TransactionPIN
+from django.conf import settings
+from .models import KYC
 
 
 class TransactionPINInline(admin.StackedInline):
@@ -34,3 +36,30 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'is_email_verified', 'is_suspended', 'groups')
     search_fields = ('email', 'full_name', 'phone')
     ordering = ('-date_joined',)
+
+
+
+
+    @admin.register(KYC)
+    class KYCAdmin(admin.ModelAdmin):
+        list_display = (
+            'user', 'full_name', 'id_type', 'status', 'submitted_at', 'reviewed_at'
+        )
+        list_filter = ('status', 'id_type', 'nationality')
+        search_fields = ('user__email', 'full_name', 'id_number', 'address', 'city', 'state', 'zip_code')
+        readonly_fields = ('submitted_at', 'reviewed_at')
+        fieldsets = (
+            (None, {
+                'fields': (
+                    'user', 'full_name', 'date_of_birth', 'address', 'state', 'city', 'zip_code', 'nationality', 'occupation'
+                )
+            }),
+            ('Government ID Info', {
+                'fields': (
+                    'id_type', 'id_number', 'id_expiry_date', 'id_document', 'selfie_with_id', 'proof_of_address'
+                )
+            }),
+            ('KYC Status', {
+                'fields': ('status', 'submitted_at', 'reviewed_at')
+            }),
+        )

@@ -71,3 +71,66 @@ class TransactionPIN(models.Model):
 
     def __str__(self):
         return f"PIN for {self.user.email}"
+
+
+# KYC Verification Models
+STATUS_CHOICES = [
+    ('pending', 'Pending'),
+    ('approved', 'Approved'),
+    ('rejected', 'Rejected'),
+]
+
+ID_TYPE_CHOICES = [
+    ('passport', 'U.S. Passport'),
+    ('ssn', 'Social Security Number'),
+    ('state_id', 'State ID'),
+    ('driver_license', 'Driver’s License'),
+    ('greencard', 'Green Card'),
+]
+
+
+
+class KYC(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # Basic Info
+    full_name = models.CharField(max_length=255)
+    date_of_birth = models.DateField()
+    address = models.TextField()
+    state = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    zip_code = models.CharField(max_length=20)
+    nationality = models.CharField(max_length=100, default='USA')
+    occupation = models.CharField(max_length=255, blank=True, null=True)
+
+    # Government ID Info
+    id_type = models.CharField(max_length=50, choices=ID_TYPE_CHOICES)
+    id_number = models.CharField(max_length=50)
+    id_expiry_date = models.DateField(blank=True, null=True)
+
+    if settings.USE_CLOUDINARY:
+        id_document = CloudinaryField('kyc/id_documents/', transformation=[
+            {'width': 1000, 'height': 1000, 'crop': 'limit', 'quality': 'auto', 'fetch_format': 'webp'}
+        ])
+        selfie_with_id = CloudinaryField('kyc/selfies/', transformation=[
+            {'width': 1000, 'height': 1000, 'crop': 'limit', 'quality': 'auto', 'fetch_format': 'webp'}
+        ])
+        proof_of_address = CloudinaryField('kyc/proof_of_address/', transformation=[
+            {'width': 1000, 'height': 1000, 'crop': 'limit', 'quality': 'auto', 'fetch_format': 'webp'}
+        ])
+    else:
+        id_document = models.ImageField(upload_to='kyc/id_documents/', blank=True, null=True)
+        selfie_with_id = models.ImageField(upload_to='kyc/selfies/', blank=True, null=True)
+        proof_of_address = models.ImageField(upload_to='kyc/proof_of_address/', blank=True, null=True)
+
+    # KYC Status
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = "KYC Verification"
+        verbose_name_plural = "KYC Verifications"
+
+    def __str__(self):
+        return f"{self.user.email} - {self.status}"

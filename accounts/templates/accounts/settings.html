@@ -30,6 +30,55 @@
                         </div>
                     </div>
 
+                    <!-- KYC Not Yet Done Status -->
+                
+                    <div class="sm:col-span-6">
+                        {% if request.user.kyc %}
+                            {% if request.user.kyc.status == 'pending' %}
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center space-x-3">
+                                    <i class="fas fa-hourglass-half text-yellow-500"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-yellow-700">KYC Pending</p>
+                                        <p class="text-xs text-yellow-600">
+                                            Your KYC documents have been submitted and are awaiting review. Some features may be unavailable until approval.
+                                        </p>
+                                    </div>
+                                </div>
+                            {% elif request.user.kyc.status == 'approved' %}
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center space-x-3">
+                                    <i class="fas fa-check-circle text-green-500"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-green-700">KYC Approved</p>
+                                        <p class="text-xs text-green-600">
+                                            Your KYC approved. All account features are available.
+                                        </p>
+                                    </div>
+                                </div>
+                            {% elif request.user.kyc.status == 'rejected' %}
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-3">
+                                    <i class="fas fa-times-circle text-red-500"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-red-700">KYC Rejected</p>
+                                        <p class="text-xs text-red-600">
+                                            Your KYC submission was rejected. Please review your documents and resubmit.
+                                        </p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-3">
+                                <i class="fas fa-times-circle text-red-500"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-red-700">KYC Not Completed</p>
+                                    <p class="text-xs text-red-600">
+                                        You have not submitted your KYC documents. Certain features will be unavailable until your KYC is completed.
+                                    </p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+
                     <!-- Full Name -->
                     <div class="sm:col-span-3">
                         <p class="text-sm font-medium text-gray-500">Full Name</p>
@@ -56,7 +105,7 @@
                 </div>
 
                 <!-- Edit Button -->
-                <div class="mt-6">
+                <div class="mt-6 flex space-x-3">
                     <button 
                         @click="editingProfile = true"
                         class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -64,6 +113,43 @@
                         <i class="fas fa-pencil-alt mr-2"></i>
                         Edit Profile
                     </button>
+                    {% if not request.user.kyc %}
+                        <button 
+                            onclick="window.location.href='{% url 'kyc_verification' %}'"
+                            type="button"
+                            class="inline-flex items-center px-4 py-2 border border-green-600 shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        >
+                            <i class="fas fa-id-card mr-2"></i>
+                            Submit KYC
+                        </button>
+                    {% elif request.user.kyc.status == 'pending' %}
+                        <button 
+                            type="button"
+                            class="inline-flex items-center px-4 py-2 border border-yellow-600 shadow-sm text-sm font-medium rounded-md text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                            disabled
+                        >
+                            <i class="fas fa-hourglass-half mr-2"></i>
+                            KYC Pending
+                        </button>
+                    {% elif request.user.kyc.status == 'approved' %}
+                        <button 
+                            type="button"
+                            class="inline-flex items-center px-4 py-2 border border-green-600 shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                            disabled
+                        >
+                            <i class="fas fa-check-circle mr-2"></i>
+                            KYC Approved
+                        </button>
+                    {% elif request.user.kyc.status == 'rejected' %}
+                        <button 
+                            onclick="window.location.href='{% url 'kyc_verification' %}'"
+                            type="button"
+                            class="inline-flex items-center px-4 py-2 border border-red-600 shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        >
+                            <i class="fas fa-times-circle mr-2"></i>
+                            Resubmit KYC
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -12,116 +12,12 @@
             <p class="mt-1 text-sm text-gray-500">View and manage your current loan accounts</p>
         </div>
         <div class="bg-white divide-y divide-gray-200">
-            <!-- Loan Cards -->
-            <!--<div class="p-4" x-data="{ showDetails: false }">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h4 class="font-medium text-gray-900">Personal Loan</h4>
-                        <p class="text-sm text-gray-500">Account #LN-7894-2023</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-medium text-indigo-600">$15,000.00</p>
-                        <p class="text-xs text-gray-500">5.9% APR</p>
-                    </div>
-                </div>-->
-                
-                <!-- Loan Details (Collapsible) -->
-                <!--<div x-show="showDetails" x-transition class="mt-4 pt-4 border-t border-gray-200">
-                    <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <p class="text-gray-500">Original Amount</p>
-                            <p class="font-medium">$15,000.00</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500">Current Balance</p>
-                            <p class="font-medium">$12,345.67</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500">Next Payment</p>
-                            <p class="font-medium">$287.50 (Jun 15)</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500">Term</p>
-                            <p class="font-medium">60 months</p>
-                        </div>
-                    </div>
-                    <div class="mt-4 flex space-x-2">
-                        <button class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700">
-                            Make Payment
-                        </button>
-                        <button class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50">
-                            View Schedule
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="mt-2 flex justify-between items-center">
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-indigo-600 h-2 rounded-full" style="width: 82%"></div>
-                    </div>
-                    <button @click="showDetails = !showDetails" class="ml-4 text-indigo-600 hover:text-indigo-800 text-sm font-medium">
-                        <span x-text="showDetails ? 'Hide Details' : 'View Details'"></span>
-                        <i class="fas ml-1" :class="showDetails ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="p-4" x-data="{ showDetails: false }">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h4 class="font-medium text-gray-900">Auto Loan</h4>
-                        <p class="text-sm text-gray-500">Account #LN-4567-2022</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-medium text-indigo-600">$28,500.00</p>
-                        <p class="text-xs text-gray-500">3.9% APR</p>
-                    </div>
-                </div>
-                
-                <div x-show="showDetails" x-transition class="mt-4 pt-4 border-t border-gray-200">
-                    <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <p class="text-gray-500">Original Amount</p>
-                            <p class="font-medium">$28,500.00</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500">Current Balance</p>
-                            <p class="font-medium">$18,765.43</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500">Next Payment</p>
-                            <p class="font-medium">$523.75 (Jun 10)</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500">Term</p>
-                            <p class="font-medium">72 months</p>
-                        </div>
-                    </div>
-                    <div class="mt-4 flex space-x-2">
-                        <button class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700">
-                            Make Payment
-                        </button>
-                        <button class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50">
-                            View Schedule
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="mt-2 flex justify-between items-center">
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-indigo-600 h-2 rounded-full" style="width: 66%"></div>
-                    </div>
-                    <button @click="showDetails = !showDetails" class="ml-4 text-indigo-600 hover:text-indigo-800 text-sm font-medium">
-                        <span x-text="showDetails ? 'Hide Details' : 'View Details'"></span>
-                        <i class="fas ml-1" :class="showDetails ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                    </button>
-                </div>
-            </div>
+            <!-- Loan cards would appear here -->
         </div>
-    </div>-->
+    </div>
     
     <!-- Apply for New Loan Section -->
-     <div class="bg-white shadow rounded-lg overflow-hidden" x-data="loanApplication()">
+    <div class="bg-white shadow rounded-lg overflow-hidden" x-data="loanApplication()">
         <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
             <h3 class="text-lg font-medium leading-6 text-gray-900">Apply for a New Loan</h3>
             <p class="mt-1 text-sm text-gray-500">Get competitive rates and flexible terms</p>
@@ -235,33 +131,42 @@
         </div>
     </div>
     
-    <!-- Account Not Verified Modal -->
+    <!-- KYC Verification Needed Modal -->
     <div 
-        x-show="showVerificationModal" 
+        x-show="showKYCModal" 
         x-transition 
         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
         style="display: none;"
     >
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
             <div class="text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                    <i class="fas fa-exclamation-triangle text-red-600"></i>
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
+                    <i class="fas fa-id-card text-yellow-600"></i>
                 </div>
-                <h3 class="mt-3 text-lg font-medium text-gray-900">Account Not Verified</h3>
+                <h3 class="mt-3 text-lg font-medium text-gray-900">KYC Verification Required</h3>
                 <div class="mt-2 text-sm text-gray-500">
-                    <p>Your account needs to be verified before you can apply for loans.</p>
-                    <p class="mt-2">Please contact our support team at:</p>
-                    <p class="mt-1 font-medium">support@grandelitecreditunion.com</p>
-                    <p class="mt-2">or call (800) 555-1234 for assistance.</p>
+                    <p>To apply for a loan, we need to verify your identity and complete our Know Your Customer (KYC) process.</p>
+                    <p class="mt-2">Please complete the following steps:</p>
+                    <ol class="list-decimal text-left mt-2 pl-5 space-y-1">
+                        <li>Upload a government-issued ID</li>
+                        <li>Provide proof of address</li>
+                        <li>Complete your profile information</li>
+                    </ol>
                 </div>
-                <div class="mt-5">
+                <div class="mt-5 flex justify-center space-x-3">
                     <button 
-                        @click="showVerificationModal = false"
+                        @click="showKYCModal = false"
                         type="button" 
+                        class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                    >
+                        Cancel
+                    </button>
+                    <a 
+                        href="/account/kyc-verification"
                         class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
                     >
-                        Close
-                    </button>
+                        Complete KYC Now
+                    </a>
                 </div>
             </div>
         </div>
@@ -314,9 +219,9 @@
             estimatedPayment: null,
             totalInterest: null,
             showSuccessModal: false,
-            showVerificationModal: false,
-            // Set this based on actual user verification status
-            isAccountVerified: false,
+            showKYCModal: false,
+            // Set this based on actual user KYC status
+            isKYCVerified: false,
             
             selectLoanType(loan) {
                 this.selectedLoanType = loan;
@@ -351,9 +256,9 @@
             submitApplication() {
                 if (!this.canSubmit) return;
                 
-                // Check if account is verified
-                if (!this.isAccountVerified) {
-                    this.showVerificationModal = true;
+                // Check if KYC is verified
+                if (!this.isKYCVerified) {
+                    this.showKYCModal = true;
                     return;
                 }
                 

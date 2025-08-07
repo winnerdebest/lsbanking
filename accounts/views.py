@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from .forms import ProfileUpdateForm, TransactionPINForm
-from .models import TransactionPIN
+from .models import TransactionPIN, KYC
 
 @login_required
 def account_settings_view(request):
@@ -62,3 +62,54 @@ def account_settings_view(request):
         'form': profile_form,
         'pin_form': pin_form,
     })
+
+
+
+
+# KYC Views
+from django.utils import timezone
+from django.contrib import messages
+
+@login_required
+def kyc_submission_view(request):
+    user = request.user
+    try:
+        kyc = KYC.objects.get(user=user)
+    except KYC.DoesNotExist:
+        kyc = None
+
+    if kyc and kyc.status in ['pending', 'approved']:
+        messages.info(request, "You cannot edit your KYC while it is under review or already approved.")
+        return redirect('account_settings')  # fix the typo if needed
+
+    if request.method == "POST":
+        if not kyc:
+            kyc = KYC(user=user)
+
+        kyc.full_name = request.POST.get('full_name')
+        kyc.date_of_birth = request.POST.get('date_of_birth')
+        kyc.address = request.POST.get('address')
+        kyc.city = request.POST.get('city')
+        kyc.state = request.POST.get('state')
+        kyc.zip_code = request.POST.get('zip_code')
+        kyc.occupation = request.POST.get('occupation')
+        kyc.id_type = request.POST.get('id_type')
+        kyc.id_number = request.POST.get('id_number')
+        kyc.id_expiry_date = request.POST.get('id_expiry_date')
+
+        if 'id_document' in request.FILES:
+            kyc.id_document = request.FILES['id_document']
+        if 'selfie_with_id' in request.FILES:
+            kyc.selfie_with_id = request.FILES['selfie_with_id']
+        if 'proof_of_address' in request.FILES:
+            kyc.proof_of_address = request.FILES['proof_of_address']
+
+        kyc.status = 'pending'
+        kyc.submitted_at = timezone.now()
+        kyc.reviewed_at = None
+        kyc.save()
+
+        messages.success(request, "KYC submitted successfully. Please wait for approval.")
+        return redirect('account_settings')
+
+    return render(request, "kyc/kyc_form.html", {"kyc": kyc})
