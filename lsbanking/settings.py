@@ -29,7 +29,7 @@ SECRET_KEY = env('SECRET_KEY')
 if ENVIRONMENT == 'development':
     DEBUG = True
 else:
-    DEBUG = True
+    DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'grandelitecreditunion.com','.ngrok-free.app',]
 
@@ -145,7 +145,7 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email' # Users log in with email
 ACCOUNT_EMAIL_REQUIRED = True # Email is required for registration
 ACCOUNT_USERNAME_REQUIRED = False # We are using email as username
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None # User model does not have a username field
-ACCOUNT_EMAIL_VERIFICATION = 'optional' # Email verification is mandatory
+ACCOUNT_EMAIL_VERIFICATION = 'none' # Email verification is off because of development reasons
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True # Log in user after email confirmation
 ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
 ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300 # 5 minutes
