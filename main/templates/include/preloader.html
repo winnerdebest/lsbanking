@@ -1,4 +1,4 @@
-<div id="preloader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-300">
+    <div id="preloader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-300">
         <div class="text-center">
             <div class="flex justify-center mb-6">
                 <div class="relative h-12 w-12">
@@ -8,9 +8,32 @@
                     </div>
                 </div>
             </div>
-            <p class="text-gray-600 font-medium mb-4">Loading your secure banking experience</p>
-            <div class="w-48 h-1.5 bg-gray-200 rounded-full overflow-hidden mx-auto">
-                <div class="h-full bg-indigo-600 rounded-full animate-progress"></div>
-            </div>
+            <p class="text-gray-600 font-medium mb-4">Grand Elite Credit Union.</p>
+            
         </div>
     </div>
+    <script>
+        // Simulate progress bar and hide preloader when page is loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            var progressBar = document.getElementById("progress-bar");
+            var preloader = document.getElementById("preloader");
+            var width = 0;
+            var interval = setInterval(function() {
+                if (width < 90) {
+                    width += Math.random() * 10;
+                    progressBar.style.width = width + "%";
+                }
+            }, 200);
+
+            window.addEventListener("load", function() {
+                clearInterval(interval);
+                progressBar.style.width = "100%";
+                setTimeout(function() {
+                    preloader.style.opacity = "0";
+                    setTimeout(function() {
+                        preloader.style.display = "none";
+                    }, 300);
+                }, 500);
+            });
+        });
+    </script>
