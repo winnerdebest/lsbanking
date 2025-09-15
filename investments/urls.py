@@ -10,4 +10,5 @@ urlpatterns = [
     path('packages/<int:package_id>/deposit/', PackageDepositView.as_view(), name='package_deposit'),
     path('chart-data/', ChartDataView.as_view(), name='chart_data'),
     path('withdraw/', InvestmentWithdrawView.as_view(), name='withdraw'),
+    path('run-daily-roi/', run_daily_roi, name='run_daily_roi'),
 ]

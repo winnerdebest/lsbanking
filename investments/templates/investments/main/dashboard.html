@@ -1,305 +1,291 @@
-{% extends "investments/main/ibase.html" %}
+{% extends "base.html" %}
 {% block content %}
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-6 md:py-8">
-        <!-- Welcome Banner with Gradient and Animation -->
-        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 rounded-2xl p-6 mb-8 text-white shadow-lg transform transition hover:scale-[1.01] duration-300">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl md:text-3xl font-bold mb-2">Welcome back, {{ request.user.full_name|default:"Investor" }}! 👋</h1>
-                    <p class="opacity-90 text-sm md:text-base">Your portfolio is growing strong</p>
-                </div>
-                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                    <i class="fas fa-chart-line text-2xl"></i>
+    <main class="container mx-auto px-4 py-4 md:py-6">
+        <!-- Header with account summary -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Investment Portfolio</h1>
+                <p class="text-gray-600 text-sm mt-1">Manage your investments and track performance</p>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <div class="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                    <p class="text-xs text-blue-700 font-medium">Total Portfolio Value</p>
+                    <p class="text-xl font-bold text-blue-900">${{ current_balance }}</p>
                 </div>
             </div>
         </div>
 
-        <!-- Stats Cards - Modern Glassmorphism -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-            <!-- Total Balance Card -->
-            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-5 shadow-md border border-white/20">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Total Balance</p>
-                        <h2 class="text-3xl font-bold mt-1 text-gray-800">${{ current_balance }}</h2>
-                    </div>
-                    <div class="w-12 h-12 bg-amber-100/50 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-wallet text-amber-600 text-xl"></i>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <a href="{% url 'investments:withdraw' %}" 
-                       class="inline-block w-full text-center bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all hover:shadow-lg">
-                        Withdraw Funds
-                    </a>
-                </div>
+        <!-- Quick Stats Row -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
+                <p class="text-xs text-gray-500">Today's Gain</p>
+                <p class="text-lg font-semibold text-green-600">+${{ daily_earnings|floatformat:2 }}</p>
             </div>
-
-            <!-- Active Investments Card -->
-            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-5 shadow-md border border-white/20">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Active Investments</p>
-                        <h2 class="text-3xl font-bold mt-1 text-gray-800">{{ user_investments.count }}</h2>
-                    </div>
-                    <div class="w-12 h-12 bg-blue-100/50 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-chart-line text-blue-600 text-xl"></i>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div class="h-full bg-blue-500 rounded-full" style="width: 75%"></div>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">75% of your portfolio active</p>
-                </div>
+            <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
+                <p class="text-xs text-gray-500">Active Plans</p>
+                <p class="text-lg font-semibold text-gray-800">{{ user_investments.count }}</p>
             </div>
-
-            <!-- Daily Earnings Card -->
-            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-5 shadow-md border border-white/20">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Daily Earnings</p>
-                        <h2 class="text-3xl font-bold mt-1 text-gray-800">${{ daily_earnings|floatformat:2 }}</h2>
-                    </div>
-                    <div class="w-12 h-12 bg-green-100/50 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-coins text-green-600 text-xl"></i>
-                    </div>
-                </div>
-                <div class="mt-4 flex items-center">
-                    <i class="fas fa-arrow-up text-green-500 mr-1"></i>
-                    <span class="text-xs font-medium text-green-600">5.2% from yesterday</span>
-                </div>
+            <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
+                <p class="text-xs text-gray-500">Annual Return</p>
+                <p class="text-lg font-semibold text-gray-800">5.2%</p>
+            </div>
+            <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
+                <p class="text-xs text-gray-500">Risk Level</p>
+                <p class="text-lg font-semibold text-gray-800">Moderate</p>
             </div>
         </div>
 
-    
-
-        <!-- Active Investments - Modern List -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-white/20 mb-8">
-            <div class="flex justify-between items-center mb-5">
-                <h2 class="text-xl font-bold text-gray-800">Your Investments</h2>
-                <div class="text-sm text-gray-500">
-                    Total Active: ${{ total_balance|floatformat:2 }} • Daily: ${{ daily_earnings|floatformat:2 }}
-                </div>
-            </div>
-
-            {% if user_investments %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {% for investment in user_investments %}
-                <div class="p-4 bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800">{{ investment.package.name }}</h3>
-                            <p class="text-xs text-gray-500 mt-1">{{ investment.get_status_display }}</p>
-                        </div>
-                        <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full text-xs font-medium">
-                            ${{ investment.package.price|floatformat:2 }}
-                        </span>
+        <!-- Two-column layout -->
+        <div class="flex flex-col lg:flex-row gap-6">
+            <!-- Left Column - Investments -->
+            <div class="lg:w-2/3">
+                <!-- Your Investments Section -->
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-200 mb-6">
+                    <div class="flex justify-between items-center mb-5">
+                        <h2 class="text-lg font-semibold text-gray-800">Your Investment Plans</h2>
+                        <span class="text-sm text-gray-500">{{ user_investments.count }} active</span>
                     </div>
-                    
-                    <!-- Expected Returns Section -->
-                    <div class="my-3 p-3 bg-blue-50 rounded-lg">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-medium text-blue-800">Expected Return:</span>
-                            <span class="font-bold text-blue-900">${{ investment.total_expected_return|floatformat:2 }}</span>
-                        </div>
-                        <div class="flex justify-between text-xs text-blue-600 mt-1">
-                            <span>{{ investment.roi_percent }}% Daily</span>
-                            <span>{{ investment.package.duration_days }} Days</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-between items-center mt-2">
-                        <div>
-                            <p class="text-xs text-gray-500">Period</p>
-                            <p class="text-sm font-medium">
-                                {{ investment.start_date|date:"M d" }} - {{ investment.end_date|date:"M d" }}
-                            </p>
-                        </div>
-                        
-                        <!-- Status Indicator with Tooltip -->
-                        <div class="relative group">
-                            <div class="w-10 h-10 rounded-lg flex items-center justify-center 
-                                        {% if investment.status == 'pending' %}bg-amber-100 text-amber-600
-                                        {% elif investment.status == 'active' %}bg-blue-100 text-blue-600
-                                        {% elif investment.status == 'completed' %}bg-green-100 text-green-600
-                                        {% else %}bg-gray-100 text-gray-600{% endif %}">
-                                {% if investment.status == 'pending' %}
-                                <i class="fas fa-clock"></i>
-                                {% elif investment.status == 'active' %}
-                                <i class="fas fa-chart-line"></i>
-                                {% elif investment.status == 'completed' %}
-                                <i class="fas fa-check-circle"></i>
-                                {% else %}
-                                <i class="fas fa-times-circle"></i>
-                                {% endif %}
+
+                    {% if user_investments %}
+                    <div class="space-y-4">
+                        {% for investment in user_investments %}
+                        <div class="border border-gray-200 rounded-lg p-4 hover:bg-blue-50 transition-colors">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-gray-800">{{ investment.package.name }}</h3>
+                                    <div class="flex items-center mt-1">
+                                        <span class="text-xs font-medium px-2 py-1 rounded 
+                                            {% if investment.status == 'active' %}bg-green-100 text-green-800
+                                            {% elif investment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                            {% elif investment.status == 'completed' %}bg-blue-100 text-blue-800
+                                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ investment.get_status_display }}
+                                        </span>
+                                        <span class="text-xs text-gray-500 ml-2">
+                                            {% if investment.status == 'active' %}
+                                            {{ investment.days_remaining }} days remaining
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <span class="text-lg font-semibold text-gray-800">${{ investment.package.price|floatformat:2 }}</span>
                             </div>
-                            <span class="absolute z-10 left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                                {{ investment.get_status_display }}
-                                {% if investment.status == 'active' %}
-                                ({{ investment.days_remaining }} days remaining)
-                                {% endif %}
-                            </span>
+                            
+                            <div class="grid grid-cols-2 gap-3 mt-4">
+                                <div>
+                                    <p class="text-xs text-gray-500">Start Date</p>
+                                    <p class="text-sm font-medium">{{ investment.start_date|date:"M d, Y" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500">Maturity Date</p>
+                                    <p class="text-sm font-medium">{{ investment.end_date|date:"M d, Y" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500">Daily Return</p>
+                                    <p class="text-sm font-medium text-green-600">{{ investment.roi_percent }}%</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500">Expected Return</p>
+                                    <p class="text-sm font-medium">${{ investment.total_expected_return|floatformat:2 }}</p>
+                                </div>
+                            </div>
+                            
+                            {% if investment.status == 'active' %}
+                            <div class="mt-4">
+                                <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                    <span>Progress</span>
+                                    <span>{{ investment.days_passed }}/{{ investment.package.duration_days }} days</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" 
+                                        style="width: {% widthratio investment.days_passed investment.package.duration_days 100 %}%"></div>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
+                        {% endfor %}
                     </div>
-                    
-                    <!-- Progress Bar for Active Investments -->
-                    {% if investment.status == 'active' %}
-                    <div class="mt-3">
-                        <div class="flex justify-between text-xs text-gray-500 mb-1">
-                            <span>Progress</span>
-                            <span>{{ investment.days_passed }}/{{ investment.package.duration_days }} days</span>
+                    {% else %}
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-1.5">
-                            <div class="bg-blue-500 h-1.5 rounded-full" 
-                                style="width: {% widthratio investment.days_passed investment.package.duration_days 100 %}%"></div>
-                        </div>
+                        <h3 class="text-gray-500 font-medium">No active investments</h3>
+                        <p class="text-sm text-gray-400 mt-1">Start growing your portfolio today</p>
+                        <a href="#investment-packages" class="inline-block mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                            Browse Investment Options
+                        </a>
                     </div>
                     {% endif %}
                 </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="text-center py-8">
-                <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                    <i class="fas fa-wallet text-gray-400 text-xl"></i>
-                </div>
-                <h3 class="text-gray-500 font-medium">No active investments</h3>
-                <p class="text-sm text-gray-400 mt-1">Start growing your portfolio today</p>
-                <a href="#investmemts" class="inline-block mt-3 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                    Browse Packages
-                </a>
-            </div>
-            {% endif %}
-            
-            <!-- Summary Stats -->
-            <div class="mt-6 pt-6 border-t border-gray-200 grid grid-cols-2 gap-4">
-                <div class="bg-green-50 p-3 rounded-lg">
-                    <p class="text-xs text-green-600 font-medium">Total Paid Returns</p>
-                    <p class="text-lg font-bold text-green-800">${{ total_paid_returns|floatformat:2 }}</p>
-                </div>
-                <div class="bg-blue-50 p-3 rounded-lg">
-                    <p class="text-xs text-blue-600 font-medium">Remaining Returns</p>
-                    <p class="text-lg font-bold text-blue-800">${{ remaining_returns|floatformat:2 }}</p>
-                </div>
-            </div>
-        </div>
 
-        <!-- Investment Packages - Modern Cards -->
-        <div id="invest"  class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-white/20">
-            <h2 class="text-xl font-bold text-gray-800 mb-6">Investment Packages</h2>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {% for package in packages %}
-                <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-b from-white to-gray-50 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
-                    {% if forloop.counter == 3 %}
-                    <div class="absolute top-3 right-3 bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
-                        RECOMMENDED
+                <!-- Recent Returns Section -->
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+                    <div class="flex justify-between items-center mb-5">
+                        <h2 class="text-lg font-semibold text-gray-800">Recent Returns</h2>
                     </div>
-                    {% endif %}
-                    
-                    <div class="p-5">
-                        <div class="flex justify-between items-start mb-3">
-                            <h3 class="font-bold text-lg text-gray-800">{{ package.name }}</h3>
-                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-lg text-sm font-bold">
-                                ${{ package.price|floatformat:2 }}
-                            </span>
-                        </div>
-                        <p class="text-gray-600 text-sm mb-4">{{ package.description|truncatechars:60 }}</p>
-                        
-                        <div class="flex justify-between items-center mb-5">
+
+                    {% if investment_returns %}
+                    <div class="divide-y divide-gray-100">
+                        {% for return in investment_returns %}
+                        <div class="py-3 flex justify-between items-center">
                             <div>
-                                <p class="text-xs text-gray-500">Daily Returns</p>
-                                <p class="text-green-600 font-bold text-xl">{{ package.roi_percent }}%</p>
+                                <p class="font-medium text-gray-800">{{ return.investment.package.name }}</p>
+                                <p class="text-xs text-gray-500">{{ return.date|date:"M d, Y" }}</p>
                             </div>
-                            <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
-                                <i class="fas fa-percentage text-green-600"></i>
+                            <div class="text-right">
+                                <p class="font-semibold text-gray-800">+${{ return.amount|floatformat:2 }}</p>
+                                <span class="text-xs px-2 py-0.5 rounded-full 
+                                    {% if return.is_paid %}bg-green-100 text-green-800
+                                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                    {% if return.is_paid %}Completed{% else %}Processing{% endif %}
+                                </span>
                             </div>
                         </div>
-                        
-                        <a href="{% url 'investments:package_deposit' package.id %}" 
-                           class="block w-full text-center bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all group-hover:from-indigo-700 group-hover:to-indigo-800">
-                            Invest Now
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-gray-500 mt-2">No returns yet</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right Column - Action & Packages -->
+            <div class="lg:w-1/3">
+                <!-- Quick Actions Card -->
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-200 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
+                    <div class="space-y-3">
+                        <a href="{% url 'investments:withdraw' %}" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium">Withdraw Funds</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                        <a href="#" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium">Transaction History</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                        <a href="#" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium">Performance Reports</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
                         </a>
                     </div>
                 </div>
-                {% endfor %}
-            </div>
-            
-        </div>
-        <br>
-        <!-- Return History - Card List Design -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-white/20 mb-8">
-            <div class="flex justify-between items-center mb-5">
-                <h2 class="text-xl font-bold text-gray-800">Recent Returns</h2>
-                <!--<a href="#" class="text-indigo-600 text-sm font-medium flex items-center">
-                    View All <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                </a>-->
-            </div>
 
-            {% if investment_returns %}
-            <div class="space-y-4">
-                {% for return in investment_returns %}
-                <div class="flex items-center justify-between p-4 bg-gray-50/50 rounded-xl">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center mr-3">
-                            <i class="fas fa-dollar-sign text-indigo-600"></i>
+                <!-- Investment Packages Card -->
+                <div id="investment-packages" class="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Investment Options</h2>
+                    <p class="text-sm text-gray-600 mb-4">Choose from our carefully selected investment plans</p>
+                    
+                    <div class="space-y-4">
+                        {% for package in packages %}
+                        <div class="border border-gray-200 rounded-lg p-4 {% if forloop.counter == 3 %}border-2 border-blue-300 bg-blue-50{% endif %}">
+                            {% if forloop.counter == 3 %}
+                            <div class="text-xs font-semibold text-blue-700 mb-2 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                MOST POPULAR
+                            </div>
+                            {% endif %}
+                            
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-semibold text-gray-800">{{ package.name }}</h3>
+                                <span class="text-lg font-bold text-blue-700">${{ package.price|floatformat:2 }}</span>
+                            </div>
+                            
+                            <p class="text-sm text-gray-600 mt-1 mb-3">{{ package.description|truncatechars:60 }}</p>
+                            
+                            <div class="flex justify-between items-center text-sm">
+                                <div>
+                                    <span class="text-gray-500">Return:</span>
+                                    <span class="font-medium text-green-600 ml-1">{{ package.roi_percent }}% daily</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500">Term:</span>
+                                    <span class="font-medium ml-1">{{ package.duration_days }} days</span>
+                                </div>
+                            </div>
+                            
+                            <a href="{% url 'investments:package_deposit' package.id %}" 
+                               class="mt-4 block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium transition-colors">
+                                Invest Now
+                            </a>
                         </div>
-                        <div>
-                            <h3 class="font-medium text-gray-800">{{ return.investment.package.name }}</h3>
-                            <p class="text-xs text-gray-500">{{ return.date|date:"M d, Y" }}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold text-gray-800">${{ return.amount|floatformat:2 }}</p>
-                        <span class="text-xs px-2 py-0.5 rounded-full 
-                            {% if return.is_paid %}bg-green-100 text-green-800
-                            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                            {% if return.is_paid %}Paid{% else %}Pending{% endif %}
-                        </span>
+                        {% endfor %}
                     </div>
                 </div>
-                {% endfor %}
             </div>
-            {% else %}
-            <div class="text-center py-8">
-                <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                    <i class="fas fa-chart-pie text-gray-400 text-xl"></i>
-                </div>
-                <h3 class="text-gray-500 font-medium">No returns yet</h3>
-                <p class="text-sm text-gray-400 mt-1">Your investment returns will appear here</p>
-            </div>
-            {% endif %}
         </div>
     </main>
 
-    
-
     <style>
-        /* Smooth scrolling and padding for mobile nav */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        @media (max-width: 767px) {
-            main {
-                padding-bottom: 5rem;
-            }
-        }
-        
-        /* Animated gradient background */
         body {
-            background: linear-gradient(-45deg, #f5f7fa, #e4e8f0, #f5f7fa);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
+            background-color: #f8fafc;
+            font-family: 'Inter', sans-serif;
         }
         
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Security badge style */
+        .security-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #4caf50;
+            z-index: 10;
+        }
+        
+        .security-badge svg {
+            margin-right: 6px;
         }
     </style>
+
+    <!-- Security badge -->
+    <div class="security-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        <span>Secure & Encrypted</span>
+    </div>
 {% endblock content %}

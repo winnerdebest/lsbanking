@@ -13,6 +13,16 @@ from investments.services import *
 from main.services import *
 
 
+#For Cron Job
+from django.http import HttpResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.core.management import call_command
+from django.conf import settings
+
+
+
+
 def investment_home(request):
     return render(request, 'investments/investment_home.html')
 
@@ -229,3 +239,18 @@ class PackageDepositView(View):
 
         messages.success(request, "Deposit submitted. Awaiting admin approval.")
         return redirect('investments:investment_dashboard')
+
+
+
+@csrf_exempt
+@require_POST
+def run_daily_roi(request):
+    token = request.headers.get('X-RUN-TOKEN')
+    if token != settings.DAILY_ROI_RUN_TOKEN:
+        return HttpResponse("Forbidden", status=403)
+    try:
+        call_command('generate_daily_returns')
+        return HttpResponse("OK")
+    except Exception as e:
+        # log e
+        return HttpResponse(f"Error: {str(e)}", status=500)

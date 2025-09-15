@@ -100,6 +100,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'lsbanking.wsgi.application'
 
 
+#FOr Cron Job
+DAILY_ROI_RUN_TOKEN = env('DAILY_ROI_RUN_TOKEN', default='your_secure_token_here')
+
+
+
+
+
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -111,7 +118,7 @@ DATABASES = {
 }
 
 
-POSTGRESS_LOCALLY = True
+POSTGRESS_LOCALLY = False
 if ENVIRONMENT == 'production' or POSTGRESS_LOCALLY == True:
         DATABASES['default'] = dj_database_url.parse(env('DATABASE_URL'))
 

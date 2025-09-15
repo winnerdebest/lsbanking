@@ -1,80 +1,137 @@
-{% extends "investments/main/ibase.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block content %}
-<div class="max-w-md mx-auto my-8 bg-white rounded-2xl overflow-hidden shadow-xl">
-    <!-- Header with gradient background -->
-    <div class="bg-gradient-to-r from-blue-500 to-emerald-600 p-6 text-white text-center">
-        <div class="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-md mx-auto bg-white rounded-2xl overflow-hidden shadow-lg">
+        <!-- Header with bank branding -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-white">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <h1 class="text-xl font-bold">GECU Investment Banking</h1>
+                </div>
+                <span class="text-sm bg-blue-500 px-2 py-1 rounded-full">Secure</span>
+            </div>
+            <h2 class="text-2xl font-semibold mt-2">Funds Withdrawal</h2>
+            <p class="text-blue-100 mt-1">Transfer investment returns to your account</p>
         </div>
-        <h2 class="text-2xl font-bold">Withdraw Funds</h2>
-        <p class="text-white/90 mt-1">Transfer to your wallet balance</p>
-    </div>
 
-    <!-- Form content -->
-    <div class="p-6">
-        <form method="post"
-              action="{% url 'investments:withdraw' %}" 
-              hx-post="{% url 'investments:withdraw' %}"
-              hx-trigger="submit"
-              hx-target="#withdraw-status"
-              hx-swap="innerHTML"
-              class="space-y-6">
-            {% csrf_token %}
+        <!-- Main content -->
+        <div class="p-6">
+            <!-- Account summary -->
+            <div class="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-600 text-sm">Available Balance</span>
+                    <span class="text-lg font-bold text-gray-800">${{ current_balance|default:"0.00" }}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-gray-500">
+                    <span>To your savings account</span>
+                    <span>Investment Portfolio</span>
+                </div>
+            </div>
 
             <!-- Requirements card -->
-            <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-lg">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-amber-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+                <div class="flex items-start">
+                    <svg class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
                     <div class="ml-3">
-                        <p class="text-sm text-amber-700">
-                            Minimum withdrawal: <span class="font-bold">$1000</span><br>
-                            Investment duration must be completed
-                        </p>
+                        <h3 class="text-sm font-medium text-amber-800">Withdrawal Requirements</h3>
+                        <div class="mt-1 text-xs text-amber-700">
+                            <p>• Minimum withdrawal: <span class="font-semibold">$1000</span></p>
+                            <p>• Investment duration must be completed</p>
+                            <p>• Processed within 24-48 business hours</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Balance display -->
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-600 font-medium">Available Balance:</span>
-                    <span class="text-2xl font-bold text-gray-800">${{ current_balance|default:"0.00" }}</span>
+            <!-- Withdrawal form -->
+            <form method="post"
+                  action="{% url 'investments:withdraw' %}" 
+                  hx-post="{% url 'investments:withdraw' %}"
+                  hx-trigger="submit"
+                  hx-target="#withdraw-status"
+                  hx-swap="innerHTML"
+                  class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Destination account (simulated) -->
+                <!--<div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Destination Account</label>
+                    <div class="relative">
+                        <select class="w-full bg-white border border-gray-300 rounded-lg py-3 px-4 appearance-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option selected>Primary Checking (•••• 6789)</option>
+                            <option>Savings Account (•••• 4321)</option>
+                            <option>External Bank Transfer</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>-->
+
+                <!-- Amount input (simulated) -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Withdrawal Amount</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">$</span>
+                        </div>
+                        <input type="text" 
+                               value="{{ current_balance|default:'0.00' }}" 
+                               class="block w-full pl-7 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                               placeholder="0.00"
+                               readonly>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">USD</span>
+                        </div>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">Full available balance</p>
                 </div>
-            </div>
 
-            <!-- Withdrawal button -->
-            <button type="submit"
-                    class="w-full flex justify-center items-center py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-xl shadow-md transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                    {% if current_balance < 1000 %}disabled{% endif %}>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                </svg>
-                Withdraw to Wallet
-            </button>
+                <!-- Withdrawal button -->
+                <button type="submit"
+                        class="w-full flex justify-center items-center py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        {% if current_balance < 1000 %}disabled{% endif %}>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    Request Withdrawal
+                </button>
 
-            <!-- Status messages will appear here -->
-            <div id="withdraw-status" class="text-center"></div>
-        </form>
+                <!-- Status messages will appear here -->
+                <div id="withdraw-status" class="text-center"></div>
+            </form>
 
-        <!-- Additional help section -->
-        <div class="mt-6 pt-6 border-t border-gray-200">
-            <div class="flex items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div class="ml-3">
-                    <p class="text-sm text-gray-600">
-                        Withdrawals are processed within <span class="font-medium">24-48 hours</span>. 
-                        Contact support if you encounter any issues.
-                    </p>
+            <!-- Additional information -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <h3 class="text-sm font-medium text-gray-700 mb-3">Withdrawal Information</h3>
+                <div class="space-y-3 text-xs text-gray-600">
+                    <div class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p>Processing time: 24-48 business hours</p>
+                    </div>
+                    <div class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        <p>No withdrawal fees for standard transfers</p>
+                    </div>
+                    <div class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <p>Contact support for assistance: 1-800-GECU-HELP</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -91,14 +148,14 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Withdrawal Requested!</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Withdrawal Requested</h3>
                 <div class="mt-2 text-sm text-gray-500">
-                    <p>Your withdrawal of <span class="font-bold">${{ current_balance }}</span> has been submitted.</p>
-                    <p class="mt-2">You'll receive confirmation shortly.</p>
+                    <p>Your withdrawal of <span class="font-semibold">${{ current_balance }}</span> has been submitted successfully.</p>
+                    <p class="mt-2">Funds will be available in 24-48 business hours.</p>
                 </div>
                 <div class="mt-5">
-                    <button type="button" onclick="closeModal()" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:text-sm">
-                        Close
+                    <button type="button" onclick="closeModal()" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
+                        Done
                     </button>
                 </div>
             </div>
@@ -111,6 +168,8 @@
     function closeModal() {
         const modal = document.querySelector('.fixed.inset-0.bg-black');
         if (modal) modal.remove();
+        // Optional: redirect to dashboard or refresh page
+        // window.location.href = "{% url 'investments:investment_dashboard' %}";
     }
 
     // Disable button if balance is insufficient
@@ -120,17 +179,38 @@
         
         if (currentBalance < 1000) {
             withdrawBtn.disabled = true;
-            withdrawBtn.classList.remove('from-green-500', 'to-emerald-600', 'hover:from-green-600', 'hover:to-emerald-700');
-            withdrawBtn.classList.add('from-gray-400', 'to-gray-500', 'cursor-not-allowed');
+            withdrawBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            withdrawBtn.classList.add('bg-gray-400');
+            
+            // Add informative tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'mt-2 text-sm text-amber-600 text-center';
+            tooltip.textContent = 'Minimum withdrawal amount is $1000';
+            withdrawBtn.parentNode.appendChild(tooltip);
         }
     });
 </script>
 
 <style>
-    /* Smooth transitions for disabled state */
-    button[disabled] {
-        opacity: 0.7;
-        transform: none !important;
+    /* Custom styles for bank app feel */
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #f9fafb;
+    }
+    
+    /* Smooth transitions for all interactive elements */
+    button, select, input {
+        transition: all 0.2s ease;
+    }
+    
+    /* Custom select styling */
+    select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234B5563'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1rem;
+        -webkit-appearance: none;
+        -moz-appearance: none;
     }
 </style>
 {% endblock %}

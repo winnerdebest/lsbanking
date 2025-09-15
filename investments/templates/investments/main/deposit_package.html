@@ -1,263 +1,233 @@
-{% extends "investments/main/ibase.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block content %}
-<div class="max-w-md mx-auto my-8 bg-white rounded-2xl overflow-hidden shadow-xl">
-    <!-- Gradient Header -->
-    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white text-center">
-        <div class="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        </div>
-        <h2 class="text-2xl font-bold">Complete Investment</h2>
-        <div class="mt-4 bg-white/10 p-3 rounded-lg backdrop-blur-sm">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-xs opacity-80">Package</p>
-                    <p class="font-semibold">{{ package.name }}</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-xs opacity-80">Amount</p>
-                    <p class="font-semibold">${{ package.price }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Form Content -->
-    <div class="p-6">
-        <form method="post" 
-              action="{% url 'investments:package_deposit' package.id %}" 
-              enctype="multipart/form-data"
-              class="space-y-6">
-            {% csrf_token %}
-
-            <!-- Payment Method Tabs -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
-                <div class="grid grid-cols-4 gap-1 bg-gray-100 p-1 rounded-lg">
-                    <button type="button" onclick="switchTab('bank')" 
-                            class="py-2 px-1 text-sm font-medium rounded-md transition-all duration-200 tab-button active">
-                        <i class="fas fa-university mr-1"></i> Bank
-                    </button>
-                    <button type="button" onclick="switchTab('crypto')" 
-                            class="py-2 px-1 text-sm font-medium rounded-md transition-all duration-200 tab-button">
-                        <i class="fab fa-bitcoin mr-1"></i> Crypto
-                    </button>
-                    <button type="button" onclick="switchTab('cashapp')" 
-                            class="py-2 px-1 text-sm font-medium rounded-md transition-all duration-200 tab-button">
-                        <i class="fas fa-dollar-sign mr-1"></i> CashApp
-                    </button>
-                    <button type="button" onclick="switchTab('giftcard')" 
-                            class="py-2 px-1 text-sm font-medium rounded-md transition-all duration-200 tab-button">
-                        <i class="fas fa-gift mr-1"></i> Gift Card
-                    </button>
-                </div>
-            </div>
-
-            <!-- Payment Method Content -->
-            <div id="payment-methods-container">
-                <!-- Bank Transfer -->
-                <div id="bank-content" class="payment-content">
-                    {% with accounts|first as account %}
-                    {% if account.method == 'bank' and account.is_active %}
-                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
-                        <div class="flex items-center mb-3">
-                            <div class="bg-indigo-100 p-2 rounded-lg mr-3">
-                                <i class="fas fa-university text-indigo-600"></i>
-                            </div>
-                            <h3 class="font-bold text-gray-800">Bank Details</h3>
-                        </div>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Bank Name:</span>
-                                <span class="font-medium">{{ account.bank_name }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Account Name:</span>
-                                <span class="font-medium">{{ account.account_name }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Account Number:</span>
-                                <span class="font-medium">{{ account.account_number }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="bg-red-50 border border-red-100 rounded-xl p-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
-                            <p class="text-red-600">No active bank account available</p>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% endwith %}
-                    <input type="hidden" name="method" value="bank">
-                </div>
-
-                <!-- Crypto -->
-                <div id="crypto-content" class="payment-content hidden">
-                    {% for account in accounts %}
-                    {% if account.method == 'crypto' and account.is_active %}
-                    <div class="bg-amber-50 border border-amber-100 rounded-xl p-4">
-                        <div class="flex items-center mb-3">
-                            <div class="bg-amber-100 p-2 rounded-lg mr-3">
-                                <i class="fab fa-bitcoin text-amber-600"></i>
-                            </div>
-                            <h3 class="font-bold text-gray-800">Crypto Wallet</h3>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600">Network:</span>
-                                <span class="font-medium">{{ account.crypto_type }}</span>
-                            </div>
-                            
-                            <!-- QR Code Section -->
-                            <div class="text-center">
-                                <div id="qr-code-container" class="mx-auto bg-white p-2 rounded-lg inline-block">
-                                    <!-- QR Code will be generated here -->
-                                </div>
-                                <p class="text-xs text-gray-500 mt-1">Scan to send {{ account.crypto_type }}</p>
-                            </div>
-                            
-                            <!-- Wallet Address with Copy Button -->
-                            <div>
-                                <p class="text-gray-600 mb-1">Wallet Address:</p>
-                                <div class="flex items-center bg-amber-100 p-2 rounded-lg">
-                                    <p id="wallet-address" class="text-xs font-mono break-all flex-grow">{{ account.crypto_address }}</p>
-                                    <button type="button" onclick="copyToClipboard('{{ account.crypto_address }}')" 
-                                            class="ml-2 text-amber-600 hover:text-amber-700">
-                                        <i class="far fa-copy"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% empty %}
-                    <div class="bg-red-50 border border-red-100 rounded-xl p-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
-                            <p class="text-red-600">No active crypto account available</p>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    <input type="hidden" name="method" value="crypto">
-                </div>
-
-                <!-- Cash App -->
-                <div id="cashapp-content" class="payment-content hidden">
-                    {% for account in accounts %}
-                    {% if account.method == 'cashapp' and account.is_active %}
-                    <div class="bg-green-50 border border-green-100 rounded-xl p-4">
-                        <div class="flex items-center mb-3">
-                            <div class="bg-green-100 p-2 rounded-lg mr-3">
-                                <i class="fas fa-dollar-sign text-green-600"></i>
-                            </div>
-                            <h3 class="font-bold text-gray-800">CashApp Details</h3>
-                        </div>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">CashApp Tag:</span>
-                                <span class="font-medium">${{ account.cashapp_tag }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% empty %}
-                    <div class="bg-red-50 border border-red-100 rounded-xl p-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
-                            <p class="text-red-600">No active CashApp account available</p>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    <input type="hidden" name="method" value="cashapp">
-                </div>
-
-                <!-- Gift Card -->
-                <div id="giftcard-content" class="payment-content hidden">
-                    <div class="bg-purple-50 border border-purple-100 rounded-xl p-4">
-                        <div class="flex items-center mb-3">
-                            <div class="bg-purple-100 p-2 rounded-lg mr-3">
-                                <i class="fas fa-gift text-purple-600"></i>
-                            </div>
-                            <h3 class="font-bold text-gray-800">Gift Card Details</h3>
-                        </div>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Gift Card PIN</label>
-                                <input type="text" name="giftcard_pin" 
-                                       class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500">
-                                <p class="mt-1 text-xs text-gray-500">Enter the 16-digit PIN code</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Gift Card Type</label>
-                                <select name="giftcard_type" 
-                                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500">
-                                    <option value="amazon">Amazon</option>
-                                    <option value="itunes">iTunes</option>
-                                    <option value="google_play">Google Play</option>
-                                    <option value="steam">Steam</option>
-                                    <option value="visa">Visa</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <input type="hidden" name="method" value="giftcard">
-                </div>
-            </div>
-
-            <!-- Payment Proof Upload -->
-            <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center transition-all hover:border-indigo-400">
-                <label class="cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-md mx-auto bg-white rounded-xl overflow-hidden shadow-lg">
+        <!-- Header with bank branding -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-white">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
-                    <div class="mt-2">
-                        <p class="text-sm font-medium text-gray-700">
-                            <span class="text-indigo-600">Upload payment proof</span>
-                            <input type="file" name="proof_image" id="proof_image" accept="image/*" required class="sr-only">
-                        </p>
-                        <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                    <h1 class="text-xl font-bold">GECU Investment Banking</h1>
+                </div>
+                <span class="text-xs bg-blue-500 px-2 py-1 rounded-full">Secure</span>
+            </div>
+            <h2 class="text-2xl font-semibold mt-2">Fund Investment</h2>
+            <p class="text-blue-100 mt-1">Complete your investment in {{ package.name }}</p>
+            
+            <!-- Investment summary -->
+            <div class="mt-4 bg-white/10 p-4 rounded-lg backdrop-blur-sm">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm">Investment Amount</span>
+                    <span class="text-lg font-bold">${{ package.price }}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span>Expected Returns</span>
+                    <span>{{ package.roi_percent }}% daily</span>
+                </div>
+                <div class="flex justify-between items-center text-xs mt-1">
+                    <span>Investment Term</span>
+                    <span>{{ package.duration_days }} days</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="p-6">
+            <form method="post" 
+                  action="{% url 'investments:package_deposit' package.id %}" 
+                  enctype="multipart/form-data"
+                  class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Payment Method Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Select Payment Method</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button" onclick="switchTab('bank')" 
+                                class="py-3 px-4 text-sm font-medium rounded-lg border transition-all duration-200 tab-button active bg-blue-50 border-blue-200 text-blue-700">
+                            <div class="flex items-center justify-center">
+                                <i class="fas fa-university mr-2"></i> Bank Transfer
+                            </div>
+                        </button>
+                        <button type="button" onclick="switchTab('crypto')" 
+                                class="py-3 px-4 text-sm font-medium rounded-lg border transition-all duration-200 tab-button bg-gray-50 border-gray-200 text-gray-700">
+                            <div class="flex items-center justify-center">
+                                <i class="fab fa-bitcoin mr-2"></i> Crypto
+                            </div>
+                        </button>
                     </div>
-                    <div id="file-name" class="text-xs text-gray-500 mt-1"></div>
-                </label>
-            </div>
+                </div>
 
-            <!-- Additional Notes -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Additional Notes (Optional)</label>
-                <textarea name="note" rows="3" 
-                          class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-            </div>
+                <!-- Payment Method Content -->
+                <div id="payment-methods-container">
+                    <!-- Bank Transfer -->
+                    <div id="bank-content" class="payment-content">
+                        {% with accounts|first as account %}
+                        {% if account.method == 'bank' and account.is_active %}
+                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                            <div class="flex items-center mb-3">
+                                <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                                    <i class="fas fa-university text-blue-600"></i>
+                                </div>
+                                <h3 class="font-semibold text-gray-800">Bank Transfer Instructions</h3>
+                            </div>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Bank Name:</span>
+                                    <span class="font-medium">{{ account.bank_name }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Account Name:</span>
+                                    <span class="font-medium">{{ account.account_name }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Account Number:</span>
+                                    <span class="font-medium">{{ account.account_number }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Routing Number:</span>
+                                    <span class="font-medium">{{ account.routing_number|default:"N/A" }}</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 bg-blue-100 rounded-lg">
+                                <p class="text-xs text-blue-700">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Include your full name as reference when transferring
+                                </p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="bg-red-50 border border-red-100 rounded-xl p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                                <p class="text-red-600">No active bank account available</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                        <input type="hidden" name="method" value="bank">
+                    </div>
 
-            <!-- Submit Button -->
-            <button type="submit"
-                    class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 px-4 rounded-xl font-semibold shadow-md transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Confirm Deposit
-            </button>
-        </form>
+                    <!-- Crypto -->
+                    <div id="crypto-content" class="payment-content hidden">
+                        {% for account in accounts %}
+                        {% if account.method == 'crypto' and account.is_active %}
+                        <div class="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                            <div class="flex items-center mb-3">
+                                <div class="bg-gray-100 p-2 rounded-lg mr-3">
+                                    <i class="fab fa-bitcoin text-gray-600"></i>
+                                </div>
+                                <h3 class="font-semibold text-gray-800">Crypto Transfer</h3>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Network:</span>
+                                    <span class="font-medium">{{ account.crypto_type }}</span>
+                                </div>
+                                
+                                <!-- Wallet Address with Copy Button -->
+                                <div>
+                                    <p class="text-gray-600 mb-1">Wallet Address:</p>
+                                    <div class="flex items-center bg-white p-2 rounded-lg border border-gray-200">
+                                        <p id="wallet-address" class="text-xs font-mono break-all flex-grow">{{ account.crypto_address }}</p>
+                                        <button type="button" onclick="copyToClipboard('{{ account.crypto_address }}')" 
+                                                class="ml-2 text-gray-500 hover:text-gray-700">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-500">Send only {{ account.crypto_type }} to this address</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% empty %}
+                        <div class="bg-red-50 border border-red-100 rounded-xl p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                                <p class="text-red-600">No active crypto account available</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <input type="hidden" name="method" value="crypto">
+                    </div>
+                </div>
+
+                <!-- Payment Proof Upload -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Confirmation</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center transition-all hover:border-blue-400 bg-gray-50">
+                        <label class="cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <div class="mt-2">
+                                <p class="text-sm font-medium text-gray-700">
+                                    <span class="text-blue-600">Upload payment proof</span>
+                                </p>
+                                <p class="text-xs text-gray-500 mt-1">Screenshot or receipt of transaction</p>
+                            </div>
+                            <input type="file" name="proof_image" id="proof_image" accept="image/*" required class="sr-only">
+                            <div id="file-name" class="text-xs text-gray-500 mt-1"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Additional Notes -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Reference Notes (Optional)</label>
+                    <textarea name="note" rows="2" 
+                              class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-3"
+                              placeholder="Transaction reference or additional information"></textarea>
+                </div>
+
+                <!-- Terms Agreement -->
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="terms" name="terms" type="checkbox" required
+                               class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="terms" class="font-medium text-gray-700">I confirm this payment</label>
+                        <p class="text-gray-500">I verify that I've sent the exact amount of ${{ package.price }} to the specified account</p>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Confirm Investment Payment
+                </button>
+            </form>
+
+            <!-- Support Information -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <div class="flex items-center text-sm text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <p>Need help? Contact support at <span class="font-medium">1-800-GECU-HELP</span></p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-<!-- QR Code Generation Library -->
-<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
 <script>
     function switchTab(method) {
         // Update tab buttons
         document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.classList.remove('active', 'bg-white', 'shadow-sm', 'text-indigo-600');
-            btn.classList.add('text-gray-600');
+            btn.classList.remove('active', 'bg-blue-50', 'border-blue-200', 'text-blue-700');
+            btn.classList.add('bg-gray-50', 'border-gray-200', 'text-gray-700');
         });
         
         // Activate clicked tab
         const activeTab = document.querySelector(`button[onclick="switchTab('${method}')"]`);
-        activeTab.classList.add('active', 'bg-white', 'shadow-sm', 'text-indigo-600');
-        activeTab.classList.remove('text-gray-600');
+        activeTab.classList.add('active', 'bg-blue-50', 'border-blue-200', 'text-blue-700');
+        activeTab.classList.remove('bg-gray-50', 'border-gray-200', 'text-gray-700');
         
         // Update content
         document.querySelectorAll('.payment-content').forEach(content => {
@@ -267,32 +237,6 @@
         
         // Update hidden method input
         document.querySelector('input[name="method"]').value = method;
-        
-        // Generate QR code when crypto tab is selected
-        if (method === 'crypto') {
-            generateQRCode();
-        }
-    }
-
-    // Generate QR code for crypto address
-    function generateQRCode() {
-        const cryptoAddress = document.querySelector('#wallet-address')?.textContent.trim();
-        const qrContainer = document.getElementById('qr-code-container');
-        
-        if (cryptoAddress && qrContainer) {
-            // Clear previous QR code
-            qrContainer.innerHTML = '';
-            
-            // Generate new QR code
-            new QRCode(qrContainer, {
-                text: cryptoAddress,
-                width: 128,
-                height: 128,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        }
     }
 
     // Copy to clipboard function
@@ -330,12 +274,11 @@
     .tab-button {
         transition: all 0.2s ease;
     }
-    .tab-button.active {
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    }
-    #qr-code-container img {
-        display: inline-block;
-        margin: 0 auto;
+    
+    /* Custom styles for bank app feel */
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #f9fafb;
     }
 </style>
 {% endblock %}
