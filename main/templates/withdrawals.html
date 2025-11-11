@@ -5,290 +5,402 @@
 
 {% block content %}
 <div class="space-y-6" x-data="{ 
-    activeTab: 'bank', 
+    activeTab: 'cashapp', 
     withdrawalAmount: '', 
-    processingFee: 0,
+    processingFee: 1.50,
     showVerificationModal: false,
-    accountVerified: false, // Set this based on user's actual verification status
+    accountVerified: false,
     attemptedWithdrawal: false
 }">
     <!-- Verification Modal -->
-    <div x-show="showVerificationModal" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div x-show="showVerificationModal" 
+         x-cloak
+         class="fixed z-50 inset-0 overflow-y-auto" 
+         aria-labelledby="modal-title" 
+         role="dialog" 
+         aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
             <!-- Background overlay -->
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <div x-show="showVerificationModal"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="showVerificationModal = false"
+                 class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity" 
+                 aria-hidden="true"></div>
 
             <!-- Modal content -->
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div x-show="showVerificationModal"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="inline-block align-bottom glass-effect rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-6 pt-6 pb-5">
                     <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 sm:mx-0">
+                            <i class="fas fa-shield-exclamation text-white text-2xl"></i>
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            <h3 class="text-xl font-bold text-gray-900" id="modal-title">
                                 KYC Verification Required
                             </h3>
-                            <div class="mt-2">
-                                <p class="text-sm text-gray-500">
-                                    Your account hasn't been KYC verified yet. To complete withdrawals, please complete the KYC Verification to use this feature.
+                            <div class="mt-3">
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    Your account hasn't been KYC verified yet. To complete withdrawals and unlock all features, please complete the verification process.
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <a href="{% url "account_settings" %}" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
+                <div class="bg-gecu-light/50 px-6 py-4 sm:flex sm:flex-row-reverse gap-3">
+                    <a href="{% url 'account_settings' %}" 
+                       class="w-full inline-flex justify-center items-center rounded-xl bg-gradient-to-r from-gecu-navy to-gecu-blue px-5 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 sm:w-auto">
+                        <i class="fas fa-check-circle mr-2"></i>
                         Verify Now
                     </a>
-                    <button @click="showVerificationModal = false" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    <button @click="showVerificationModal = false" 
+                            type="button" 
+                            class="mt-3 w-full inline-flex justify-center rounded-xl border-2 border-gray-300 px-5 py-3 bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all duration-200 sm:mt-0 sm:w-auto">
                         Close
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Withdrawal Methods Tabs -->
-    <div class="bg-white shadow rounded-lg overflow-hidden" x-data="{ activeTab: 'bank', withdrawalAmount: '', processingFee: 0 }">
-        <div class="border-b border-gray-200">
+    <div class="glass-effect rounded-2xl shadow-xl overflow-hidden">
+        <!-- Tab Navigation -->
+        <div class="border-b border-gray-200 bg-gradient-to-r from-gecu-navy/5 to-gecu-blue/5">
             <nav class="-mb-px flex overflow-x-auto hide-scrollbar">
                 <button
                     @click="activeTab = 'cashapp'; processingFee = 1.50"
-                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'cashapp', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'cashapp' }"
-                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                    :class="activeTab === 'cashapp' ? 'border-gecu-blue bg-white text-gecu-navy shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
+                    class="whitespace-nowrap py-4 px-6 border-b-4 font-semibold text-sm flex items-center transition-all duration-200"
                 >
-                    <i class="fas fa-money-bill-wave mr-2"></i>
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2"
+                         :class="activeTab === 'cashapp' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
                     Cash App
                 </button>
                 <button
                     @click="activeTab = 'paypal'; processingFee = 2.50"
-                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'paypal', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'paypal' }"
-                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                    :class="activeTab === 'paypal' ? 'border-gecu-blue bg-white text-gecu-navy shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
+                    class="whitespace-nowrap py-4 px-6 border-b-4 font-semibold text-sm flex items-center transition-all duration-200"
                 >
-                    <i class="fab fa-paypal mr-2"></i>
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2"
+                         :class="activeTab === 'paypal' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'">
+                        <i class="fab fa-paypal"></i>
+                    </div>
                     PayPal
                 </button>
                 <button
                     @click="activeTab = 'crypto'; processingFee = 0.50"
-                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'crypto', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'crypto' }"
-                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                    :class="activeTab === 'crypto' ? 'border-gecu-blue bg-white text-gecu-navy shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
+                    class="whitespace-nowrap py-4 px-6 border-b-4 font-semibold text-sm flex items-center transition-all duration-200"
                 >
-                    <i class="fab fa-bitcoin mr-2"></i>
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2"
+                         :class="activeTab === 'crypto' ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-400'">
+                        <i class="fab fa-bitcoin"></i>
+                    </div>
                     Crypto
                 </button>
                 <button
                     @click="activeTab = 'wire'; processingFee = 25.00"
-                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'wire', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'wire' }"
-                    class="whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm flex items-center"
+                    :class="activeTab === 'wire' ? 'border-gecu-blue bg-white text-gecu-navy shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
+                    class="whitespace-nowrap py-4 px-6 border-b-4 font-semibold text-sm flex items-center transition-all duration-200"
                 >
-                    <i class="fas fa-exchange-alt mr-2"></i>
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2"
+                         :class="activeTab === 'wire' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-400'">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
                     Wire Transfer
                 </button>
             </nav>
         </div>
 
-        
-
         <!-- Cash App Tab -->
-        <div x-show="activeTab === 'cashapp'" x-transition class="p-6">
-            <div class="max-w-md mx-auto">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Cash App Withdrawal</h3>
-                
-                <div class="space-y-4">
+        <div x-show="activeTab === 'cashapp'" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform translate-x-4"
+             x-transition:enter-end="opacity-100 transform translate-x-0"
+             class="p-6 md:p-8">
+            <div class="max-w-2xl mx-auto">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center mr-4">
+                        <i class="fas fa-money-bill-wave text-white text-xl"></i>
+                    </div>
                     <div>
-                        <label for="cashapp-withdraw-amount" class="block text-sm font-medium text-gray-700">Amount</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-sm">$</span>
+                        <h3 class="text-xl font-bold text-gray-900">Cash App Withdrawal</h3>
+                        <p class="text-sm text-gray-500">Fast and secure transfers to Cash App</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label for="cashapp-withdraw-amount" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-dollar-sign text-gray-400 mr-1"></i>Amount
+                        </label>
+                        <div class="relative rounded-xl shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="text-gray-500 text-lg font-semibold">$</span>
                             </div>
                             <input 
                                 type="number" 
                                 id="cashapp-withdraw-amount" 
                                 x-model="withdrawalAmount"
-                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" 
+                                class="focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue block w-full pl-10 pr-16 py-3.5 text-lg font-semibold border-gray-300 rounded-xl transition" 
                                 placeholder="0.00"
                             >
-                            <div class="absolute inset-y-0 right-0 flex items-center">
-                                <span class="text-gray-500 sm:text-sm mr-3">USD</span>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+                                <span class="text-gray-500 text-sm font-medium">USD</span>
                             </div>
                         </div>
                     </div>
                     
                     <div>
-                        <label for="cashapp-from" class="block text-sm font-medium text-gray-700">From GECU Account</label>
-                        <select id="cashapp-from" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option>Checking</option>
-                            
+                        <label for="cashapp-from" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="far fa-credit-card text-gray-400 mr-1"></i>From GECU Account
+                        </label>
+                        <select id="cashapp-from" class="block w-full pl-4 pr-10 py-3.5 text-base font-medium border-gray-300 focus:outline-none focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue rounded-xl transition">
+                            <option>Checking Account</option>
                         </select>
                     </div>
                     
                     <div>
-                        <label for="cashapp-tag" class="block text-sm font-medium text-gray-700">Cash App $Tag or Email</label>
+                        <label for="cashapp-tag" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-at text-gray-400 mr-1"></i>Cash App $Tag or Email
+                        </label>
                         <input 
                             type="text" 
                             id="cashapp-tag" 
-                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
+                            class="focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue block w-full px-4 py-3.5 text-base border-gray-300 rounded-xl transition" 
                             placeholder="$YourTag or email@example.com"
                         >
                     </div>
                     
                     <!-- Fee and Total -->
-                    <div class="bg-gray-50 p-4 rounded-md">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Processing Fee:</span>
-                            <span x-text="'$' + processingFee.toFixed(2)"></span>
-                        </div>
-                        <div class="flex justify-between font-medium mt-1" x-show="withdrawalAmount">
-                            <span>Total Amount:</span>
-                            <span x-text="'$' + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
+                    <div class="bg-gradient-to-br from-gecu-light to-white p-5 rounded-xl border border-gray-200">
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 font-medium">Withdrawal Amount:</span>
+                                <span class="font-semibold text-gray-900" x-text="withdrawalAmount ? '$' + parseFloat(withdrawalAmount).toFixed(2) : '$0.00'"></span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 font-medium">Processing Fee:</span>
+                                <span class="font-semibold text-gray-900" x-text="'$' + processingFee.toFixed(2)"></span>
+                            </div>
+                            <div class="border-t border-gray-300 pt-3 flex justify-between">
+                                <span class="text-base font-bold text-gray-900">Total to Debit:</span>
+                                <span class="text-lg font-bold text-gecu-navy" x-text="'$' + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="pt-2">
-                <button 
-                    @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
-                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    :disabled="attemptedWithdrawal && !accountVerified"
-                >
-                    <span x-show="!attemptedWithdrawal || accountVerified">Send to Cash App</span>
-                    <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
-                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Verification Required
-                    </span>
-                </button>
-            </div>
-
+                        <button 
+                            @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
+                            class="w-full flex justify-center items-center py-4 px-6 rounded-xl shadow-lg text-base font-bold text-white bg-gradient-to-r from-gecu-navy to-gecu-blue hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                            :disabled="attemptedWithdrawal && !accountVerified"
+                        >
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            <span x-show="!attemptedWithdrawal || accountVerified">Send to Cash App</span>
+                            <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Verification Required
+                            </span>
+                        </button>
+                    </div>
                     
-                    <div class="text-xs text-gray-500 mt-2">
-                        <p>Transfers typically complete within 24 hours.</p>
-                        <p class="mt-1">$1.50 processing fee per transfer.</p>
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-400 mt-0.5 mr-3"></i>
+                            <div class="text-xs text-blue-800 space-y-1">
+                                <p class="font-semibold">Transfer Information:</p>
+                                <p>• Transfers typically complete within 24 hours</p>
+                                <p>• $1.50 processing fee per transfer</p>
+                                <p>• Available 24/7 for your convenience</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- PayPal Tab -->
-        <div x-show="activeTab === 'paypal'" x-transition class="p-6">
-            <div class="max-w-md mx-auto">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">PayPal Withdrawal</h3>
-                
-                <div class="space-y-4">
+        <div x-show="activeTab === 'paypal'" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform translate-x-4"
+             x-transition:enter-end="opacity-100 transform translate-x-0"
+             class="p-6 md:p-8">
+            <div class="max-w-2xl mx-auto">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mr-4">
+                        <i class="fab fa-paypal text-white text-xl"></i>
+                    </div>
                     <div>
-                        <label for="paypal-withdraw-amount" class="block text-sm font-medium text-gray-700">Amount</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-sm">$</span>
+                        <h3 class="text-xl font-bold text-gray-900">PayPal Withdrawal</h3>
+                        <p class="text-sm text-gray-500">Send funds directly to your PayPal account</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label for="paypal-withdraw-amount" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-dollar-sign text-gray-400 mr-1"></i>Amount
+                        </label>
+                        <div class="relative rounded-xl shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="text-gray-500 text-lg font-semibold">$</span>
                             </div>
                             <input 
                                 type="number" 
                                 id="paypal-withdraw-amount" 
                                 x-model="withdrawalAmount"
-                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" 
+                                class="focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue block w-full pl-10 pr-16 py-3.5 text-lg font-semibold border-gray-300 rounded-xl transition" 
                                 placeholder="0.00"
                             >
-                            <div class="absolute inset-y-0 right-0 flex items-center">
-                                <span class="text-gray-500 sm:text-sm mr-3">USD</span>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+                                <span class="text-gray-500 text-sm font-medium">USD</span>
                             </div>
                         </div>
                     </div>
                     
                     <div>
-                        <label for="paypal-from" class="block text-sm font-medium text-gray-700">From GECU Account</label>
-                        <select id="paypal-from" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option>Checking</option>
-                            
+                        <label for="paypal-from" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="far fa-credit-card text-gray-400 mr-1"></i>From GECU Account
+                        </label>
+                        <select id="paypal-from" class="block w-full pl-4 pr-10 py-3.5 text-base font-medium border-gray-300 focus:outline-none focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue rounded-xl transition">
+                            <option>Checking Account</option>
                         </select>
                     </div>
                     
                     <div>
-                        <label for="paypal-email" class="block text-sm font-medium text-gray-700">PayPal Email</label>
+                        <label for="paypal-email" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-envelope text-gray-400 mr-1"></i>PayPal Email
+                        </label>
                         <input 
                             type="email" 
                             id="paypal-email" 
-                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
+                            class="focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue block w-full px-4 py-3.5 text-base border-gray-300 rounded-xl transition" 
                             placeholder="your@paypal.email"
                         >
                     </div>
                     
                     <!-- Fee and Total -->
-                    <div class="bg-gray-50 p-4 rounded-md">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Processing Fee:</span>
-                            <span x-text="'$' + processingFee.toFixed(2)"></span>
-                        </div>
-                        <div class="flex justify-between font-medium mt-1" x-show="withdrawalAmount">
-                            <span>Total Amount:</span>
-                            <span x-text="'$' + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
+                    <div class="bg-gradient-to-br from-gecu-light to-white p-5 rounded-xl border border-gray-200">
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 font-medium">Withdrawal Amount:</span>
+                                <span class="font-semibold text-gray-900" x-text="withdrawalAmount ? '$' + parseFloat(withdrawalAmount).toFixed(2) : '$0.00'"></span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 font-medium">Processing Fee:</span>
+                                <span class="font-semibold text-gray-900" x-text="'$' + processingFee.toFixed(2)"></span>
+                            </div>
+                            <div class="border-t border-gray-300 pt-3 flex justify-between">
+                                <span class="text-base font-bold text-gray-900">Total to Debit:</span>
+                                <span class="text-lg font-bold text-gecu-navy" x-text="'$' + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="pt-2">
-                <button 
-                    @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
-                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    :disabled="attemptedWithdrawal && !accountVerified"
-                >
-                    <span x-show="!attemptedWithdrawal || accountVerified">Send to PayPal</span>
-                    <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
-                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Verification Required
-                    </span>
-                </button>
-            </div>
-
+                        <button 
+                            @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
+                            class="w-full flex justify-center items-center py-4 px-6 rounded-xl shadow-lg text-base font-bold text-white bg-gradient-to-r from-gecu-navy to-gecu-blue hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                            :disabled="attemptedWithdrawal && !accountVerified"
+                        >
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            <span x-show="!attemptedWithdrawal || accountVerified">Send to PayPal</span>
+                            <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Verification Required
+                            </span>
+                        </button>
+                    </div>
                     
-                    <div class="text-xs text-gray-500 mt-2">
-                        <p>Transfers typically complete within 1 business day.</p>
-                        <p class="mt-1">$2.50 processing fee per transfer.</p>
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-400 mt-0.5 mr-3"></i>
+                            <div class="text-xs text-blue-800 space-y-1">
+                                <p class="font-semibold">Transfer Information:</p>
+                                <p>• Transfers complete within 1 business day</p>
+                                <p>• $2.50 processing fee per transfer</p>
+                                <p>• Funds appear in your PayPal balance</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Crypto Tab -->
-        <div x-show="activeTab === 'crypto'" x-transition class="p-6">
-            <div class="max-w-md mx-auto">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Crypto Withdrawal</h3>
-                
-                <div class="space-y-4">
+        <div x-show="activeTab === 'crypto'" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform translate-x-4"
+             x-transition:enter-end="opacity-100 transform translate-x-0"
+             class="p-6 md:p-8">
+            <div class="max-w-2xl mx-auto">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center mr-4">
+                        <i class="fab fa-bitcoin text-white text-xl"></i>
+                    </div>
                     <div>
-                        <label for="crypto-withdraw-amount" class="block text-sm font-medium text-gray-700">Amount (USD)</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-sm">$</span>
+                        <h3 class="text-xl font-bold text-gray-900">Crypto Withdrawal</h3>
+                        <p class="text-sm text-gray-500">Convert and send to your crypto wallet</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label for="crypto-withdraw-amount" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-dollar-sign text-gray-400 mr-1"></i>Amount (USD)
+                        </label>
+                        <div class="relative rounded-xl shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="text-gray-500 text-lg font-semibold">$</span>
                             </div>
                             <input 
                                 type="number" 
                                 id="crypto-withdraw-amount" 
                                 x-model="withdrawalAmount"
-                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" 
+                                class="focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue block w-full pl-10 pr-16 py-3.5 text-lg font-semibold border-gray-300 rounded-xl transition" 
                                 placeholder="0.00"
                             >
-                            <div class="absolute inset-y-0 right-0 flex items-center">
-                                <span class="text-gray-500 sm:text-sm mr-3">USD</span>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+                                <span class="text-gray-500 text-sm font-medium">USD</span>
                             </div>
                         </div>
                     </div>
                     
                     <div>
-                        <label for="crypto-from" class="block text-sm font-medium text-gray-700">From GECU Account</label>
-                        <select id="crypto-from" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option>Checking</option>
-                            
+                        <label for="crypto-from" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="far fa-credit-card text-gray-400 mr-1"></i>From GECU Account
+                        </label>
+                        <select id="crypto-from" class="block w-full pl-4 pr-10 py-3.5 text-base font-medium border-gray-300 focus:outline-none focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue rounded-xl transition">
+                            <option>Checking Account</option>
                         </select>
                     </div>
                     
                     <div>
-                        <label for="crypto-currency" class="block text-sm font-medium text-gray-700">Cryptocurrency</label>
-                        <select id="crypto-currency" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <label for="crypto-currency" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-coins text-gray-400 mr-1"></i>Cryptocurrency
+                        </label>
+                        <select id="crypto-currency" class="block w-full pl-4 pr-10 py-3.5 text-base font-medium border-gray-300 focus:outline-none focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue rounded-xl transition">
                             <option value="btc">Bitcoin (BTC)</option>
                             <option value="eth">Ethereum (ETH)</option>
                             <option value="usdt">Tether (USDT)</option>
@@ -297,160 +409,235 @@
                     </div>
                     
                     <div>
-                        <label for="crypto-wallet" class="block text-sm font-medium text-gray-700">Wallet Address</label>
+                        <label for="crypto-wallet" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-wallet text-gray-400 mr-1"></i>Wallet Address
+                        </label>
                         <input 
                             type="text" 
                             id="crypto-wallet" 
-                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
+                            class="focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue block w-full px-4 py-3.5 text-base font-mono border-gray-300 rounded-xl transition" 
                             placeholder="Enter your wallet address"
                         >
                     </div>
                     
                     <!-- Fee and Total -->
-                    <div class="bg-gray-50 p-4 rounded-md">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Processing Fee:</span>
-                            <span x-text="'$' + processingFee.toFixed(2)"></span>
-                        </div>
-                        <div class="flex justify-between font-medium mt-1" x-show="withdrawalAmount">
-                            <span>Total Amount:</span>
-                            <span x-text="'$' + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
-                        </div>
-                        <div class="text-xs text-gray-500 mt-2" x-show="withdrawalAmount">
-                            <p>You'll receive approximately: <span x-text="(parseFloat(withdrawalAmount || 0) / 30000"></span> BTC</p>
-                            <p class="mt-1">Rate: 1 BTC ≈ $30,000</p>
+                    <div class="bg-gradient-to-br from-gecu-light to-white p-5 rounded-xl border border-gray-200">
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 font-medium">Withdrawal Amount:</span>
+                                <span class="font-semibold text-gray-900" x-text="withdrawalAmount ? '$' + parseFloat(withdrawalAmount).toFixed(2) : '$0.00'"></span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 font-medium">Processing Fee:</span>
+                                <span class="font-semibold text-gray-900" x-text="'$' + processingFee.toFixed(2)"></span>
+                            </div>
+                            <div class="border-t border-gray-300 pt-3 flex justify-between">
+                                <span class="text-base font-bold text-gray-900">Total to Debit:</span>
+                                <span class="text-lg font-bold text-gecu-navy" x-text="'$' + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
+                            </div>
+                            <div class="text-xs text-gray-600 pt-2 space-y-1" x-show="withdrawalAmount">
+                                <p class="flex justify-between">
+                                    <span>You'll receive approx:</span>
+                                    <span class="font-semibold" x-text="(parseFloat(withdrawalAmount || 0) / 30000).toFixed(8) + ' BTC'"></span>
+                                </p>
+                                <p class="text-gray-500">Rate: 1 BTC ≈ $30,000</p>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="pt-2">
-                <button 
-                    @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
-                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    :disabled="attemptedWithdrawal && !accountVerified"
-                >
-                    <span x-show="!attemptedWithdrawal || accountVerified">Send</span>
-                    <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
-                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Verification Required
-                    </span>
-                </button>
-            </div>
-
+                        <button 
+                            @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
+                            class="w-full flex justify-center items-center py-4 px-6 rounded-xl shadow-lg text-base font-bold text-white bg-gradient-to-r from-gecu-navy to-gecu-blue hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                            :disabled="attemptedWithdrawal && !accountVerified"
+                        >
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            <span x-show="!attemptedWithdrawal || accountVerified">Send Crypto</span>
+                            <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Verification Required
+                            </span>
+                        </button>
+                    </div>
                     
-                    <div class="text-xs text-gray-500 mt-2">
-                        <p>Processing may take 10-30 minutes.</p>
-                        <p class="mt-1">$0.50 network fee + exchange spread.</p>
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-400 mt-0.5 mr-3"></i>
+                            <div class="text-xs text-blue-800 space-y-1">
+                                <p class="font-semibold">Transfer Information:</p>
+                                <p>• Processing may take 10-30 minutes</p>
+                                <p>• $0.50 network fee + exchange spread</p>
+                                <p>• Verify wallet address carefully</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Wire Transfer Tab -->
-        <div x-show="activeTab === 'wire'" x-transition class="p-6">
-            <div class="max-w-md mx-auto">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Wire Transfer</h3>
-                
-                <div class="space-y-4">
+        <div x-show="activeTab === 'wire'" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform translate-x-4"
+             x-transition:enter-end="opacity-100 transform translate-x-0"
+             class="p-6 md:p-8">
+            <div class="max-w-2xl mx-auto">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center mr-4">
+                        <i class="fas fa-exchange-alt text-white text-xl"></i>
+                    </div>
                     <div>
-                        <label for="wire-withdraw-amount" class="block text-sm font-medium text-gray-700">Amount</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-sm">$</span>
+                        <h3 class="text-xl font-bold text-gray-900">Wire Transfer</h3>
+                        <p class="text-sm text-gray-500">Send funds via bank wire transfer</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label for="wire-withdraw-amount" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-dollar-sign text-gray-400 mr-1"></i>Amount
+                        </label>
+                        <div class="relative rounded-xl shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="text-gray-500 text-lg font-semibold">$</span>
                             </div>
                             <input 
                                 type="number" 
                                 id="wire-withdraw-amount" 
                                 x-model="withdrawalAmount"
-                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" 
+                                class="focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue block w-full pl-10 pr-16 py-3.5 text-lg font-semibold border-gray-300 rounded-xl transition" 
                                 placeholder="0.00"
                             >
-                            <div class="absolute inset-y-0 right-0 flex items-center">
-                                <span class="text-gray-500 sm:text-sm mr-3">USD</span>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+                                <span class="text-gray-500 text-sm font-medium">USD</span>
                             </div>
                         </div>
                     </div>
                     
                     <div>
-                        <label for="wire-from" class="block text-sm font-medium text-gray-700">From GECU Account</label>
-                        <select id="wire-from" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option>Checking</option>
-                            
+                        <label for="wire-from" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="far fa-credit-card text-gray-400 mr-1"></i>From GECU Account
+                        </label>
+                        <select id="wire-from" class="block w-full pl-4 pr-10 py-3.5 text-base font-medium border-gray-300 focus:outline-none focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue rounded-xl transition">
+                            <option>Checking Account</option>
                         </select>
                     </div>
                     
                     <div>
-                        <label for="wire-bank-name" class="block text-sm font-medium text-gray-700">Receiving Bank Name</label>
+                        <label for="wire-bank-name" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-university text-gray-400 mr-1"></i>Receiving Bank Name
+                        </label>
                         <input 
                             type="text" 
                             id="wire-bank-name" 
-                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
+                            class="focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue block w-full px-4 py-3.5 text-base border-gray-300 rounded-xl transition" 
                             placeholder="Bank Name"
                         >
                     </div>
                     
-                    <div>
-                        <label for="wire-account" class="block text-sm font-medium text-gray-700">Account Number</label>
-                        <input 
-                            type="text" 
-                            id="wire-account" 
-                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
-                            placeholder="Account Number"
-                        >
-                    </div>
-                    
-                    <div>
-                        <label for="wire-routing" class="block text-sm font-medium text-gray-700">Routing Number</label>
-                        <input 
-                            type="text" 
-                            id="wire-routing" 
-                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2" 
-                            placeholder="Routing Number"
-                        >
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="wire-account" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-hashtag text-gray-400 mr-1"></i>Account Number
+                            </label>
+                            <input 
+                                type="text" 
+                                id="wire-account" 
+                                class="focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue block w-full px-4 py-3.5 text-base font-mono border-gray-300 rounded-xl transition" 
+                                placeholder="Account Number"
+                            >
+                        </div>
+                        
+                        <div>
+                            <label for="wire-routing" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-route text-gray-400 mr-1"></i>Routing Number
+                            </label>
+                            <input 
+                                type="text" 
+                                id="wire-routing" 
+                                class="focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue block w-full px-4 py-3.5 text-base font-mono border-gray-300 rounded-xl transition" 
+                                placeholder="Routing Number"
+                            >
+                        </div>
                     </div>
                     
                     <!-- Fee and Total -->
-                    <div class="bg-gray-50 p-4 rounded-md">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Processing Fee:</span>
-                            <span x-text="'$' + processingFee.toFixed(2)"></span>
-                        </div>
-                        <div class="flex justify-between font-medium mt-1" x-show="withdrawalAmount">
-                            <span>Total Amount:</span>
-                            <span x-text="'$' + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
+                    <div class="bg-gradient-to-br from-gecu-light to-white p-5 rounded-xl border border-gray-200">
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 font-medium">Withdrawal Amount:</span>
+                                <span class="font-semibold text-gray-900" x-text="withdrawalAmount ? '
+                 + parseFloat(withdrawalAmount).toFixed(2) : '$0.00'"></span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 font-medium">Processing Fee:</span>
+                                <span class="font-semibold text-gray-900" x-text="'
+                 + processingFee.toFixed(2)"></span>
+                            </div>
+                            <div class="border-t border-gray-300 pt-3 flex justify-between">
+                                <span class="text-base font-bold text-gray-900">Total to Debit:</span>
+                                <span class="text-lg font-bold text-gecu-navy" x-text="'
+                 + (parseFloat(withdrawalAmount || 0) + processingFee).toFixed(2)"></span>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="pt-2">
-                <button 
-                    @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
-                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    :disabled="attemptedWithdrawal && !accountVerified"
-                >
-                    <span x-show="!attemptedWithdrawal || accountVerified">Initiate Wire Transfer</span>
-                    <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
-                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Verification Required
-                    </span>
-                </button>
-            </div>
-
+                        <button 
+                            @click="if (!accountVerified) { showVerificationModal = true; attemptedWithdrawal = true; }"
+                            class="w-full flex justify-center items-center py-4 px-6 rounded-xl shadow-lg text-base font-bold text-white bg-gradient-to-r from-gecu-navy to-gecu-blue hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                            :disabled="attemptedWithdrawal && !accountVerified"
+                        >
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            <span x-show="!attemptedWithdrawal || accountVerified">Initiate Wire Transfer</span>
+                            <span x-show="attemptedWithdrawal && !accountVerified" class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Verification Required
+                            </span>
+                        </button>
+                    </div>
                     
-                    <div class="text-xs text-gray-500 mt-2">
-                        <p>Domestic wires complete same day if initiated before 3pm ET.</p>
-                        <p class="mt-1">$25.00 processing fee per transfer.</p>
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-400 mt-0.5 mr-3"></i>
+                            <div class="text-xs text-blue-800 space-y-1">
+                                <p class="font-semibold">Transfer Information:</p>
+                                <p>• Domestic wires complete same day if initiated before 3pm ET</p>
+                                <p>• $25.00 processing fee per transfer</p>
+                                <p>• Verify all bank details carefully</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     
+    <!-- Security Notice -->
+    <div class="glass-effect rounded-2xl p-6 border-l-4 border-amber-400">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-amber-600"></i>
+                </div>
+            </div>
+            <div class="ml-4">
+                <h4 class="text-sm font-bold text-gray-900 mb-2">Security Reminder</h4>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    Always verify recipient details before initiating a withdrawal. GECU will never ask for your password or OTP codes. 
+                    Contact <a href="mailto:support@grandelitecreditunion.com" class="text-gecu-blue hover:underline font-semibold">support@grandelitecreditunion.com</a> if you notice any suspicious activity.
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
+
 <style>
     .hide-scrollbar::-webkit-scrollbar {
         display: none;
@@ -463,10 +650,8 @@
 </style>
 
 <script>
-// You might want to fetch the actual verification status from your backend
 document.addEventListener('DOMContentLoaded', function() {
-    // Example of how you might check verification status
-    // In a real app, you'd make an AJAX request to your backend
+    // You might want to fetch the actual verification status from your backend
     // const accountVerified = await checkVerificationStatus();
     // Alpine.store('accountVerified', accountVerified);
 });

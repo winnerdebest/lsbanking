@@ -1,39 +1,74 @@
-    <div id="preloader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-300">
-        <div class="text-center">
-            <div class="flex justify-center mb-6">
-                <div class="relative h-12 w-12">
-                    <div class="absolute inset-0 rounded-full bg-indigo-600 opacity-75 animate-ping"></div>
-                    <div class="relative flex items-center justify-center h-12 w-12 rounded-full bg-indigo-600">
-                        <span class="text-white font-bold text-lg">GECU</span>
+<div id="preloader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+    <div class="text-center">
+        <!-- Simple Elegant Spinner -->
+        <div class="flex justify-center mb-8">
+            <div class="relative w-20 h-20">
+                <!-- Spinning ring -->
+                <div class="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-transparent border-t-blue-600 border-r-indigo-600 rounded-full animate-spin"></div>
+                
+                <!-- Logo in center -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                        <span class="text-white font-bold text-xl">G</span>
                     </div>
                 </div>
             </div>
-            <p class="text-gray-600 font-medium mb-4">Grand Elite Credit Union.</p>
-            
+        </div>
+
+        <!-- Brand Name -->
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">
+            Grand Elite Credit Union
+        </h1>
+        
+        <p class="text-gray-600 font-medium mb-8">
+            Loading your account...
+        </p>
+
+        <!-- Progress Bar -->
+        <div class="w-64 mx-auto">
+            <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                <div id="progress-bar" class="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+            </div>
         </div>
     </div>
-    <script>
-        // Simulate progress bar and hide preloader when page is loaded
-        document.addEventListener("DOMContentLoaded", function() {
-            var progressBar = document.getElementById("progress-bar");
-            var preloader = document.getElementById("preloader");
-            var width = 0;
-            var interval = setInterval(function() {
-                if (width < 90) {
-                    width += Math.random() * 10;
-                    progressBar.style.width = width + "%";
-                }
-            }, 200);
+</div>
 
-            window.addEventListener("load", function() {
-                clearInterval(interval);
-                progressBar.style.width = "100%";
+<script>
+    // Enhanced progress simulation with smooth acceleration
+    document.addEventListener("DOMContentLoaded", function() {
+        var progressBar = document.getElementById("progress-bar");
+        var preloader = document.getElementById("preloader");
+        var width = 0;
+        var increment = 2;
+        
+        var interval = setInterval(function() {
+            if (width < 90) {
+                // Accelerate the progress as it goes
+                increment = 2 + (width / 30);
+                width += Math.random() * increment;
+                
+                // Ensure we don't exceed 90%
+                if (width > 90) width = 90;
+                
+                progressBar.style.width = width + "%";
+            }
+        }, 150);
+
+        window.addEventListener("load", function() {
+            clearInterval(interval);
+            
+            // Smoothly complete the progress bar
+            progressBar.style.width = "100%";
+            
+            // Add a slight delay before fading out
+            setTimeout(function() {
+                preloader.style.opacity = "0";
+                
                 setTimeout(function() {
-                    preloader.style.opacity = "0";
-                    setTimeout(function() {
-                        preloader.style.display = "none";
-                    }, 300);
+                    preloader.style.display = "none";
                 }, 500);
-            });
+            }, 400);
         });
-    </script>
+    });
+</script>

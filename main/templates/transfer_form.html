@@ -4,50 +4,62 @@
 
 {% block content %}
 <div class="py-6 px-4 sm:px-6 lg:px-8">
-    <div x-data="transferApp()" class="max-w-3xl mx-auto">
+    <div x-data="transferApp()" class="max-w-4xl mx-auto">
         {% csrf_token %}
         
-        <!-- Transfer Type Selector - Card Style -->
-        <div class="bg-white rounded-xl shadow-sm mb-8 p-1">
-            <div class="flex space-x-1 bg-gray-50 p-1 rounded-lg">
+        <!-- Transfer Type Selector -->
+        <div class="bg-white rounded-2xl shadow-lg mb-8 p-2 border border-gray-100">
+            <div class="flex space-x-2 bg-gecu-light p-2 rounded-xl">
                 <button @click="transferType = 'internal'" 
-                        class="flex-1 py-3 px-4 text-center font-medium rounded-md transition-all"
-                        :class="{'bg-white shadow-sm text-indigo-600': transferType === 'internal', 'text-gray-500 hover:text-gray-700': transferType !== 'internal'}">
-                    <i class="fas fa-users mr-2"></i> GECU Transfer
+                        class="flex-1 py-4 px-6 text-center font-semibold rounded-xl transition-all transform hover:scale-105"
+                        :class="{'bg-gradient-to-r from-gecu-navy to-gecu-blue text-white shadow-lg': transferType === 'internal', 'text-gray-600 hover:text-gecu-navy': transferType !== 'internal'}">
+                    <i class="fas fa-users text-xl mb-2 block"></i>
+                    <span class="text-sm">GECU Member</span>
                 </button>
                 <button @click="transferType = 'external'" 
-                        class="flex-1 py-3 px-4 text-center font-medium rounded-md transition-all"
-                        :class="{'bg-white shadow-sm text-indigo-600': transferType === 'external', 'text-gray-500 hover:text-gray-700': transferType !== 'external'}">
-                    <i class="fas fa-university mr-2"></i> External Bank
+                        class="flex-1 py-4 px-6 text-center font-semibold rounded-xl transition-all transform hover:scale-105"
+                        :class="{'bg-gradient-to-r from-gecu-navy to-gecu-blue text-white shadow-lg': transferType === 'external', 'text-gray-600 hover:text-gecu-navy': transferType !== 'external'}">
+                    <i class="fas fa-university text-xl mb-2 block"></i>
+                    <span class="text-sm">Other Bank</span>
                 </button>
             </div>
         </div>
 
-
-
         <!-- Internal Transfer Form -->
-        <div x-show="transferType === 'internal'" x-transition class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div class="p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                    <span class="bg-indigo-100 text-indigo-800 p-2 rounded-lg mr-3">
-                        <i class="fas fa-users"></i>
-                    </span>
-                    Transfer to Another Member
-                </h2>
-                
+        <div x-show="transferType === 'internal'" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+            <div class="bg-gradient-to-r from-gecu-navy to-gecu-blue px-6 py-8 text-white">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white bg-opacity-20 rounded-2xl p-4 backdrop-blur-sm">
+                        <i class="fas fa-users text-3xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold">Transfer to GECU Member</h2>
+                        <p class="text-blue-100 text-sm mt-1">Send money instantly to another GECU account</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 md:p-8">
                 <div class="space-y-6">
                     <!-- Source Account -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">From Account</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                            <i class="fas fa-wallet text-gecu-blue mr-2"></i>
+                            From Your Account
+                        </label>
                         <div class="relative">
                             <select x-model="selectedSourceWallet" 
-                                    class="block w-full pl-4 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg">
+                                    class="block w-full pl-4 pr-12 py-4 text-base border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue rounded-xl bg-gray-50 hover:bg-white transition">
                                 <option value="">Select your account</option>
                                 {% for wallet in user_wallets %}
                                 <option value="{{ wallet.id }}">{{ wallet.get_account_type_display }} ••••{{ wallet.account_number|slice:"-4:" }}</option>
                                 {% endfor %}
                             </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
                                 <i class="fas fa-chevron-down text-gray-400"></i>
                             </div>
                         </div>
@@ -55,36 +67,52 @@
                     
                     <!-- Recipient Search -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Send To</label>
-                        <div class="flex rounded-lg shadow-sm">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                            <i class="fas fa-search text-gecu-blue mr-2"></i>
+                            Find Recipient
+                        </label>
+                        <div class="flex rounded-xl shadow-sm overflow-hidden border-2 border-gray-200 focus-within:border-gecu-blue transition">
                             <input type="text" 
                                    x-model="recipientEmail"
                                    @keyup.enter="searchRecipient()"
-                                   class="flex-1 min-w-0 block w-full px-4 py-3 rounded-l-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
-                                   placeholder="Email or account number">
+                                   class="flex-1 min-w-0 block w-full px-4 py-4 border-0 focus:ring-0 bg-gray-50"
+                                   placeholder="Enter email or account number">
                             <button @click="searchRecipient()" 
-                                    class="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                    class="inline-flex items-center px-6 bg-gradient-to-r from-gecu-navy to-gecu-blue text-white font-semibold hover:shadow-lg focus:outline-none transition-all"
                                     :disabled="isLoading">
-                                <span x-show="!isLoading">Search</span>
+                                <span x-show="!isLoading" class="flex items-center">
+                                    <i class="fas fa-search mr-2"></i> Search
+                                </span>
                                 <span x-show="isLoading"><i class="fas fa-spinner fa-spin"></i></span>
                             </button>
                         </div>
                     </div>
 
                     <!-- Recipient Card -->
-                    <div x-show="recipientFound" x-transition class="bg-indigo-50 border border-indigo-100 rounded-lg p-4">
+                    <div x-show="recipientFound" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform translate-y-4"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         class="bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-200 rounded-2xl p-6 shadow-md">
                         <div class="flex items-start">
-                            <div class="bg-indigo-100 text-indigo-600 rounded-full p-2 mr-3">
-                                <i class="fas fa-user"></i>
+                            <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-2xl p-4 mr-4 shadow-lg">
+                                <i class="fas fa-user-check text-2xl"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-medium text-indigo-900 truncate" x-text="recipientName"></h4>
+                                <h4 class="text-lg font-bold text-gray-900 mb-1" x-text="recipientName"></h4>
+                                <p class="text-sm text-gray-600 mb-3">
+                                    <i class="fas fa-check-circle text-green-600 mr-1"></i>
+                                    Verified GECU Member
+                                </p>
                                 
                                 <template x-if="recipientWallets.length > 1">
-                                    <div class="mt-3">
-                                        <label class="block text-xs font-medium text-indigo-700 mb-1">Choose recipient account</label>
+                                    <div class="mt-4">
+                                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                            <i class="fas fa-chevron-right text-xs mr-1"></i>
+                                            Choose recipient account
+                                        </label>
                                         <select x-model="selectedRecipientWallet" 
-                                                class="block w-full pl-3 pr-8 py-2 text-base border-indigo-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md bg-white">
+                                                class="block w-full pl-3 pr-10 py-3 text-sm border-2 border-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 rounded-xl bg-white">
                                             <option value="">Select account</option>
                                             <template x-for="wallet in recipientWallets" :key="wallet.id">
                                                 <option :value="wallet.id" x-text="`${wallet.account_type} ••••${wallet.account_number.slice(-4)}`"></option>
@@ -94,149 +122,273 @@
                                 </template>
                                 
                                 <template x-if="recipientWallets.length === 1">
-                                    <p class="text-sm text-indigo-600 mt-1" 
-                                       x-text="`${recipientWallets[0].account_type} ••••${recipientWallets[0].account_number.slice(-4)}`">
-                                    </p>
+                                    <div class="bg-white bg-opacity-70 rounded-xl px-4 py-2 inline-block">
+                                        <p class="text-sm font-semibold text-gray-700" 
+                                           x-text="`${recipientWallets[0].account_type} ••••${recipientWallets[0].account_number.slice(-4)}`">
+                                        </p>
+                                    </div>
                                 </template>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Amount Input -->
-                    <div x-show="recipientFound" x-transition class="space-y-4">
+                    <!-- Amount & Description -->
+                    <div x-show="recipientFound" 
+                         x-transition:enter="transition ease-out duration-300 delay-100"
+                         x-transition:enter-start="opacity-0 transform translate-y-4"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         class="space-y-6">
+                        <!-- Amount Input -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
-                            <div class="relative rounded-lg shadow-sm">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500">$</span>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                                <i class="fas fa-dollar-sign text-gecu-blue mr-2"></i>
+                                Transfer Amount
+                            </label>
+                            <div class="relative rounded-xl shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 text-xl font-bold">$</span>
                                 </div>
                                 <input type="number" 
                                        x-model="amount"
-                                       class="block w-full pl-8 pr-12 py-3 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" 
+                                       class="block w-full pl-10 pr-20 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue text-2xl font-bold bg-gray-50" 
                                        placeholder="0.00"
                                        step="0.01">
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500">USD</span>
+                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                    <span class="text-gray-400 font-semibold">USD</span>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Description -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                                <i class="fas fa-comment-alt text-gecu-blue mr-2"></i>
+                                What's this for? (Optional)
+                            </label>
                             <input type="text" 
                                    x-model="description"
-                                   class="block w-full px-4 py-3 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" 
-                                   placeholder="e.g. Rent payment, Birthday gift">
+                                   class="block w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue bg-gray-50" 
+                                   placeholder="e.g., Rent payment, Birthday gift, Dinner">
                         </div>
                         
                         <!-- Transfer Button -->
                         <button @click="showConfirmationModal()"
                                 :disabled="isLoading || !selectedSourceWallet || !selectedRecipientWallet || !amount"
-                                class="w-full mt-2 bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed transition-colors">
-                            <span x-show="!isLoading">
-                                <i class="fas fa-paper-plane mr-2"></i> Send Money
+                                class="w-full mt-6 bg-gradient-to-r from-gecu-navy to-gecu-blue text-white py-5 px-6 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-gecu-blue focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 disabled:hover:scale-100">
+                            <span x-show="!isLoading" class="flex items-center justify-center">
+                                <i class="fas fa-paper-plane mr-3"></i> Send Money Now
                             </span>
-                            <span x-show="isLoading">
-                                <i class="fas fa-spinner fa-spin mr-2"></i> Processing...
+                            <span x-show="isLoading" class="flex items-center justify-center">
+                                <i class="fas fa-spinner fa-spin mr-3"></i> Processing...
                             </span>
                         </button>
+                        
+                        <!-- Info Box -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-info-circle text-blue-600 mt-1 mr-3"></i>
+                                <p class="text-sm text-blue-800">
+                                    <span class="font-semibold">Instant Transfer:</span> Money will be available immediately in the recipient's account.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- External Transfer Form -->
-        <div x-show="transferType === 'external'" x-transition class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div class="p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                    <span class="bg-blue-100 text-blue-800 p-2 rounded-lg mr-3">
-                        <i class="fas fa-university"></i>
-                    </span>
-                    Transfer to Other Banks
-                </h2>
-                
-                <div class="space-y-6">
+        <div x-show="transferType === 'external'" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8 text-white">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white bg-opacity-20 rounded-2xl p-4 backdrop-blur-sm">
+                        <i class="fas fa-university text-3xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold">Transfer to Other Banks</h2>
+                        <p class="text-blue-100 text-sm mt-1">Send money to external bank accounts</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 md:p-8">
+                <div class="space-y-6" x-data="{ selectedBank: '', amount: '', isVerified: false, showError: false }">
                     <!-- Bank Selection -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Destination Bank</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                            <i class="fas fa-building text-blue-600 mr-2"></i>
+                            Select Destination Bank
+                        </label>
                         <div class="relative">
                             <select x-model="selectedBank" 
-                                    class="block w-full pl-4 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg">
-                                <option value="">Select bank</option>
+                                    class="block w-full pl-4 pr-12 py-4 text-base border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 rounded-xl bg-gray-50 hover:bg-white transition">
+                                <option value="">Choose a bank</option>
                                 <template x-for="bank in otherBanks" :key="bank.id">
                                     <option :value="bank.id" x-text="bank.name"></option>
                                 </template>
                             </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
                                 <i class="fas fa-chevron-down text-gray-400"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Bank Transfer Form -->
-                    <div x-data="{ selectedBank: false, amount: '', isVerified: false, showError: false }">
-                        <div x-show="selectedBank" x-transition class="space-y-4">
-                            <!-- Account Details -->
-                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Account Number</label>
-                                    <input type="text"
-                                           class="block w-full px-4 py-3 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                                           placeholder="Enter account number">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Routing Number</label>
-                                    <input type="text"
-                                           class="block w-full px-4 py-3 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                                           placeholder="Enter routing number">
-                                </div>
-                            </div>
-
-                            <!-- Recipient Info -->
+                    <div x-show="selectedBank" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform translate-y-4"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         class="space-y-6">
+                        <!-- Account Details -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Recipient Name</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-hashtag text-blue-600 mr-1"></i>
+                                    Account Number
+                                </label>
                                 <input type="text"
-                                       class="block w-full px-4 py-3 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                                       placeholder="Full name as it appears on account">
+                                       class="block w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-gray-50"
+                                       placeholder="Enter account number">
                             </div>
-
-                            <!-- Amount -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
-                                <div class="relative rounded-lg shadow-sm">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span class="text-gray-500">$</span>
-                                    </div>
-                                    <input type="number"
-                                           x-model="amount"
-                                           class="block w-full pl-8 pr-12 py-3 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                                           placeholder="0.00"
-                                           step="0.01">
-                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                        <span class="text-gray-500">USD</span>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-route text-blue-600 mr-1"></i>
+                                    Routing Number
+                                </label>
+                                <input type="text"
+                                       class="block w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-gray-50"
+                                       placeholder="Enter routing number">
+                            </div>
+                        </div>
+
+                        <!-- Recipient Info -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-user text-blue-600 mr-1"></i>
+                                Recipient Full Name
+                            </label>
+                            <input type="text"
+                                   class="block w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-gray-50"
+                                   placeholder="Full name as it appears on account">
+                        </div>
+
+                        <!-- Amount -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                <i class="fas fa-dollar-sign text-blue-600 mr-1"></i>
+                                Transfer Amount
+                            </label>
+                            <div class="relative rounded-xl shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 text-xl font-bold">$</span>
+                                </div>
+                                <input type="number"
+                                       x-model="amount"
+                                       class="block w-full pl-10 pr-20 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-2xl font-bold bg-gray-50"
+                                       placeholder="0.00"
+                                       step="0.01">
+                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                    <span class="text-gray-400 font-semibold">USD</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transfer Button -->
+                        <button 
+                            @click.prevent="if (!isVerified) { showError = true } else { /* submit logic */ }"
+                            class="w-full mt-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-5 px-6 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-600 focus:ring-opacity-50 transition-all transform hover:scale-105">
+                            <i class="fas fa-exchange-alt mr-3"></i> Initiate External Transfer
+                        </button>
+
+                        <!-- Error Alert -->
+                        <template x-if="showError">
+                            <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-exclamation-triangle text-yellow-600 text-xl mt-1 mr-3"></i>
+                                    <div>
+                                        <p class="text-sm font-semibold text-yellow-900 mb-1">Account Verification Required</p>
+                                        <p class="text-sm text-yellow-800">
+                                            Your account needs to be verified for external transfers. Please 
+                                            <a href="mailto:support@grandelitecreditunion.com" class="underline font-semibold hover:text-yellow-900">contact our support team</a> 
+                                            to complete the verification process.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
+                        </template>
 
-                            <!-- Transfer Button -->
-                            <button 
-                                @click.prevent="if (!isVerified) { showError = true } else { /* submit logic here */ }"
-                                class="w-full mt-4 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                                <i class="fas fa-exchange-alt mr-2"></i> Initiate Transfer
-                            </button>
+                        <!-- Info Box -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-clock text-blue-600 mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm font-semibold text-blue-900 mb-1">Processing Time</p>
+                                    <p class="text-sm text-blue-800">External transfers typically take 1-3 business days to complete.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                            <!-- Error -->
-                            <template x-if="showError">
-                                <p class="text-sm text-red-600 mt-2">
-                                    <i class="fas fa-exclamation-triangle mr-1"></i> Account not verified. Please <a href="mailto:support@grandelitecreditunion.com" class="underline text-blue-600 hover:text-blue-800">contact support</a>.
-                                </p>
-                            </template>
+        <!-- Notification Container -->
+        <div class="fixed inset-x-0 top-0 z-50 pointer-events-none">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="space-y-3 pt-4">
+                    <!-- Error Notification -->
+                    <div x-show="errorMessage" 
+                         x-transition:enter="transform ease-out duration-300"
+                         x-transition:enter-start="translate-y-2 opacity-0"
+                         x-transition:enter-end="translate-y-0 opacity-100"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
+                         @click="errorMessage = ''"
+                         class="max-w-md w-full bg-white border-l-4 border-red-500 shadow-2xl rounded-xl pointer-events-auto overflow-hidden">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 bg-red-100 rounded-full p-2">
+                                    <i class="fas fa-exclamation-circle text-red-600 text-lg"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <p class="text-sm font-bold text-gray-900">Transfer Failed</p>
+                                    <p class="mt-1 text-sm text-gray-700" x-text="errorMessage"></p>
+                                </div>
+                                <button @click="errorMessage = ''" class="ml-4 text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-                            <!-- Disclaimer -->
-                            <p class="text-xs text-gray-500 mt-4">
-                                <i class="fas fa-info-circle mr-1"></i> External transfers typically take 1-3 business days to complete.
-                            </p>
+                    <!-- Success Notification -->
+                    <div x-show="successMessage" 
+                         x-transition:enter="transform ease-out duration-300"
+                         x-transition:enter-start="translate-y-2 opacity-0"
+                         x-transition:enter-end="translate-y-0 opacity-100"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
+                         @click="successMessage = ''"
+                         class="max-w-md w-full bg-white border-l-4 border-green-500 shadow-2xl rounded-xl pointer-events-auto overflow-hidden">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 bg-green-100 rounded-full p-2">
+                                    <i class="fas fa-check-circle text-green-600 text-lg"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <p class="text-sm font-bold text-gray-900">Transfer Successful!</p>
+                                    <p class="mt-1 text-sm text-gray-700" x-text="successMessage"></p>
+                                </div>
+                                <button @click="successMessage = ''" class="ml-4 text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -245,73 +397,7 @@
 
         <!-- Confirmation Modal -->
         <div x-show="showModal" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                    <!-- Notification Container (fixed at top of screen) -->
-<div class="fixed inset-x-0 top-0 z-50 pointer-events-none">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="space-y-2 pt-4">
-            <!-- Error Notification -->
-            <div x-show="errorMessage" 
-                 x-transition:enter="transform ease-out duration-300 transition"
-                 x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-                 x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
-                 x-transition:leave="transition ease-in duration-100"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
-                 @click.away="errorMessage = ''"
-                 x-init="setTimeout(() => errorMessage = '', 5000)"
-                 class="max-w-sm w-full bg-red-50 border border-red-100 shadow-lg rounded-lg pointer-events-auto overflow-hidden">
-                <div class="p-4">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-exclamation-circle text-red-500"></i>
-                        </div>
-                        <div class="ml-3 w-0 flex-1 pt-0.5">
-                            <p class="text-sm font-medium text-red-800">Transfer issue</p>
-                            <p class="mt-1 text-sm text-red-700" x-text="errorMessage"></p>
-                        </div>
-                        <div class="ml-4 flex-shrink-0 flex">
-                            <button @click="errorMessage = ''" class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <span class="sr-only">Close</span>
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Success Notification -->
-            <div x-show="successMessage" 
-                 x-transition:enter="transform ease-out duration-300 transition"
-                 x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-                 x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
-                 x-transition:leave="transition ease-in duration-100"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
-                 @click.away="successMessage = ''"
-                 x-init="setTimeout(() => successMessage = '', 5000)"
-                 class="max-w-sm w-full bg-green-50 border border-green-100 shadow-lg rounded-lg pointer-events-auto overflow-hidden">
-                <div class="p-4">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                        </div>
-                        <div class="ml-3 w-0 flex-1 pt-0.5">
-                            <p class="text-sm font-medium text-green-800">Transfer successful</p>
-                            <p class="mt-1 text-sm text-green-700" x-text="successMessage"></p>
-                        </div>
-                        <div class="ml-4 flex-shrink-0 flex">
-                            <button @click="successMessage = ''" class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <span class="sr-only">Close</span>
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <!-- Background overlay -->
                 <div x-show="showModal" 
                      x-transition:enter="ease-out duration-300" 
@@ -320,7 +406,7 @@
                      x-transition:leave="ease-in duration-200" 
                      x-transition:leave-start="opacity-100" 
                      x-transition:leave-end="opacity-0" 
-                     class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+                     class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm" 
                      aria-hidden="true"></div>
 
                 <!-- Modal panel -->
@@ -331,73 +417,96 @@
                      x-transition:leave="ease-in duration-200" 
                      x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
                      x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
-                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start">
-                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
-                                <i class="fas fa-lock text-indigo-600"></i>
+                     class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-gecu-navy to-gecu-blue px-6 py-6">
+                        <div class="flex items-center">
+                            <div class="bg-white bg-opacity-20 rounded-xl p-3 mr-4">
+                                <i class="fas fa-shield-alt text-white text-2xl"></i>
                             </div>
-                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                                    Confirm Transfer
-                                </h3>
-                                <div class="mt-4">
-                                    <div class="bg-gray-50 p-4 rounded-lg">
-                                        <div class="grid grid-cols-2 gap-4 mb-4">
-                                            <div>
-                                                <p class="text-sm text-gray-500">From Account</p>
-                                                <p class="font-medium" x-text="getWalletName(selectedSourceWallet)"></p>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm text-gray-500">To Account</p>
-                                                <p class="font-medium" x-text="getRecipientWalletName(selectedRecipientWallet)"></p>
-                                            </div>
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <p class="text-sm text-gray-500">Amount</p>
-                                                <p class="font-medium" x-text="'$' + amount"></p>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm text-gray-500">Description</p>
-                                                <p class="font-medium" x-text="description"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-6">
-                                        <label for="pin" class="block text-sm font-medium text-gray-700">Enter your transaction PIN</label>
-                                        <div class="mt-1 relative rounded-md shadow-sm">
-                                            <input x-model="pin" 
-                                                   id="pin" 
-                                                   type="password" 
-                                                   maxlength="4" 
-                                                   inputmode="numeric" 
-                                                   pattern="[0-9]*"
-                                                   class="block w-full pr-10 py-3 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" 
-                                                   placeholder="••••">
-                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                                <i class="fas fa-key text-gray-400"></i>
-                                            </div>
-                                        </div>
-                                        <p class="mt-2 text-sm text-gray-500">Enter your 4-digit transaction PIN to confirm this transfer</p>
-                                    </div>
-                                </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">Confirm Transfer</h3>
+                                <p class="text-blue-100 text-sm mt-1">Review and authorize your transaction</p>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+
+                    <!-- Content -->
+                    <div class="px-6 py-6">
+                        <!-- Transfer Details -->
+                        <div class="bg-gecu-light rounded-xl p-5 mb-6">
+                            <h4 class="text-sm font-semibold text-gray-700 mb-4 flex items-center">
+                                <i class="fas fa-clipboard-list text-gecu-blue mr-2"></i>
+                                Transfer Details
+                            </h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm text-gray-600">From Account</span>
+                                    <span class="text-sm font-semibold text-gray-900 text-right" x-text="getWalletName(selectedSourceWallet)"></span>
+                                </div>
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm text-gray-600">To Account</span>
+                                    <span class="text-sm font-semibold text-gray-900 text-right" x-text="getRecipientWalletName(selectedRecipientWallet)"></span>
+                                </div>
+                                <div class="border-t border-gray-300 pt-3 mt-3"></div>
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm text-gray-600">Amount</span>
+                                    <span class="text-xl font-bold text-gecu-navy" x-text="'$' + amount"></span>
+                                </div>
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm text-gray-600">Description</span>
+                                    <span class="text-sm font-medium text-gray-700 text-right" x-text="description || 'No description'"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PIN Input -->
+                        <div>
+                            <label for="pin" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                <i class="fas fa-key text-gecu-blue mr-2"></i>
+                                Enter Transaction PIN
+                            </label>
+                            <div class="relative">
+                                <input x-model="pin" 
+                                       id="pin" 
+                                       type="password" 
+                                       maxlength="4" 
+                                       inputmode="numeric" 
+                                       pattern="[0-9]*"
+                                       class="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-gecu-blue focus:border-gecu-blue text-center text-2xl font-bold tracking-widest" 
+                                       placeholder="••••">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-gray-400"></i>
+                                </div>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500 flex items-center">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Enter your 4-digit transaction PIN to authorize this transfer
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Footer Actions -->
+                    <div class="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end space-y-3 space-y-reverse sm:space-y-0 sm:space-x-3">
+                        <button @click="showModal = false" 
+                                type="button" 
+                                class="w-full sm:w-auto inline-flex justify-center items-center rounded-xl border-2 border-gray-300 px-6 py-3 bg-white text-base font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition">
+                            <i class="fas fa-times mr-2"></i>
+                            Cancel
+                        </button>
                         <button @click="processTransfer()" 
                                 :disabled="!pin || pin.length !== 4 || isProcessing"
                                 type="button" 
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-70 disabled:cursor-not-allowed">
-                            <span x-show="!isProcessing">Confirm Transfer</span>
-                            <span x-show="isProcessing"><i class="fas fa-spinner fa-spin mr-1"></i> Processing...</span>
-                        </button>
-                        <button @click="showModal = false" 
-                                type="button" 
-                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Cancel
+                                class="w-full sm:w-auto inline-flex justify-center items-center rounded-xl border border-transparent px-6 py-3 bg-gradient-to-r from-gecu-navy to-gecu-blue text-base font-bold text-white hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 disabled:hover:scale-100">
+                            <span x-show="!isProcessing" class="flex items-center">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                Confirm Transfer
+                            </span>
+                            <span x-show="isProcessing" class="flex items-center">
+                                <i class="fas fa-spinner fa-spin mr-2"></i>
+                                Processing...
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -557,14 +666,18 @@ function transferApp() {
                 if (data.success) {
                     this.successMessage = data.message;
                     this.showModal = false;
-                    window.location.href = `/transactions/${data.transaction_id}/`;
+                    setTimeout(() => {
+                        window.location.href = `/transactions/${data.transaction_id}/`;
+                    }, 1500);
                 } else {
                     this.errorMessage = data.message;
+                    this.showModal = false;
                 }
             })
             .catch(error => {
                 this.isProcessing = false;
                 this.errorMessage = 'An error occurred during the transfer';
+                this.showModal = false;
                 console.error('Transfer error:', error);
             });
         }

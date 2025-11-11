@@ -4,17 +4,17 @@
 {% block content %}
 <div class="py-2 md:py-4">
    <!-- User Profile Header -->
-<div class="bg-white shadow-sm py-4 px-4 md:px-6 mb-6 rounded-lg">
-    <div class="flex items-center justify-between">
+<div class="bg-white shadow-lg rounded-2xl py-6 px-4 md:px-6 mb-6 border border-gray-100">
+    <div class="flex items-center justify-between flex-wrap gap-4">
         <div class="flex items-center space-x-4">
             <!-- Profile Picture -->
             {% if request.user.profile_picture %}
                 <img src="{{ request.user.profile_picture.url }}" 
                      alt="Profile Picture" 
-                     class="h-12 w-12 rounded-full object-cover border-2 border-indigo-100">
+                     class="h-14 w-14 rounded-full object-cover border-3 border-gecu-blue shadow-md">
             {% else %}
-                <div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center border-2 border-indigo-100">
-                    <span class="text-gray-500 text-xl font-medium">
+                <div class="h-14 w-14 rounded-full bg-gradient-to-r from-gecu-navy to-gecu-blue flex items-center justify-center shadow-md">
+                    <span class="text-white text-xl font-bold">
                         {{ request.user.full_name|default:"M"|first|upper }}
                     </span>
                 </div>
@@ -22,51 +22,45 @@
 
             <!-- User Info -->
             <div>
-                <h2 class="font-semibold text-gray-900 text-lg">
-                    Welcome, {{ request.user.full_name|default:"Member" }}
+                <h2 class="font-bold text-gray-900 text-lg md:text-xl">
+                    Welcome back, {{ request.user.full_name|default:"Member" }}!
                 </h2>
-                <p class="text-xs text-gray-500 mt-1">
+                <p class="text-xs text-gray-500 mt-1 flex items-center">
+                    <i class="fas fa-clock mr-1"></i>
                     Last login: {{ last_login_time|default:"Recently" }}
                 </p>
                 
                 <!-- KYC Status Badge -->
                 {% if not request.user.kyc %}
-                    <div class="mt-1 text-xs text-red-700 bg-red-50 rounded-full px-3 py-1 inline-flex items-center">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                        </svg>
-                        KYC Needed: Please complete verification
+                    <div class="mt-2 text-xs text-red-700 bg-red-50 rounded-full px-3 py-1.5 inline-flex items-center border border-red-200">
+                        <i class="fas fa-exclamation-triangle mr-1.5"></i>
+                        KYC Required
                     </div>
                 {% elif request.user.kyc_status == "pending" %}
-                    <div class="mt-1 text-xs text-yellow-700 bg-yellow-50 rounded-full px-3 py-1 inline-flex items-center">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                        </svg>
-                        KYC Pending: Under review
+                    <div class="mt-2 text-xs text-yellow-700 bg-yellow-50 rounded-full px-3 py-1.5 inline-flex items-center border border-yellow-200">
+                        <i class="fas fa-hourglass-half mr-1.5"></i>
+                        KYC Pending
                     </div>
                 {% elif request.user.kyc_status == "approved" %}
-                    <div class="mt-1 text-xs text-green-700 bg-green-50 rounded-full px-3 py-1 inline-flex items-center">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                        </svg>
-                        KYC Approved: Account verified
+                    <div class="mt-2 text-xs text-green-700 bg-green-50 rounded-full px-3 py-1.5 inline-flex items-center border border-green-200">
+                        <i class="fas fa-check-circle mr-1.5"></i>
+                        Verified Account
                     </div>
                 {% elif request.user.kyc_status == "rejected" %}
-                    <div class="mt-1 text-xs text-red-700 bg-red-50 rounded-full px-3 py-1 inline-flex items-center">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                        </svg>
-                        KYC Rejected: Please resubmit
+                    <div class="mt-2 text-xs text-red-700 bg-red-50 rounded-full px-3 py-1.5 inline-flex items-center border border-red-200">
+                        <i class="fas fa-times-circle mr-1.5"></i>
+                        KYC Rejected
                     </div>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Optional: Action Button -->
+        <!-- Action Button -->
         <div>
             {% if not request.user.kyc or request.user.kyc_status == "rejected" %}
                 <a href="{% url 'kyc_verification' %}" 
-                   class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                   class="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-full shadow-lg text-white bg-gradient-to-r from-gecu-navy to-gecu-blue hover:shadow-xl transition-all transform hover:scale-105">
+                    <i class="fas fa-shield-alt mr-2"></i>
                     Complete KYC
                 </a>
             {% endif %}
@@ -74,73 +68,79 @@
     </div>
 </div>
 
-    <!-- Swipeable Account Cards - Fixed Version -->
+    <!-- Swipeable Account Cards -->
     <div class="relative mb-6 px-2" id="wallets-container">
-        <div class="account-carousel flex overflow-x-auto space-x-4 py-2 px-2 hide-scrollbar" id="wallets-carousel">
+        <div class="account-carousel flex overflow-x-auto space-x-4 py-4 px-2 hide-scrollbar" id="wallets-carousel">
             {% for wallet in wallets_json %}
-            <div class="relative account-card flex-shrink-0 w-64 rounded-xl shadow-lg wallet-card"
+            <div class="relative account-card flex-shrink-0 w-72 md:w-80 wallet-card shadow-2xl"
                  data-index="{{ forloop.counter0 }}"
                  data-number="{{ wallet.number }}"
                  data-active="{{ wallet.is_active|yesno:'true,false' }}"
-                 style="{% if wallet.is_active %}{% else %}opacity: 0.6;{% endif %}">
+                 style="{% if not wallet.is_active %}opacity: 0.7;{% endif %}">
                 
-                <!-- Background gradient - moved to inner div -->
-                <div class="absolute inset-0 rounded-xl overflow-hidden 
-                    {% if wallet.type == 'checking' %}bg-gradient-to-r from-blue-500 to-blue-600
-                    {% elif wallet.type == 'savings' %}bg-gradient-to-r from-green-500 to-green-600
-                    {% else %}bg-gradient-to-r from-purple-500 to-purple-600{% endif %}">
+                <!-- Background gradient -->
+                <div class="absolute inset-0 rounded-2xl overflow-hidden 
+                    {% if wallet.type == 'checking' %}bg-gradient-to-br from-gecu-navy via-gecu-blue to-gecu-navy
+                    {% elif wallet.type == 'savings' %}bg-gradient-to-br from-green-600 via-green-500 to-green-600
+                    {% else %}bg-gradient-to-br from-purple-600 via-purple-500 to-purple-600{% endif %}">
+                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
+                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
                 </div>
 
                 {% if not wallet.is_active %}
-                <div class="absolute inset-0 z-50 bg-black bg-opacity-95 text-white flex flex-col items-center justify-center p-6 rounded-xl border-4 border-red-500">
-                    <p class="text-xl font-extrabold text-center tracking-wide">🚫 Account Frozen</p>
-                    <p class="text-sm text-center mt-3">Account was frozen cause of some unusual activities.</p>
-                    <p class="text-xs text-center mt-2">
-                        Contact <a href="mailto:support@grandelitecreditunion.com" class="underline hover:text-red-300">support@grandelitecreditunion.com</a>
-                    </p>
+                <div class="absolute inset-0 z-50 bg-gray-900 bg-opacity-95 text-white flex flex-col items-center justify-center p-6 rounded-2xl border-4 border-red-500">
+                    <i class="fas fa-lock text-5xl mb-4 text-red-500"></i>
+                    <p class="text-xl font-bold mb-3">Account Frozen</p>
+                    <p class="text-sm text-gray-300 mb-4 text-center">Unusual activity detected</p>
+                    <a href="mailto:support@grandelitecreditunion.com" 
+                       class="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-full">
+                        Contact Support
+                    </a>
                 </div>
                 {% endif %}
 
                 <!-- Card content -->
-                <div class="relative z-20 p-4 text-white h-full flex flex-col">
-                    <div class="flex justify-between items-start mb-6">
+                <div class="relative z-20 p-6 text-white h-full flex flex-col min-h-[200px]">
+                    <div class="flex justify-between items-start mb-8">
                         <div>
-                            <h3 class="font-medium">{{ wallet.name }}</h3>
-                            <p class="text-sm opacity-80 mt-1 wallet-number">
-                                <span class="partial-number">••••• ••••• </span>
-                                <!--<span class="last-four">{{ wallet.number|slice:"-4:" }}</span>-->
+                            <p class="text-xs uppercase tracking-wider opacity-80 mb-1">{{ wallet.type }}</p>
+                            <h3 class="font-bold text-lg">{{ wallet.name }}</h3>
+                            <p class="text-sm opacity-90 mt-2 wallet-number font-mono">
+                                <span class="partial-number">•••• •••• •••• </span>
                                 <span class="full-number hidden">{{ wallet.number }}</span>
                             </p>
                         </div>
-                        <div class="bg-white bg-opacity-20 rounded-full p-2">
-                            <i class="fas 
-                                {% if wallet.type == 'checking' %}fa-money-bill-wave
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <i class="fas text-lg
+                                {% if wallet.type == 'checking' %}fa-credit-card
                                 {% elif wallet.type == 'savings' %}fa-piggy-bank
                                 {% else %}fa-chart-line{% endif %}"></i>
                         </div>
                     </div>
-                    <div class="mt-4">
-                        <p class="text-2xl font-bold">{{ wallet.balance }}</p>
-                        <p class="text-xs opacity-80 mt-1">{{ wallet.trend }}</p>
-                    </div>
                     <div class="mt-auto">
+                        <p class="text-xs uppercase tracking-wider opacity-80 mb-1">Available Balance</p>
+                        <p class="text-3xl font-bold mb-1">{{ wallet.balance }}</p>
+                        <p class="text-xs opacity-80">{{ wallet.trend }}</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-white border-opacity-20">
                         <div class="flex justify-between items-center">
                             <div class="relative">
-                                <button class="text-xs font-mono toggle-number-btn">
-                                    <span class="show-text">Show Full Number</span>
-                                    <span class="hide-text hidden">Hide Number</span>
+                                <button class="text-xs font-medium toggle-number-btn flex items-center space-x-1">
+                                    <i class="fas fa-eye show-icon"></i>
+                                    <i class="fas fa-eye-slash hide-icon hidden"></i>
+                                    <span class="show-text">Show</span>
+                                    <span class="hide-text hidden">Hide</span>
                                 </button>
-                                <div class="copied-message absolute -top-6 left-0 bg-white text-gray-800 text-xs px-2 py-1 rounded hidden">
+                                <div class="copied-message absolute -top-8 left-0 bg-white text-gray-800 text-xs px-3 py-1 rounded shadow-lg hidden">
                                     Copied!
                                 </div>
                             </div>
                             <div class="flex space-x-2">
-                                <button class="copy-btn bg-white bg-opacity-20 rounded-full p-1"
-                                        title="Copy account number">
-                                    <i class="fas fa-copy text-xs"></i>
+                                <button class="copy-btn bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2" title="Copy number">
+                                    <i class="fas fa-copy text-sm"></i>
                                 </button>
-                                <button class="bg-white bg-opacity-20 rounded-full p-1">
-                                    <i class="fas fa-ellipsis-h text-xs"></i>
+                                <button class="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2">
+                                    <i class="fas fa-ellipsis-h text-sm"></i>
                                 </button>
                             </div>
                         </div>
@@ -150,76 +150,78 @@
             {% endfor %}
         </div>
         <!-- Dots indicator -->
-        <div class="flex justify-center mt-2 space-x-1" id="wallets-dots">
+        <div class="flex justify-center mt-4 space-x-2" id="wallets-dots">
             {% for wallet in wallets_json %}
-            <button class="w-2 h-2 rounded-full wallet-dot {% if forloop.first %}bg-indigo-600{% else %}bg-gray-300{% endif %}"
+            <button class="h-2.5 rounded-full wallet-dot transition-all {% if forloop.first %}bg-gecu-navy w-8{% else %}bg-gray-300 w-2.5{% endif %}"
                     data-index="{{ forloop.counter0 }}"></button>
             {% endfor %}
         </div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="grid grid-cols-4 gap-2 mb-4 px-2">
-        <a href="{% url 'transfer' %}" class="bg-white rounded-lg shadow p-3 flex flex-col items-center">
-            <div class="bg-indigo-100 text-indigo-600 rounded-full p-2 mb-2">
-                <i class="fas fa-paper-plane"></i>
+    <div class="grid grid-cols-4 gap-3 mb-6 px-2">
+        <a href="{% url 'transfer' %}" class="bg-white rounded-2xl shadow-md hover:shadow-xl p-4 flex flex-col items-center card-hover">
+            <div class="bg-gradient-to-br from-gecu-navy to-gecu-blue text-white rounded-2xl p-3 mb-3">
+                <i class="fas fa-paper-plane text-lg"></i>
             </div>
-            <span class="text-xs font-medium">Transfer</span>
+            <span class="text-xs font-semibold text-gray-700">Transfer</span>
         </a>
-        <a href="{% url 'deposit' %}" class="bg-white rounded-lg shadow p-3 flex flex-col items-center">
-            <div class="bg-green-100 text-green-600 rounded-full p-2 mb-2">
-                <i class="fas fa-money-bill-wave"></i>
+        <a href="{% url 'deposit' %}" class="bg-white rounded-2xl shadow-md hover:shadow-xl p-4 flex flex-col items-center card-hover">
+            <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-2xl p-3 mb-3">
+                <i class="fas fa-money-bill-wave text-lg"></i>
             </div>
-            <span class="text-xs font-medium">Deposit</span>
+            <span class="text-xs font-semibold text-gray-700">Deposit</span>
         </a>
-        <a href="{% url 'withdrawals' %}" class="bg-white rounded-lg shadow p-3 flex flex-col items-center">
-            <div class="bg-blue-100 text-blue-600 rounded-full p-2 mb-2">
-                <i class="fas fa-wallet"></i>
+        <a href="{% url 'withdrawals' %}" class="bg-white rounded-2xl shadow-md hover:shadow-xl p-4 flex flex-col items-center card-hover">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-3 mb-3">
+                <i class="fas fa-wallet text-lg"></i>
             </div>
-            <span class="text-xs font-medium">Withdraw</span>
+            <span class="text-xs font-semibold text-gray-700">Withdraw</span>
         </a>
-        <a href="{% url 'loans' %}" class="bg-white rounded-lg shadow p-3 flex flex-col items-center">
-            <div class="bg-purple-100 text-purple-600 rounded-full p-2 mb-2">
-                <i class="fas fa-hand-holding-usd"></i>
+        <a href="{% url 'loans' %}" class="bg-white rounded-2xl shadow-md hover:shadow-xl p-4 flex flex-col items-center card-hover">
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl p-3 mb-3">
+                <i class="fas fa-hand-holding-usd text-lg"></i>
             </div>
-            <span class="text-xs font-medium">Loans</span>
+            <span class="text-xs font-semibold text-gray-700">Loans</span>
         </a>
     </div>
 
     <!-- Recent Transactions -->
-    <div class="bg-white rounded-xl shadow overflow-hidden">
-        <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
-            <h3 class="text-lg font-medium">Recent Transactions</h3>
-            <a href="{% url 'transactions' %}" class="text-indigo-600 text-sm font-medium">See All</a>
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="px-6 py-4 bg-gradient-to-r from-gecu-navy to-gecu-blue text-white flex justify-between items-center">
+            <h3 class="text-lg font-bold">Recent Transactions</h3>
+            <a href="{% url 'transactions' %}" class="text-white text-sm font-semibold bg-white bg-opacity-20 px-4 py-1.5 rounded-full hover:bg-opacity-30 transition">
+                See All
+            </a>
         </div>
         <div class="divide-y divide-gray-200">
             {% for transaction in recent_transactions %}
-            <div class="px-4 py-3">
+            <div class="px-6 py-4 hover:bg-gray-50 transition">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                        <div class="{% if transaction.transaction_type == 'DEBIT' %}bg-red-100 text-red-600{% else %}bg-green-100 text-green-600{% endif %} rounded-full p-2 mr-3">
-                            <i class="fas 
-                                {% if transaction.transaction_type == 'DEBIT' %}fa-arrow-down{% else %}fa-arrow-up{% endif %}"></i>
+                        <div class="{% if transaction.transaction_type == 'DEBIT' %}bg-red-100 text-red-600{% else %}bg-green-100 text-green-600{% endif %} rounded-xl p-3 mr-4">
+                            <i class="fas {% if transaction.transaction_type == 'DEBIT' %}fa-arrow-down{% else %}fa-arrow-up{% endif %} text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="font-medium">{{ transaction.description }}</h4>
-                            <p class="text-sm text-gray-500">
+                            <h4 class="font-semibold text-gray-900">{{ transaction.description }}</h4>
+                            <p class="text-sm text-gray-500 mt-1">
                                 {{ transaction.created_at|date:"M d, h:i A" }} • 
-                                {{ transaction.wallet.get_account_type_display }} ****{{ transaction.wallet.account_number|slice:"-4:" }}
+                                {{ transaction.wallet.get_account_type_display }} ••••{{ transaction.wallet.account_number|slice:"-4:" }}
                             </p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="font-semibold {% if transaction.transaction_type == 'DEBIT' %}text-red-600{% else %}text-green-600{% endif %}">
+                        <p class="font-bold text-lg {% if transaction.transaction_type == 'DEBIT' %}text-red-600{% else %}text-green-600{% endif %}">
                             {% if transaction.transaction_type == 'DEBIT' %}-{% else %}+{% endif %}${{ transaction.amount|floatformat:2 }}
                         </p>
-                        <p class="text-xs text-gray-500">{{ transaction.get_status_display }}</p>
+                        <p class="text-xs text-gray-500 mt-1">{{ transaction.get_status_display }}</p>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <div class="px-4 py-6 text-center text-gray-500">
-                No recent transactions
+            <div class="px-6 py-12 text-center">
+                <i class="fas fa-receipt text-4xl text-gray-300 mb-4"></i>
+                <p class="text-gray-500">No recent transactions</p>
             </div>
             {% endfor %}
         </div>
@@ -245,6 +247,12 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-4px);
+    }
 </style>
 
 <script>
@@ -253,20 +261,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const dots = document.querySelectorAll('.wallet-dot');
     let currentIndex = 0;
     
-    // Initialize carousel dots
     function updateDots(index) {
         dots.forEach((dot, i) => {
             if (i === index) {
-                dot.classList.remove('bg-gray-300');
-                dot.classList.add('bg-indigo-600');
+                dot.classList.remove('bg-gray-300', 'w-2.5');
+                dot.classList.add('bg-gecu-navy', 'w-8');
             } else {
-                dot.classList.remove('bg-indigo-600');
-                dot.classList.add('bg-gray-300');
+                dot.classList.remove('bg-gecu-navy', 'w-8');
+                dot.classList.add('bg-gray-300', 'w-2.5');
             }
         });
     }
     
-    // Handle dot clicks
     dots.forEach(dot => {
         dot.addEventListener('click', function() {
             const index = parseInt(this.getAttribute('data-index'));
@@ -276,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Scroll to specific card
     function scrollToCard(index) {
         const cards = document.querySelectorAll('.wallet-card');
         if (cards[index]) {
@@ -288,7 +293,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Handle scroll events to update dots
     carousel.addEventListener('scroll', function() {
         const cards = document.querySelectorAll('.wallet-card');
         let closestCard = null;
@@ -310,21 +314,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Toggle full account number visibility
     document.querySelectorAll('.toggle-number-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const card = this.closest('.wallet-card');
+            const showIcon = card.querySelector('.show-icon');
+            const hideIcon = card.querySelector('.hide-icon');
             const showText = card.querySelector('.show-text');
             const hideText = card.querySelector('.hide-text');
             const partialNumber = card.querySelector('.partial-number');
             const fullNumber = card.querySelector('.full-number');
             
-            if (showText.classList.contains('hidden')) {
+            if (showIcon.classList.contains('hidden')) {
+                showIcon.classList.remove('hidden');
+                hideIcon.classList.add('hidden');
                 showText.classList.remove('hidden');
                 hideText.classList.add('hidden');
                 partialNumber.classList.remove('hidden');
                 fullNumber.classList.add('hidden');
             } else {
+                showIcon.classList.add('hidden');
+                hideIcon.classList.remove('hidden');
                 showText.classList.add('hidden');
                 hideText.classList.remove('hidden');
                 partialNumber.classList.add('hidden');
@@ -333,7 +342,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Copy account number to clipboard
     document.querySelectorAll('.copy-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const card = this.closest('.wallet-card');

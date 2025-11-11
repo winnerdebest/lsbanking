@@ -4,521 +4,633 @@
 {% block header %}Account Settings{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <!-- Profile Information Section -->
-    <div class="bg-white shadow rounded-lg overflow-hidden" x-data="{ editingProfile: false }">
-        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-            <h3 class="text-lg font-medium leading-6 text-gray-900">Profile Information</h3>
-            <p class="mt-1 text-sm text-gray-500">Manage your personal details and contact information</p>
-        </div>
-        <div class="px-4 py-5 sm:p-6">
-            <div x-show="!editingProfile">
-                <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-
-                    <!-- Profile Picture -->
-                    <div class="sm:col-span-6 flex items-center space-x-4">
-                        {% if request.user.profile_picture %}
-                            <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture" class="h-16 w-16 rounded-full object-cover">
+<div class="space-y-4 md:space-y-6">
+    <!-- Quick Stats - Mobile Optimized -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
+        <div class="bg-white rounded-xl shadow-sm p-3 md:p-5 border-l-4 border-gecu-blue">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs md:text-sm font-medium text-gray-500">Status</p>
+                    <p class="text-sm md:text-lg font-bold text-gray-900 mt-1">
+                        {% if request.user.kyc and request.user.kyc.status == 'approved' %}
+                            Verified
                         {% else %}
-                            <div class="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                                <span class="text-sm">N/A</span>
-                            </div>
+                            Unverified
                         {% endif %}
-                        <div>
-                            <p class="text-sm font-medium text-gray-700">Profile Picture</p>
-                            <p class="text-xs text-gray-500">Displayed in your account header.</p>
-                        </div>
-                    </div>
+                    </p>
+                </div>
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user-check text-gecu-blue text-sm md:text-base"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-3 md:p-5 border-l-4 border-green-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs md:text-sm font-medium text-gray-500">Security</p>
+                    <p class="text-sm md:text-lg font-bold text-gray-900 mt-1">
+                        {% if request.user.transaction_pin %}High{% else %}Medium{% endif %}
+                    </p>
+                </div>
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-green-50 rounded-full flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-green-500 text-sm md:text-base"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-3 md:p-5 border-l-4 border-purple-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs md:text-sm font-medium text-gray-500">Member</p>
+                    <p class="text-sm md:text-lg font-bold text-gray-900 mt-1">
+                        {{ request.user.date_joined|date:"M Y"|default:"N/A" }}
+                    </p>
+                </div>
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-purple-50 rounded-full flex items-center justify-center">
+                    <i class="fas fa-calendar-alt text-purple-500 text-sm md:text-base"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-3 md:p-5 border-l-4 border-orange-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs md:text-sm font-medium text-gray-500">Last Login</p>
+                    <p class="text-sm md:text-lg font-bold text-gray-900 mt-1">
+                        {{ request.user.last_login|date:"M d"|default:"N/A" }}
+                    </p>
+                </div>
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-orange-50 rounded-full flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt text-orange-500 text-sm md:text-base"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <!-- KYC Not Yet Done Status -->
+    <div class="grid lg:grid-cols-3 gap-4 md:gap-6">
+        <!-- Left Column - Profile & Security -->
+        <div class="lg:col-span-2 space-y-4 md:space-y-6">
+            <!-- Profile Information Section -->
+            <div class="bg-white shadow-lg rounded-2xl overflow-hidden" x-data="{ editingProfile: false }">
+                <div class="px-4 md:px-6 py-4 md:py-5 border-b border-gray-200 flex justify-between items-center">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg md:text-xl font-semibold text-gray-900 truncate">Profile Information</h3>
+                        <p class="mt-1 text-xs md:text-sm text-gray-500 truncate">Manage your personal details and contact information</p>
+                    </div>
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-gecu-blue to-gecu-navy rounded-full flex items-center justify-center flex-shrink-0 ml-3">
+                        <i class="fas fa-user text-white text-sm md:text-base"></i>
+                    </div>
+                </div>
                 
-                    <div class="sm:col-span-6">
+                <div class="p-4 md:p-6">
+                    <!-- KYC Status Banner -->
+                    <div class="mb-4 md:mb-6">
                         {% if request.user.kyc %}
                             {% if request.user.kyc.status == 'pending' %}
-                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center space-x-3">
-                                    <i class="fas fa-hourglass-half text-yellow-500"></i>
-                                    <div>
-                                        <p class="text-sm font-medium text-yellow-700">KYC Pending</p>
-                                        <p class="text-xs text-yellow-600">
-                                            Your KYC documents have been submitted and are awaiting review. Some features may be unavailable until approval.
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 md:p-4 flex items-start space-x-3 md:space-x-4">
+                                    <div class="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-hourglass-half text-yellow-600 text-sm md:text-base"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-yellow-800">KYC Verification Pending</p>
+                                        <p class="text-xs md:text-sm text-yellow-700 mt-1">
+                                            Your documents are under review. Some features may be limited until approval.
                                         </p>
                                     </div>
                                 </div>
                             {% elif request.user.kyc.status == 'approved' %}
-                                <div class="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center space-x-3">
-                                    <i class="fas fa-check-circle text-green-500"></i>
-                                    <div>
-                                        <p class="text-sm font-medium text-green-700">KYC Approved</p>
-                                        <p class="text-xs text-green-600">
-                                            Your KYC approved. All account features are available.
+                                <div class="bg-green-50 border border-green-200 rounded-xl p-3 md:p-4 flex items-start space-x-3 md:space-x-4">
+                                    <div class="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-check-circle text-green-600 text-sm md:text-base"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-green-800">KYC Verified</p>
+                                        <p class="text-xs md:text-sm text-green-700 mt-1">
+                                            Your identity has been verified. All account features are available.
                                         </p>
                                     </div>
                                 </div>
                             {% elif request.user.kyc.status == 'rejected' %}
-                                <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-3">
-                                    <i class="fas fa-times-circle text-red-500"></i>
-                                    <div>
-                                        <p class="text-sm font-medium text-red-700">KYC Rejected</p>
-                                        <p class="text-xs text-red-600">
-                                            Your KYC submission was rejected. Please review your documents and resubmit.
+                                <div class="bg-red-50 border border-red-200 rounded-xl p-3 md:p-4 flex items-start space-x-3 md:space-x-4">
+                                    <div class="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-times-circle text-red-600 text-sm md:text-base"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-red-800">KYC Rejected</p>
+                                        <p class="text-xs md:text-sm text-red-700 mt-1">
+                                            Please review your documents and resubmit for verification.
                                         </p>
                                     </div>
                                 </div>
                             {% endif %}
                         {% else %}
-                            <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-3">
-                                <i class="fas fa-times-circle text-red-500"></i>
-                                <div>
-                                    <p class="text-sm font-medium text-red-700">KYC Not Completed</p>
-                                    <p class="text-xs text-red-600">
-                                        You have not submitted your KYC documents. Certain features will be unavailable until your KYC is completed.
+                            <div class="bg-red-50 border border-red-200 rounded-xl p-3 md:p-4 flex items-start space-x-3 md:space-x-4">
+                                <div class="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-exclamation-triangle text-red-600 text-sm md:text-base"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold text-red-800">KYC Required</p>
+                                    <p class="text-xs md:text-sm text-red-700 mt-1">
+                                        Complete KYC verification to access all account features and higher limits.
                                     </p>
                                 </div>
                             </div>
                         {% endif %}
                     </div>
-                    
 
-                    <!-- Full Name -->
-                    <div class="sm:col-span-3">
-                        <p class="text-sm font-medium text-gray-500">Full Name</p>
-                        <p class="mt-1 text-sm text-gray-900">{{ request.user.full_name|default:"Member" }}</p>
-                    </div>
-
-                    <!-- Date of Birth -->
-                    <!--<div class="sm:col-span-3">
-                        <p class="text-sm font-medium text-gray-500">Date of Birth</p>
-                        <p class="mt-1 text-sm text-gray-900">N/A</p> <!-- Replace when you add DOB support -->
-                    <!--</div>-->
-
-                    <!-- Email -->
-                    <div class="sm:col-span-4">
-                        <p class="text-sm font-medium text-gray-500">Email Address</p>
-                        <p class="mt-1 text-sm text-gray-900">{{ request.user.email|default:"N/A" }}</p>
-                    </div>
-
-                    <!-- Phone -->
-                    <div class="sm:col-span-4">
-                        <p class="text-sm font-medium text-gray-500">Phone Number</p>
-                        <p class="mt-1 text-sm text-gray-900">{{ request.user.phone|default:"N/A" }}</p>
-                    </div>
-                </div>
-
-                <!-- Edit Button -->
-                <div class="mt-6 flex space-x-3">
-                    <button 
-                        @click="editingProfile = true"
-                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                        <i class="fas fa-pencil-alt mr-2"></i>
-                        Edit Profile
-                    </button>
-                    {% if not request.user.kyc %}
-                        <button 
-                            onclick="window.location.href='{% url 'kyc_verification' %}'"
-                            type="button"
-                            class="inline-flex items-center px-4 py-2 border border-green-600 shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                        >
-                            <i class="fas fa-id-card mr-2"></i>
-                            Submit KYC
-                        </button>
-                    {% elif request.user.kyc.status == 'pending' %}
-                        <button 
-                            type="button"
-                            class="inline-flex items-center px-4 py-2 border border-yellow-600 shadow-sm text-sm font-medium rounded-md text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                            disabled
-                        >
-                            <i class="fas fa-hourglass-half mr-2"></i>
-                            KYC Pending
-                        </button>
-                    {% elif request.user.kyc.status == 'approved' %}
-                        <button 
-                            type="button"
-                            class="inline-flex items-center px-4 py-2 border border-green-600 shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                            disabled
-                        >
-                            <i class="fas fa-check-circle mr-2"></i>
-                            KYC Approved
-                        </button>
-                    {% elif request.user.kyc.status == 'rejected' %}
-                        <button 
-                            onclick="window.location.href='{% url 'kyc_verification' %}'"
-                            type="button"
-                            class="inline-flex items-center px-4 py-2 border border-red-600 shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                        >
-                            <i class="fas fa-times-circle mr-2"></i>
-                            Resubmit KYC
-                        </button>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-
-            <div x-show="editingProfile" x-transition>
-                <form method="POST" enctype="multipart/form-data" class="space-y-6">
-                    {% csrf_token %}
-
-                    <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                        <div class="sm:col-span-6">
-                            <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                            <input type="text" name="full_name" id="full_name" value="{{ request.user.full_name }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-
-                        <div class="sm:col-span-6">
-                            <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-                            <input type="email" name="email" id="email" value="{{ request.user.email }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-
-                        <div class="sm:col-span-6">
-                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone number</label>
-                            <input type="text" name="phone" id="phone" value="{{ request.user.phone }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-
-                        <div class="sm:col-span-6">
-                            <label for="profile_picture" class="block text-sm font-medium text-gray-700">Profile Picture</label>
-                            <input type="file" name="profile_picture" id="profile_picture" class="mt-1 block w-full text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md cursor-pointer focus:outline-none">
-                            {% if request.user.profile_picture %}
-                                <div class="mt-2">
-                                    <img src="{{ request.user.profile_picture.url }}" alt="Current profile picture" class="h-16 w-16 rounded-full object-cover">
+                    <div x-show="!editingProfile">
+                        <div class="space-y-4 md:space-y-6">
+                            <!-- Profile Picture -->
+                            <div class="flex items-center space-x-3 md:space-x-4 p-3 md:p-4 bg-gray-50 rounded-xl">
+                                {% if request.user.profile_picture %}
+                                    <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture" class="h-16 w-16 md:h-20 md:w-20 rounded-full object-cover border-2 md:border-4 border-white shadow">
+                                {% else %}
+                                    <div class="h-16 w-16 md:h-20 md:w-20 rounded-full bg-gradient-to-r from-gecu-blue to-gecu-navy flex items-center justify-center text-white text-xl md:text-2xl font-bold border-2 md:border-4 border-white shadow">
+                                        {{ request.user.full_name|first|upper|default:"M" }}
+                                    </div>
+                                {% endif %}
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-base md:text-lg font-semibold text-gray-900 truncate">{{ request.user.full_name|default:"Member" }}</p>
+                                    <p class="text-xs md:text-sm text-gray-500 truncate">Member ID: {{ request.user.id|stringformat:"06d" }}</p>
                                 </div>
+                            </div>
+
+                            <!-- Personal Details Grid -->
+                            <div class="grid grid-cols-1 gap-3 md:gap-4">
+                                <div class="bg-white border border-gray-200 rounded-xl p-3 md:p-4">
+                                    <p class="text-xs md:text-sm font-medium text-gray-500">Full Name</p>
+                                    <p class="text-sm md:text-lg font-semibold text-gray-900 mt-1 truncate">{{ request.user.full_name|default:"Not set" }}</p>
+                                </div>
+                                
+                                <div class="bg-white border border-gray-200 rounded-xl p-3 md:p-4">
+                                    <p class="text-xs md:text-sm font-medium text-gray-500">Email Address</p>
+                                    <p class="text-sm md:text-lg font-semibold text-gray-900 mt-1 truncate">{{ request.user.email|default:"Not set" }}</p>
+                                </div>
+
+                                <div class="bg-white border border-gray-200 rounded-xl p-3 md:p-4">
+                                    <p class="text-xs md:text-sm font-medium text-gray-500">Phone Number</p>
+                                    <p class="text-sm md:text-lg font-semibold text-gray-900 mt-1 truncate">{{ request.user.phone|default:"Not set" }}</p>
+                                </div>
+                                
+                                <div class="bg-white border border-gray-200 rounded-xl p-3 md:p-4">
+                                    <p class="text-xs md:text-sm font-medium text-gray-500">Member Since</p>
+                                    <p class="text-sm md:text-lg font-semibold text-gray-900 mt-1">{{ request.user.date_joined|date:"F j, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="mt-4 md:mt-6 flex flex-col sm:flex-row gap-2 md:gap-3">
+                            <button 
+                                @click="editingProfile = true"
+                                class="flex-1 inline-flex items-center justify-center px-4 py-2.5 md:px-5 md:py-3 border border-gray-300 shadow-sm text-sm md:text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition-all"
+                            >
+                                <i class="fas fa-edit mr-2 md:mr-3 text-sm"></i>
+                                Edit Profile
+                            </button>
+                            
+                            {% if not request.user.kyc %}
+                                <a href="{% url 'kyc_verification' %}"
+                                    class="flex-1 inline-flex items-center justify-center px-4 py-2.5 md:px-5 md:py-3 border border-transparent text-sm md:text-base font-medium rounded-xl shadow-sm text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
+                                >
+                                    <i class="fas fa-id-card mr-2 md:mr-3 text-sm"></i>
+                                    Complete KYC
+                                </a>
+                            {% elif request.user.kyc.status == 'pending' %}
+                                <button 
+                                    type="button"
+                                    class="flex-1 inline-flex items-center justify-center px-4 py-2.5 md:px-5 md:py-3 border border-yellow-300 text-sm md:text-base font-medium rounded-xl text-yellow-700 bg-yellow-50 cursor-not-allowed"
+                                    disabled
+                                >
+                                    <i class="fas fa-hourglass-half mr-2 md:mr-3 text-sm"></i>
+                                    Verification Pending
+                                </button>
+                            {% elif request.user.kyc.status == 'approved' %}
+                                <button 
+                                    type="button"
+                                    class="flex-1 inline-flex items-center justify-center px-4 py-2.5 md:px-5 md:py-3 border border-green-300 text-sm md:text-base font-medium rounded-xl text-green-700 bg-green-50 cursor-not-allowed"
+                                    disabled
+                                >
+                                    <i class="fas fa-check-circle mr-2 md:mr-3 text-sm"></i>
+                                    Verified
+                                </button>
+                            {% elif request.user.kyc.status == 'rejected' %}
+                                <a href="{% url 'kyc_verification' %}"
+                                    class="flex-1 inline-flex items-center justify-center px-4 py-2.5 md:px-5 md:py-3 border border-transparent text-sm md:text-base font-medium rounded-xl shadow-sm text-white bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all"
+                                >
+                                    <i class="fas fa-redo mr-2 md:mr-3 text-sm"></i>
+                                    Resubmit KYC
+                                </a>
                             {% endif %}
                         </div>
                     </div>
 
-                    <div class="flex justify-end space-x-3">
-                        <button 
-                            @click="editingProfile = false"
-                            type="button" 
-                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Cancel
-                        </button>
-                        <button 
-                            type="submit" 
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Save Changes
-                        </button>
+                    <!-- Edit Profile Form -->
+                    <div x-show="editingProfile" x-transition class="space-y-4 md:space-y-6">
+                        <form method="POST" enctype="multipart/form-data" class="space-y-4 md:space-y-6">
+                            {% csrf_token %}
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="full_name" class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                                    <input type="text" name="full_name" id="full_name" value="{{ request.user.full_name }}" 
+                                           class="block w-full border border-gray-300 rounded-xl shadow-sm py-2.5 md:py-3 px-3 md:px-4 text-sm md:text-base focus:ring-gecu-blue focus:border-gecu-blue">
+                                </div>
+
+                                <div>
+                                    <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                                    <input type="email" name="email" id="email" value="{{ request.user.email }}" 
+                                           class="block w-full border border-gray-300 rounded-xl shadow-sm py-2.5 md:py-3 px-3 md:px-4 text-sm md:text-base focus:ring-gecu-blue focus:border-gecu-blue">
+                                </div>
+
+                                <div>
+                                    <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                                    <input type="text" name="phone" id="phone" value="{{ request.user.phone }}" 
+                                           class="block w-full border border-gray-300 rounded-xl shadow-sm py-2.5 md:py-3 px-3 md:px-4 text-sm md:text-base focus:ring-gecu-blue focus:border-gecu-blue">
+                                </div>
+
+                                <div>
+                                    <label for="profile_picture" class="block text-sm font-semibold text-gray-700 mb-2">Profile Picture</label>
+                                    <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                                        <div class="flex-shrink-0">
+                                            {% if request.user.profile_picture %}
+                                                <img src="{{ request.user.profile_picture.url }}" alt="Current profile picture" class="h-16 w-16 md:h-20 md:w-20 rounded-full object-cover border-2 md:border-4 border-white shadow">
+                                            {% else %}
+                                                <div class="h-16 w-16 md:h-20 md:w-20 rounded-full bg-gradient-to-r from-gecu-blue to-gecu-navy flex items-center justify-center text-white text-xl md:text-2xl font-bold border-2 md:border-4 border-white shadow">
+                                                    {{ request.user.full_name|first|upper|default:"M" }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <input type="file" name="profile_picture" id="profile_picture" 
+                                                   class="block w-full text-sm md:text-base text-gray-900 bg-gray-50 border border-gray-300 rounded-xl cursor-pointer focus:outline-none py-2 px-3">
+                                            <p class="text-xs md:text-sm text-gray-500 mt-2">JPG, PNG or GIF. Max 5MB.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row gap-2 md:gap-3 pt-3 md:pt-4 border-t border-gray-200">
+                                <button 
+                                    @click="editingProfile = false"
+                                    type="button" 
+                                    class="flex-1 inline-flex items-center justify-center px-4 py-2.5 md:px-5 md:py-3 border border-gray-300 shadow-sm text-sm md:text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    class="flex-1 inline-flex items-center justify-center px-4 py-2.5 md:px-5 md:py-3 border border-transparent text-sm md:text-base font-medium rounded-xl shadow-sm text-white bg-gradient-to-r from-gecu-navy to-gecu-blue hover:from-gecu-blue hover:to-gecu-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition-all"
+                                >
+                                    <i class="fas fa-save mr-2 text-sm"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
 
-        </div>
-    </div>
+            <!-- Security Settings -->
+            <div class="bg-white shadow-lg rounded-2xl overflow-hidden" x-data="{ changingPassword: false }">
+                <div class="px-4 md:px-6 py-4 md:py-5 border-b border-gray-200 flex justify-between items-center">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg md:text-xl font-semibold text-gray-900 truncate">Security Settings</h3>
+                        <p class="mt-1 text-xs md:text-sm text-gray-500 truncate">Manage your password and security preferences</p>
+                    </div>
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0 ml-3">
+                        <i class="fas fa-shield-alt text-white text-sm md:text-base"></i>
+                    </div>
+                </div>
+                
+                <div class="p-4 md:p-6">
+                    <div x-show="!changingPassword">
+                        <div class="space-y-3 md:space-y-4">
+                            <!-- Password -->
+                            <div class="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-xl">
+                                <div class="flex items-center space-x-3 min-w-0">
+                                    <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-lock text-blue-600 text-sm"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-sm md:text-base font-semibold text-gray-900 truncate">Password</p>
+                                        <p class="text-xs md:text-sm text-gray-500 truncate">Last changed 3 months ago</p>
+                                    </div>
+                                </div>
+                                <button 
+                                    @click="changingPassword = true"
+                                    class="text-gecu-blue hover:text-gecu-navy font-semibold text-xs md:text-sm px-2 md:px-4 py-1 md:py-2 rounded-lg hover:bg-blue-50 transition-colors ml-2 flex-shrink-0"
+                                >
+                                    Change
+                                </button>
+                            </div>
+                            
+                            <!-- Transaction PIN -->
+                            <div class="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-xl">
+                                <div class="flex items-center space-x-3 min-w-0">
+                                    <div class="w-8 h-8 md:w-10 md:h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-key text-purple-600 text-sm"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-sm md:text-base font-semibold text-gray-900 truncate">Transaction PIN</p>
+                                        <p class="text-xs md:text-sm text-gray-500 truncate">
+                                            {% if request.user.transaction_pin %}
+                                                PIN is set and active
+                                            {% else %}
+                                                No PIN set (required for transfers)
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                                <a href="#transaction-pin" 
+                                   class="text-gecu-blue hover:text-gecu-navy font-semibold text-xs md:text-sm px-2 md:px-4 py-1 md:py-2 rounded-lg hover:bg-blue-50 transition-colors ml-2 flex-shrink-0">
+                                    Manage
+                                </a>
+                            </div>
+                            
+                            <!-- Two-Factor Authentication -->
+                            <div class="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-xl">
+                                <div class="flex items-center space-x-3 min-w-0">
+                                    <div class="w-8 h-8 md:w-10 md:h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-mobile-alt text-green-600 text-sm"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-sm md:text-base font-semibold text-gray-900 truncate">Two-Factor Auth</p>
+                                        <p class="text-xs md:text-sm text-gray-500 truncate">Enabled via Email</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs md:text-sm text-gray-400 px-2 md:px-4 py-1 md:py-2 ml-2 flex-shrink-0">Active</span>
+                            </div>
+                        </div>
+                    </div>
 
+                    <!-- Change Password Form -->
+                    <div x-show="changingPassword" x-transition class="space-y-4 md:space-y-6">
+                        <form class="space-y-4">
+                            <div>
+                                <label for="current-password" class="block text-sm font-semibold text-gray-700 mb-2">Current Password</label>
+                                <div class="relative rounded-xl shadow-sm">
+                                    <input type="password" id="current-password" name="current-password" 
+                                           class="block w-full pr-10 text-sm md:text-base border-gray-300 rounded-xl focus:ring-gecu-blue focus:border-gecu-blue py-2.5 md:py-3 px-3 md:px-4" 
+                                           placeholder="Enter current password">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-lock text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
 
-    <!-- Transaction Pin Change -->
-     <!-- Transaction PIN Section -->
-    <!-- In your Transaction PIN section, change the x-data declaration to: -->
-    <div class="bg-white shadow rounded-lg overflow-hidden" x-data="pinForm">
-        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-            <h3 class="text-lg font-medium leading-6 text-gray-900">Transaction PIN</h3>
-            <p class="mt-1 text-sm text-gray-500">Secure your transactions with a 4-digit PIN</p>
+                            <div>
+                                <label for="new-password" class="block text-sm font-semibold text-gray-700 mb-2">New Password</label>
+                                <div class="relative rounded-xl shadow-sm">
+                                    <input type="password" id="new-password" name="new-password" 
+                                           class="block w-full pr-10 text-sm md:text-base border-gray-300 rounded-xl focus:ring-gecu-blue focus:border-gecu-blue py-2.5 md:py-3 px-3 md:px-4" 
+                                           placeholder="Enter new password">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-lock text-gray-400"></i>
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-xs md:text-sm text-gray-500">Must be at least 8 characters with numbers and symbols</p>
+                            </div>
+
+                            <div>
+                                <label for="confirm-password" class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
+                                <div class="relative rounded-xl shadow-sm">
+                                    <input type="password" id="confirm-password" name="confirm-password" 
+                                           class="block w-full pr-10 text-sm md:text-base border-gray-300 rounded-xl focus:ring-gecu-blue focus:border-gecu-blue py-2.5 md:py-3 px-3 md:px-4" 
+                                           placeholder="Confirm new password">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-lock text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row gap-2 md:gap-3 pt-3 md:pt-4 border-t border-gray-200">
+                                <button 
+                                    @click="changingPassword = false"
+                                    type="button" 
+                                    class="flex-1 inline-flex items-center justify-center px-4 py-2.5 md:px-5 md:py-3 border border-gray-300 shadow-sm text-sm md:text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    class="flex-1 inline-flex items-center justify-center px-4 py-2.5 md:px-5 md:py-3 border border-transparent text-sm md:text-base font-medium rounded-xl shadow-sm text-white bg-gradient-to-r from-gecu-navy to-gecu-blue hover:from-gecu-blue hover:to-gecu-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition-all"
+                                >
+                                    Update Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="px-4 py-5 sm:p-6">
-            <div x-show="!showPinForm">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-900">Transaction PIN Status</p>
-                        <p class="text-sm text-gray-500">
+
+        <!-- Right Column - Quick Actions -->
+        <div class="space-y-4 md:space-y-6">
+            <!-- Transaction PIN Section -->
+            <div id="transaction-pin" class="bg-white shadow-lg rounded-2xl overflow-hidden" x-data="pinForm">
+                <div class="px-4 md:px-6 py-4 md:py-5 border-b border-gray-200">
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-900">Transaction PIN</h3>
+                    <p class="mt-1 text-xs md:text-sm text-gray-500">Secure your transactions</p>
+                </div>
+                <div class="p-4 md:p-6">
+                    <div x-show="!showPinForm" class="text-center">
+                        <div class="w-12 h-12 md:w-16 md:h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                            <i class="fas fa-key text-purple-600 text-lg md:text-xl"></i>
+                        </div>
+                        <p class="text-sm md:text-base font-semibold text-gray-900">
                             {% if request.user.transaction_pin %}
-                                PIN is set
+                                PIN Protection Active
                             {% else %}
-                                No PIN set (required for transfers)
+                                PIN Not Set
                             {% endif %}
                         </p>
+                        <p class="text-xs md:text-sm text-gray-500 mt-1">
+                            {% if request.user.transaction_pin %}
+                                Required for all transfers
+                            {% else %}
+                                Set up for secure transactions
+                            {% endif %}
+                        </p>
+                        <button 
+                            @click="showPinForm = true; pinError = ''; pinSuccess = ''"
+                            class="mt-3 md:mt-4 w-full bg-gradient-to-r from-gecu-navy to-gecu-blue text-white py-2.5 md:py-3 rounded-xl font-semibold text-sm md:text-base hover:from-gecu-blue hover:to-gecu-navy transition-all"
+                        >
+                            {% if request.user.transaction_pin %}Change PIN{% else %}Set PIN{% endif %}
+                        </button>
                     </div>
-                    <button 
-                        @click="showPinForm = true; pinError = ''; pinSuccess = ''"
-                        class="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-                    >
-                        {% if request.user.transaction_pin %}Change PIN{% else %}Set PIN{% endif %}
+
+                    <div x-show="showPinForm" x-transition class="space-y-4">
+                        <form method="POST" @submit.prevent="setPin()">
+                            {% csrf_token %}
+                            <input type="hidden" name="set_pin" value="true">
+                            
+                            <div>
+                                <label for="pin" class="block text-sm font-semibold text-gray-700 mb-2">New 4-digit PIN</label>
+                                <div class="relative rounded-xl shadow-sm">
+                                    <input x-model="pin" 
+                                           id="pin" 
+                                           name="pin" 
+                                           type="password" 
+                                           maxlength="4" 
+                                           inputmode="numeric" 
+                                           pattern="[0-9]*"
+                                           class="block w-full pr-10 py-2.5 md:py-3 px-3 md:px-4 border-gray-300 rounded-xl focus:ring-gecu-blue focus:border-gecu-blue text-sm md:text-base" 
+                                           placeholder="••••">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-lock text-gray-400"></i>
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-xs md:text-sm text-gray-500">Enter a 4-digit numeric PIN</p>
+                            </div>
+
+                            <div>
+                                <label for="confirm_pin" class="block text-sm font-semibold text-gray-700 mb-2">Confirm PIN</label>
+                                <div class="relative rounded-xl shadow-sm">
+                                    <input x-model="confirmPin" 
+                                           id="confirm_pin" 
+                                           name="confirm_pin" 
+                                           type="password" 
+                                           maxlength="4" 
+                                           inputmode="numeric" 
+                                           pattern="[0-9]*"
+                                           class="block w-full pr-10 py-2.5 md:py-3 px-3 md:px-4 border-gray-300 rounded-xl focus:ring-gecu-blue focus:border-gecu-blue text-sm md:text-base" 
+                                           placeholder="••••">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-lock text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Error Message -->
+                            <div x-show="pinError" class="bg-red-50 border border-red-200 rounded-xl p-3 md:p-4 flex items-start">
+                                <div class="flex-shrink-0 text-red-500 mt-0.5">
+                                    <i class="fas fa-exclamation-circle text-sm"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-xs md:text-sm text-red-700" x-text="pinError"></p>
+                                </div>
+                            </div>
+
+                            <!-- Success Message -->
+                            <div x-show="pinSuccess" class="bg-green-50 border border-green-200 rounded-xl p-3 md:p-4 flex items-start">
+                                <div class="flex-shrink-0 text-green-500 mt-0.5">
+                                    <i class="fas fa-check-circle text-sm"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-xs md:text-sm text-green-700" x-text="pinSuccess"></p>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row gap-2 md:gap-3 mt-4">
+                                <button 
+                                    @click="showPinForm = false; pin = ''; confirmPin = ''; pinError = ''; pinSuccess = ''"
+                                    type="button" 
+                                    class="flex-1 inline-flex items-center justify-center px-3 md:px-4 py-2 md:py-3 border border-gray-300 shadow-sm text-sm md:text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    :disabled="isSettingPin || !pin || !confirmPin || pin.length !== 4 || confirmPin.length !== 4"
+                                    class="flex-1 inline-flex items-center justify-center px-3 md:px-4 py-2 md:py-3 border border-transparent text-sm md:text-base font-medium rounded-xl shadow-sm text-white bg-gradient-to-r from-gecu-navy to-gecu-blue hover:from-gecu-blue hover:to-gecu-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                >
+                                    <span x-show="!isSettingPin">
+                                        {% if request.user.transaction_pin %}Update{% else %}Set PIN{% endif %}
+                                    </span>
+                                    <span x-show="isSettingPin">
+                                        <i class="fas fa-spinner fa-spin mr-1"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notification Preferences -->
+            <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
+                <div class="px-4 md:px-6 py-4 md:py-5 border-b border-gray-200">
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-900">Notifications</h3>
+                    <p class="mt-1 text-xs md:text-sm text-gray-500">Manage your preferences</p>
+                </div>
+                <div class="p-4 md:p-6">
+                    <div class="space-y-3 md:space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2 md:space-x-3 min-w-0">
+                                <div class="w-7 h-7 md:w-8 md:h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-envelope text-blue-600 text-xs md:text-sm"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700 truncate">Email Alerts</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-9 h-5 md:w-11 md:h-6 bg-gray-200 peer-focus:ring-2 md:peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 md:after:h-5 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2 md:space-x-3 min-w-0">
+                                <div class="w-7 h-7 md:w-8 md:h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-sms text-green-600 text-xs md:text-sm"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700 truncate">SMS Notifications</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-9 h-5 md:w-11 md:h-6 bg-gray-200 peer-focus:ring-2 md:peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 md:after:h-5 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2 md:space-x-3 min-w-0">
+                                <div class="w-7 h-7 md:w-8 md:h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-bell text-purple-600 text-xs md:text-sm"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700 truncate">Push Notifications</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-9 h-5 md:w-11 md:h-6 bg-gray-200 peer-focus:ring-2 md:peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 md:after:h-5 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="mt-4 md:mt-6 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 md:py-3 rounded-xl font-semibold text-sm md:text-base transition-colors">
+                        Save Preferences
                     </button>
                 </div>
             </div>
 
-            <div x-show="showPinForm" x-transition class="space-y-4">
-                <form method="POST" @submit.prevent="setPin()">
-                    {% csrf_token %}
-                    <input type="hidden" name="set_pin" value="true">
-                    
-                    <div>
-                        <label for="pin" class="block text-sm font-medium text-gray-700">New 4-digit PIN</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <input x-model="pin" 
-                                   id="pin" 
-                                   name="pin" 
-                                   type="password" 
-                                   maxlength="4" 
-                                   inputmode="numeric" 
-                                   pattern="[0-9]*"
-                                   class="block w-full pr-10 py-2 px-3 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
-                                   placeholder="••••">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400"></i>
+            <!-- Quick Actions -->
+            <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
+                <div class="px-4 md:px-6 py-4 md:py-5 border-b border-gray-200">
+                    <h3 class="text-lg md:text-xl font-semibold text-gray-900">Quick Actions</h3>
+                    <p class="mt-1 text-xs md:text-sm text-gray-500">Account management</p>
+                </div>
+                <div class="p-4 md:p-6">
+                    <div class="space-y-2 md:space-y-3">
+                        <button class="w-full flex items-center justify-between p-2.5 md:p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors">
+                            <div class="flex items-center space-x-2 md:space-x-3 min-w-0">
+                                <div class="w-7 h-7 md:w-8 md:h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-download text-blue-600 text-xs md:text-sm"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700 truncate">Export Data</span>
                             </div>
-                        </div>
-                        <p class="mt-2 text-sm text-gray-500">Enter a 4-digit numeric PIN</p>
-                    </div>
-
-                    <div>
-                        <label for="confirm_pin" class="block text-sm font-medium text-gray-700">Confirm PIN</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <input x-model="confirmPin" 
-                                   id="confirm_pin" 
-                                   name="confirm_pin" 
-                                   type="password" 
-                                   maxlength="4" 
-                                   inputmode="numeric" 
-                                   pattern="[0-9]*"
-                                   class="block w-full pr-10 py-2 px-3 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
-                                   placeholder="••••">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400"></i>
+                            <i class="fas fa-chevron-right text-gray-400 text-xs md:text-sm flex-shrink-0 ml-2"></i>
+                        </button>
+                        
+                        <button class="w-full flex items-center justify-between p-2.5 md:p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors">
+                            <div class="flex items-center space-x-2 md:space-x-3 min-w-0">
+                                <div class="w-7 h-7 md:w-8 md:h-8 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-times-circle text-red-600 text-xs md:text-sm"></i>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700 truncate">Close Account</span>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Error Message -->
-                    <div x-show="pinError" class="bg-red-50 border border-red-100 rounded-lg p-4 flex items-start">
-                        <div class="flex-shrink-0 text-red-500 mt-0.5">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-red-700" x-text="pinError"></p>
-                        </div>
-                    </div>
-
-                    <!-- Success Message -->
-                    <div x-show="pinSuccess" class="bg-green-50 border border-green-100 rounded-lg p-4 flex items-start">
-                        <div class="flex-shrink-0 text-green-500 mt-0.5">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-green-700" x-text="pinSuccess"></p>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end space-x-3 mt-4">
-                        <button 
-                            @click="showPinForm = false; pin = ''; confirmPin = ''; pinError = ''; pinSuccess = ''"
-                            type="button" 
-                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Cancel
-                        </button>
-                        <button 
-                            type="submit" 
-                            :disabled="isSettingPin || !pin || !confirmPin || pin.length !== 4 || confirmPin.length !== 4"
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed"
-                        >
-                            <span x-show="!isSettingPin">
-                                {% if request.user.transaction_pin %}Update PIN{% else %}Set PIN{% endif %}
-                            </span>
-                            <span x-show="isSettingPin">
-                                <i class="fas fa-spinner fa-spin mr-1"></i> Processing...
-                            </span>
+                            <i class="fas fa-chevron-right text-gray-400 text-xs md:text-sm flex-shrink-0 ml-2"></i>
                         </button>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-
-
-    <!-- Security Settings Section -->
-    <div class="bg-white shadow rounded-lg overflow-hidden" x-data="{ changingPassword: false }">
-        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-            <h3 class="text-lg font-medium leading-6 text-gray-900">Security Settings</h3>
-            <p class="mt-1 text-sm text-gray-500">Manage your password and security preferences</p>
-        </div>
-        <div class="px-4 py-5 sm:p-6">
-            <div x-show="!changingPassword">
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Password</p>
-                            <p class="text-sm text-gray-500">Last changed 3 months ago</p>
-                        </div>
-                        <button 
-                            @click="changingPassword = true"
-                            class="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-                        >
-                            Change
-                        </button>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Two-Factor Authentication</p>
-                            <p class="text-sm text-gray-500">Currently enabled via Email</p>
-                        </div>
-                        <button class="text-sm font-medium text-red-600 hover:text-red-500">
-                            Unavailable
-                        </button>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Login Alerts</p>
-                            <p class="text-sm text-gray-500">Enabled for new devices</p>
-                        </div>
-                        <button class="text-sm font-medium text-red-600 hover:text-red-500">
-                            Unavailable
-                        </button>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Connected Devices</p>
-                            <p class="text-sm text-gray-500">N/A</p>
-                        </div>
-                        <button class="text-sm font-medium text-red-600 hover:text-red-500">
-                            Unavailable
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div x-show="changingPassword" x-transition>
-                <form class="space-y-6">
-                    <div>
-                        <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <input type="password" id="current-password" name="current-password" class="block w-full pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 py-2 px-3" placeholder="Enter current password">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <input type="password" id="new-password" name="new-password" class="block w-full pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 py-2 px-3" placeholder="Enter new password">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400"></i>
-                            </div>
-                        </div>
-                        <p class="mt-2 text-sm text-gray-500">Must be at least 8 characters</p>
-                    </div>
-
-                    <div>
-                        <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <input type="password" id="confirm-password" name="confirm-password" class="block w-full pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 py-2 px-3" placeholder="Confirm new password">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end space-x-3">
-                        <button 
-                            @click="changingPassword = false"
-                            type="button" 
-                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Cancel
-                        </button>
-                        <button 
-                            type="submit" 
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Update Password
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Notification Preferences -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-            <h3 class="text-lg font-medium leading-6 text-gray-900">Notification Preferences</h3>
-            <p class="mt-1 text-sm text-gray-500">Manage how you receive notifications</p>
-        </div>
-        <div class="px-4 py-5 sm:p-6">
-            <div class="space-y-4">
-                <div class="flex items-start">
-                    <div class="flex items-center h-5">
-                        <input id="email-notifications" name="email-notifications" type="checkbox" checked class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                    </div>
-                    <div class="ml-3 text-sm">
-                        <label for="email-notifications" class="font-medium text-gray-700">Email Notifications</label>
-                        <p class="text-gray-500">Receive important account notifications via email</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-start">
-                    <div class="flex items-center h-5">
-                        <input id="sms-notifications" name="sms-notifications" type="checkbox" checked class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                    </div>
-                    <div class="ml-3 text-sm">
-                        <label for="sms-notifications" class="font-medium text-gray-700">SMS Notifications</label>
-                        <p class="text-gray-500">Receive security alerts and one-time codes via text</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-start">
-                    <div class="flex items-center h-5">
-                        <input id="push-notifications" name="push-notifications" type="checkbox" checked class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                    </div>
-                    <div class="ml-3 text-sm">
-                        <label for="push-notifications" class="font-medium text-gray-700">Push Notifications</label>
-                        <p class="text-gray-500">Receive app notifications on your device</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-start">
-                    <div class="flex items-center h-5">
-                        <input id="marketing-emails" name="marketing-emails" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                    </div>
-                    <div class="ml-3 text-sm">
-                        <label for="marketing-emails" class="font-medium text-gray-700">Marketing Communications</label>
-                        <p class="text-gray-500">Receive promotional emails and offers</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mt-6">
-                <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Save Preferences
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Account Management -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-            <h3 class="text-lg font-medium leading-6 text-gray-900">Account Management</h3>
-            <p class="mt-1 text-sm text-gray-500">Advanced account options</p>
-        </div>
-        <div class="px-4 py-5 sm:p-6">
-            <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-900">Download Account Data</p>
-                        <p class="text-sm text-gray-500">Request a copy of your personal data</p>
-                    </div>
-                    <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                        Request
-                    </button>
-                </div>
-                
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-900">Close Account</p>
-                        <p class="text-sm text-gray-500">Permanently delete your account</p>
-                    </div>
-                    <button class="text-sm font-medium text-red-600 hover:text-red-500">
-                        Begin Process
-                    </button>
                 </div>
             </div>
         </div>

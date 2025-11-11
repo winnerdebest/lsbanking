@@ -1,0 +1,587 @@
+{% extends "base.html" %}
+
+{% block title %}Loans | GRAND ELITE CREDIT UNION{% endblock %}
+{% block header %}Loans Management{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Quick Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-gecu-blue">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Active Loans</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ active_loans_count }}</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-invoice-dollar text-gecu-blue text-xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Total Borrowed</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">${{ total_borrowed|floatformat:2 }}</p>
+                </div>
+                <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
+                    <i class="fas fa-hand-holding-usd text-green-500 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-purple-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Available Credit</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">${{ available_credit|floatformat:2 }}</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center">
+                    <i class="fas fa-credit-card text-purple-500 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Loans Section -->
+    <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
+            <div>
+                <h3 class="text-xl font-semibold text-gray-900">Your Active Loans</h3>
+                <p class="mt-1 text-sm text-gray-500">View and manage your current loan accounts</p>
+            </div>
+            <button class="text-gecu-blue hover:text-gecu-navy font-medium text-sm flex items-center">
+                <i class="fas fa-history mr-2"></i>
+                View Payment History
+            </button>
+        </div>
+        
+        <div class="divide-y divide-gray-100">
+            {% for loan in active_loans %}
+            <!-- Loan Item -->
+            <div class="p-6 hover:bg-gray-50 transition-colors">
+                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-gecu-blue to-gecu-navy rounded-lg flex items-center justify-center">
+                            <i class="fas fa-file-invoice-dollar text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">{{ loan.loan_type.name }}</h4>
+                            <p class="text-sm text-gray-500">Loan #{{ loan.loan_number }}</p>
+                            <div class="flex items-center mt-1">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <i class="fas fa-circle text-xs mr-1"></i>
+                                    {{ loan.status|title }}
+                                </span>
+                                <span class="ml-2 text-xs text-gray-500">Next payment due: {{ loan.next_payment_date|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 md:mt-0 grid grid-cols-2 md:grid-cols-4 gap-4 text-center md:text-right">
+                        <div>
+                            <p class="text-sm text-gray-500">Balance</p>
+                            <p class="font-semibold text-gray-900">${{ loan.current_balance|floatformat:2 }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Interest Rate</p>
+                            <p class="font-semibold text-gray-900">{{ loan.interest_rate }}%</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Monthly Payment</p>
+                            <p class="font-semibold text-gray-900">${{ loan.monthly_payment|floatformat:2 }}</p>
+                        </div>
+                        <div>
+                            <button class="bg-gecu-blue hover:bg-gecu-navy text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Make Payment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="mt-4">
+                    <div class="flex justify-between text-sm text-gray-500 mb-1">
+                        <span>Paid: ${{ loan.total_paid|floatformat:2 }}</span>
+                        <span>Remaining: ${{ loan.current_balance|floatformat:2 }}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: {{ loan.get_progress_percentage }}%"></div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="p-6 text-center text-gray-500">
+                <i class="fas fa-file-invoice-dollar text-4xl mb-3 text-gray-300"></i>
+                <p>No active loans found.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="px-6 py-4 bg-gecu-light border-t border-gray-200">
+            <a href="#" class="text-gecu-blue hover:text-gecu-navy font-medium text-sm flex items-center justify-center">
+                <i class="fas fa-plus-circle mr-2"></i>
+                View All Loan Details
+            </a>
+        </div>
+    </div>
+    
+    <!-- Apply for New Loan Section -->
+    <div class="bg-white shadow-lg rounded-2xl overflow-hidden" x-data="loanApplication()">
+        <div class="px-6 py-5 border-b border-gray-200">
+            <h3 class="text-xl font-semibold text-gray-900">Apply for a New Loan</h3>
+            <p class="mt-1 text-sm text-gray-500">Get competitive rates and flexible terms tailored to your needs</p>
+        </div>
+        
+        <div class="p-6">
+            <!-- Loan Type Selection -->
+            <div class="mb-8">
+                <label class="block text-sm font-semibold text-gray-700 mb-4">Choose Loan Type</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <template x-for="loan in loanTypes" :key="loan.id">
+                        <button 
+                            @click="selectLoanType(loan)"
+                            class="p-4 border-2 rounded-xl text-left transition-all duration-300 card-hover"
+                            :class="{
+                                'border-gecu-blue bg-blue-50 shadow-md': selectedLoanType.id === loan.id,
+                                'border-gray-200 hover:border-gecu-gray': selectedLoanType.id !== loan.id
+                            }"
+                        >
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center mr-3" 
+                                     :class="loan.bgColor">
+                                    <i :class="loan.icon" :class="loan.textColor" class="text-lg"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-900" x-text="loan.name"></p>
+                                    <p class="text-xs text-gray-500 mt-1" x-text="loan.rate"></p>
+                                    <p class="text-xs text-gecu-blue mt-2 font-medium" x-text="loan.description"></p>
+                                </div>
+                            </div>
+                        </button>
+                    </template>
+                </div>
+            </div>
+            
+            <!-- Loan Application Form -->
+            <div x-show="selectedLoanType" x-transition class="space-y-6">
+                <div class="bg-gecu-light rounded-xl p-4">
+                    <h4 class="font-medium text-gecu-navy mb-2 flex items-center">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <span x-text="selectedLoanType.name"></span> Details
+                    </h4>
+                    <p class="text-sm text-gray-600" x-text="selectedLoanType.fullDescription"></p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">Loan Amount</label>
+                        <div class="mt-1 relative rounded-lg shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            <input 
+                                type="number" 
+                                id="amount" 
+                                x-model="loanAmount" 
+                                @input="calculatePayment()"
+                                class="focus:ring-gecu-blue focus:border-gecu-blue block w-full pl-7 pr-12 py-3 text-sm border-gray-300 rounded-lg" 
+                                placeholder="0.00"
+                                min="1000"
+                                max="100000"
+                            >
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                <span class="text-gray-500 text-sm">USD</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between mt-1 text-xs text-gray-500">
+                            <span>Min: $1,000</span>
+                            <span>Max: $100,000</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="term" class="block text-sm font-medium text-gray-700 mb-2">Loan Term</label>
+                        <select 
+                            id="term" 
+                            x-model="loanTerm" 
+                            @change="calculatePayment()"
+                            class="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-gecu-blue focus:border-gecu-blue rounded-lg shadow-sm"
+                        >
+                            <option value="12">12 months (1 year)</option>
+                            <option value="24">24 months (2 years)</option>
+                            <option value="36" selected>36 months (3 years)</option>
+                            <option value="48">48 months (4 years)</option>
+                            <option value="60">60 months (5 years)</option>
+                            <option value="72">72 months (6 years)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Purpose Field -->
+                <div>
+                    <label for="purpose" class="block text-sm font-medium text-gray-700 mb-2">Loan Purpose</label>
+                    <textarea
+                        id="purpose" 
+                        x-model="loanPurpose"
+                        rows="3"
+                        class="mt-1 focus:ring-gecu-blue focus:border-gecu-blue block w-full shadow-sm sm:text-sm border-gray-300 rounded-lg py-2 px-3"
+                        placeholder="Briefly describe what you need the loan for..."
+                    ></textarea>
+                </div>
+                
+                <!-- Estimated Payment Card -->
+                <div class="bg-gradient-to-r from-gecu-navy to-gecu-blue text-white p-5 rounded-xl">
+                    <h4 class="text-lg font-semibold mb-4 flex items-center">
+                        <i class="fas fa-calculator mr-2"></i>
+                        Payment Estimate
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center p-3 bg-white bg-opacity-10 rounded-lg">
+                            <p class="text-sm opacity-90">Monthly Payment</p>
+                            <p class="text-2xl font-bold mt-1" x-text="estimatedPayment ? '$' + estimatedPayment.toFixed(2) : '--'"></p>
+                        </div>
+                        <div class="text-center p-3 bg-white bg-opacity-10 rounded-lg">
+                            <p class="text-sm opacity-90">Interest Rate</p>
+                            <p class="text-2xl font-bold mt-1" x-text="selectedLoanType ? selectedLoanType.rate.split(' ')[0] : '--'"></p>
+                        </div>
+                        <div class="text-center p-3 bg-white bg-opacity-10 rounded-lg">
+                            <p class="text-sm opacity-90">Total Interest</p>
+                            <p class="text-2xl font-bold mt-1" x-text="totalInterest ? '$' + totalInterest.toFixed(2) : '--'"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="pt-2">
+                    <button 
+                        @click="submitApplication()"
+                        :disabled="!canSubmit || isSubmitting"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white bg-gradient-to-r from-gecu-navy to-gecu-blue hover:from-gecu-blue hover:to-gecu-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                    >
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        <span x-show="!isSubmitting">Submit Application</span>
+                        <span x-show="isSubmitting">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>
+                            Processing...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- KYC Verification Needed Modal -->
+    <div 
+        x-show="showKYCModal" 
+        x-transition 
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+        style="display: none;"
+    >
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 mx-4">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100">
+                    <i class="fas fa-id-card text-yellow-600 text-xl"></i>
+                </div>
+                <h3 class="mt-4 text-xl font-semibold text-gray-900">Verification Required</h3>
+                <div class="mt-3 text-sm text-gray-500">
+                    <p>To apply for a loan, we need to verify your identity through our secure KYC process.</p>
+                    <p class="mt-3 font-medium text-gray-700">Required documents:</p>
+                    <ul class="mt-2 space-y-1 text-left">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2 text-xs"></i>
+                            Government-issued ID
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2 text-xs"></i>
+                            Proof of address
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2 text-xs"></i>
+                            Income verification
+                        </li>
+                    </ul>
+                </div>
+                <div class="mt-6 flex justify-center space-x-3">
+                    <button 
+                        @click="showKYCModal = false"
+                        type="button" 
+                        class="inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-5 py-2.5 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <a 
+                        href="{% url 'kyc_verification' %}"
+                        class="inline-flex justify-center rounded-xl border border-transparent shadow-sm px-5 py-2.5 bg-gradient-to-r from-gecu-navy to-gecu-blue text-base font-medium text-white hover:from-gecu-blue hover:to-gecu-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition-all"
+                    >
+                        Complete Verification
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Processing Fee Modal -->
+    <div 
+        x-show="showProcessingFeeModal" 
+        x-transition 
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+        style="display: none;"
+    >
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 mx-4">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100">
+                    <i class="fas fa-credit-card text-blue-600 text-xl"></i>
+                </div>
+                <h3 class="mt-4 text-xl font-semibold text-gray-900">Processing Fee Required</h3>
+                <div class="mt-3 text-sm text-gray-500">
+                    <p>A 5% processing fee is required to submit your loan application.</p>
+                    <div class="mt-4 bg-gray-50 rounded-lg p-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700">Loan Amount:</span>
+                            <span class="font-semibold" x-text="'$' + loanAmount"></span>
+                        </div>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-gray-700">Processing Fee (5%):</span>
+                            <span class="font-semibold text-gecu-blue" x-text="processingFee ? '$' + processingFee.toFixed(2) : '--'"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-center space-x-3">
+                    <button 
+                        @click="showProcessingFeeModal = false"
+                        type="button" 
+                        class="inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-5 py-2.5 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        @click="confirmAndSubmit()"
+                        :disabled="isSubmitting"
+                        class="inline-flex justify-center rounded-xl border border-transparent shadow-sm px-5 py-2.5 bg-gradient-to-r from-gecu-navy to-gecu-blue text-base font-medium text-white hover:from-gecu-blue hover:to-gecu-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition-all disabled:opacity-50"
+                    >
+                        <span x-show="!isSubmitting">Proceed to Payment</span>
+                        <span x-show="isSubmitting">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>
+                            Processing...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loan Application Success Modal -->
+    <div 
+        x-show="showSuccessModal" 
+        x-transition 
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+        style="display: none;"
+    >
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 mx-4">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+                    <i class="fas fa-check text-green-600 text-xl"></i>
+                </div>
+                <h3 class="mt-4 text-xl font-semibold text-gray-900">Application Submitted!</h3>
+                <div class="mt-3 text-sm text-gray-500">
+                    <p>Your <span class="font-medium text-gecu-navy" x-text="selectedLoanType.name"></span> application for <span class="font-medium text-gecu-navy" x-text="'$' + loanAmount"></span> has been received.</p>
+                    <p class="mt-3">Our loan officer will review your application and contact you within 1-2 business days.</p>
+                </div>
+                <div class="mt-6">
+                    <button 
+                        @click="showSuccessModal = false; window.location.reload()"
+                        type="button" 
+                        class="inline-flex justify-center rounded-xl border border-transparent shadow-sm px-5 py-2.5 bg-gradient-to-r from-gecu-navy to-gecu-blue text-base font-medium text-white hover:from-gecu-blue hover:to-gecu-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gecu-blue transition-all w-full"
+                    >
+                        Return to Loans Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function loanApplication() {
+    return {
+        // Loan types data - FIXED: Properly escaped strings
+        loanTypes: [
+            { 
+                id: 1, 
+                name: 'Personal Loan', 
+                rate: '5.9% - 12.9% APR', 
+                icon: 'fas fa-user', 
+                bgColor: 'bg-blue-100',
+                textColor: 'text-blue-600',
+                description: 'Flexible use',
+                fullDescription: 'Use for any personal expense with flexible repayment terms and competitive rates.'
+            },
+            { 
+                id: 2, 
+                name: 'Auto Loan', 
+                rate: '3.9% - 7.9% APR', 
+                icon: 'fas fa-car', 
+                bgColor: 'bg-green-100',
+                textColor: 'text-green-600',
+                description: 'New or used vehicle',
+                fullDescription: 'Finance your next vehicle with low rates and terms up to 72 months.'
+            },
+            { 
+                id: 3, 
+                name: 'Home Loan', 
+                rate: '4.5% - 6.5% APR', 
+                icon: 'fas fa-home', 
+                bgColor: 'bg-purple-100',
+                textColor: 'text-purple-600',
+                description: 'Purchase or refinance',
+                fullDescription: 'Competitive mortgage rates for home purchases, refinancing, or equity lines.'
+            },
+            { 
+                id: 4, 
+                name: 'Education Loan', 
+                rate: '4.9% - 8.9% APR', 
+                icon: 'fas fa-graduation-cap', 
+                bgColor: 'bg-indigo-100',
+                textColor: 'text-indigo-600',
+                description: 'Student financing',
+                fullDescription: 'Invest in your education with deferred payment options and student-friendly terms.'
+            }
+        ],
+        
+        // Form data
+        selectedLoanType: null,
+        loanAmount: '',
+        loanTerm: '36',
+        loanPurpose: '',
+        estimatedPayment: null,
+        totalInterest: null,
+        processingFee: null,
+        
+        // Modal states - ADDED: All missing modal state variables
+        showKYCModal: false,
+        showProcessingFeeModal: false,
+        showSuccessModal: false,
+        
+        // Submission state - ADDED: Missing submission state
+        isSubmitting: false,
+        
+        // User KYC status - ADDED: This should come from your backend
+        isKYCVerified: {% if is_kyc_verified %}true{% else %}false{% endif %},
+        
+        selectLoanType(loan) {
+            this.selectedLoanType = loan;
+            this.calculatePayment();
+        },
+        
+        calculatePayment() {
+            if (!this.selectedLoanType || !this.loanAmount) {
+                this.estimatedPayment = null;
+                this.totalInterest = null;
+                this.processingFee = null;
+                return;
+            }
+            
+            // Extract the lower rate from the range (e.g., "5.9% - 12.9%" becomes 5.9)
+            const rate = parseFloat(this.selectedLoanType.rate.split('%')[0]);
+            const amount = parseFloat(this.loanAmount);
+            const term = parseInt(this.loanTerm);
+            
+            if (isNaN(amount) || amount <= 0) {
+                this.estimatedPayment = null;
+                this.totalInterest = null;
+                this.processingFee = null;
+                return;
+            }
+            
+            // Simple loan payment calculation (PMT formula)
+            const monthlyRate = (rate / 100) / 12;
+            const payment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -term));
+            this.estimatedPayment = payment;
+            this.totalInterest = (payment * term) - amount;
+            
+            // Calculate processing fee (5%)
+            this.processingFee = amount * 0.05;
+        },
+        
+        submitApplication() {
+            if (!this.canSubmit) return;
+            
+            // Check if KYC is verified
+            if (!this.isKYCVerified) {
+                this.showKYCModal = true;
+                return;
+            }
+            
+            // Show processing fee modal
+            this.showProcessingFeeModal = true;
+        },
+        
+        confirmAndSubmit() {
+            this.isSubmitting = true;
+            
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('loan_type_id', this.selectedLoanType.id);
+            formData.append('amount', this.loanAmount);
+            formData.append('term_months', this.loanTerm);
+            formData.append('purpose', this.loanPurpose);
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            // Send AJAX request to your Django view
+            fetch('{% url "loans:submit_application" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.showProcessingFeeModal = false;
+                    this.showSuccessModal = true;
+                    
+                    // Reset form
+                    this.loanAmount = '';
+                    this.loanTerm = '36';
+                    this.loanPurpose = '';
+                    this.estimatedPayment = null;
+                    this.totalInterest = null;
+                    this.processingFee = null;
+                    
+                    // Redirect to payment page if needed
+                    if (data.redirect) {
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 2000);
+                    }
+                } else {
+                    // Handle errors
+                    if (data.error === 'KYC verification required' && data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            })
+            .finally(() => {
+                this.isSubmitting = false;
+            });
+        },
+        
+        get canSubmit() {
+            return this.selectedLoanType && 
+                   this.loanAmount && 
+                   parseFloat(this.loanAmount) > 0 && 
+                   this.loanPurpose.trim().length > 0;
+        }
+    }
+}
+</script>
+{% endblock %}

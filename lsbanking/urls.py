@@ -24,6 +24,7 @@ urlpatterns = [
     # path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path('investments/', include('investments.urls')),
     path('accounts/', include('allauth.urls')), 
+    path('loans/', include('loans.urls')),
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
 
 

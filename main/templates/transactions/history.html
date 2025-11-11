@@ -21,7 +21,6 @@
          init() {
              this.loadTransactions();
              
-             // Set up infinite scroll
              window.onscroll = () => {
                  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500 && !this.loading && this.hasMore) {
                      this.loadMore();
@@ -55,129 +54,144 @@
      }">
     
     <!-- Filter Section -->
-    <div class="bg-white shadow sm:rounded-lg p-4 md:p-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+    <div class="glass-effect rounded-2xl p-5 md:p-6 shadow-lg">
+        <div class="flex items-center mb-4">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-gecu-navy to-gecu-blue flex items-center justify-center mr-3">
+                <i class="fas fa-filter text-white"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Filter Transactions</h3>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-                <label for="search_term" class="block text-sm font-medium text-gray-700">Search Transactions</label>
+                <label for="search_term" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-search text-gray-400 mr-1"></i>Search
+                </label>
                 <input type="text" 
                        id="search_term" 
                        x-model="searchTerm" 
                        @input.debounce.500ms="applyFilters()"
                        placeholder="Description, amount..." 
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-gecu-blue focus:ring-gecu-blue sm:text-sm transition">
             </div>
+            
             <div>
-                <label for="transaction_type_filter" class="block text-sm font-medium text-gray-700">Type</label>
+                <label for="transaction_type_filter" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-layer-group text-gray-400 mr-1"></i>Type
+                </label>
                 <select id="transaction_type_filter" 
                         x-model="transactionType" 
                         @change="applyFilters()"
-                        class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                        class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-gecu-blue focus:ring-gecu-blue sm:text-sm transition">
                     <option value="">All Types</option>
                     <option value="CREDIT">Credit</option>
                     <option value="DEBIT">Debit</option>
                     <option value="TRANSFER">Transfer</option>
                 </select>
             </div>
-            <div>
+            
+            <div class="flex items-end">
                 <button @click="applyFilters()" 
-                        class="w-full md:w-auto inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                    <i class="fas fa-filter mr-2"></i>Filter
+                        class="w-full inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-gecu-navy to-gecu-blue px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    <i class="fas fa-sync-alt mr-2"></i>Apply Filters
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Transaction List -->
-    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="px-4 py-3 sm:px-6 border-b border-gray-200 flex items-center justify-between">
-            <h3 class="text-lg font-medium text-gray-900">
-                <i class="fas fa-history mr-2 text-indigo-600"></i>
-                Transaction History
-            </h3>
-            <span class="text-sm text-gray-500" x-text="`${transactions.length} transactions`"></span>
+    <div class="glass-effect rounded-2xl shadow-lg overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-200 bg-gradient-to-r from-gecu-navy/5 to-gecu-blue/5">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-gecu-navy to-gecu-blue flex items-center justify-center mr-3">
+                        <i class="fas fa-history text-white text-sm"></i>
+                    </div>
+                    Recent Activity
+                </h3>
+                <span class="px-3 py-1 bg-gecu-light rounded-full text-xs font-medium text-gecu-navy" x-text="`${transactions.length} total`"></span>
+            </div>
         </div>
         
         <ul role="list" class="divide-y divide-gray-100">
-    <template x-for="transaction in transactions" :key="transaction.id">
-        <li>
-            <a :href="`/transactions/${transaction.id}/`" class="block hover:bg-gray-50 transition-colors duration-150">
-                <div class="px-4 py-4 sm:px-6">
-                    <div class="flex items-center justify-between space-x-4">
-
-                        <!-- Icon -->
-                        <div class="flex-shrink-0">
-                            <div class="h-10 w-10 rounded-full flex items-center justify-center shadow-sm"
-                                 :class="{
-                                     'bg-green-50 text-green-600': transaction.transaction_type === 'CREDIT',
-                                     'bg-red-50 text-red-600': transaction.transaction_type === 'DEBIT',
-                                     'bg-blue-50 text-blue-600': transaction.transaction_type === 'TRANSFER'
-                                 }">
-                                <i class="text-lg"
-                                   :class="{
-                                       'fas fa-arrow-down': transaction.transaction_type === 'DEBIT',
-                                       'fas fa-arrow-up': transaction.transaction_type === 'CREDIT',
-                                       'fas fa-exchange-alt': transaction.transaction_type === 'TRANSFER'
-                                   }"></i>
-                            </div>
-                        </div>
-
-                        <!-- Transaction Info -->
-                        <div class="flex-1 min-w-0">
-                            <div class="flex justify-between">
-                                <p class="text-sm font-medium text-gray-800 truncate" x-text="transaction.description"></p>
-                                <p class="text-sm font-semibold ml-2 whitespace-nowrap"
-                                   :class="{
-                                       'text-green-600': transaction.transaction_type === 'CREDIT',
-                                       'text-red-600': transaction.transaction_type === 'DEBIT',
-                                       'text-blue-600': transaction.transaction_type === 'TRANSFER'
-                                   }"
-                                   x-text="`${transaction.transaction_type === 'CREDIT' ? '+' : '-'}$${transaction.amount.toFixed(2)}`"></p>
-                            </div>
-
-                            <!-- Metadata: date and wallet info -->
-                            <div class="mt-1 flex flex-wrap items-center text-xs text-gray-500 space-x-3">
-                                <div class="flex items-center">
-                                    <i class="far fa-calendar mr-1"></i>
-                                    <span x-text="new Date(transaction.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })"></span>
+            <template x-for="transaction in transactions" :key="transaction.id">
+                <li>
+                    <a :href="`/transactions/${transaction.id}/`" class="block hover:bg-gecu-light/30 transition-all duration-200">
+                        <div class="px-5 py-4">
+                            <div class="flex items-center space-x-4">
+                                <!-- Icon -->
+                                <div class="flex-shrink-0">
+                                    <div class="h-12 w-12 rounded-xl flex items-center justify-center shadow-md transition-transform hover:scale-105"
+                                         :class="{
+                                             'bg-gradient-to-br from-green-400 to-green-600 text-white': transaction.transaction_type === 'CREDIT',
+                                             'bg-gradient-to-br from-red-400 to-red-600 text-white': transaction.transaction_type === 'DEBIT',
+                                             'bg-gradient-to-br from-gecu-navy to-gecu-blue text-white': transaction.transaction_type === 'TRANSFER'
+                                         }">
+                                        <i class="text-xl"
+                                           :class="{
+                                               'fas fa-arrow-down': transaction.transaction_type === 'DEBIT',
+                                               'fas fa-arrow-up': transaction.transaction_type === 'CREDIT',
+                                               'fas fa-exchange-alt': transaction.transaction_type === 'TRANSFER'
+                                           }"></i>
+                                    </div>
                                 </div>
-                                <div class="flex items-center">
-                                    <i class="far fa-credit-card mr-1"></i>
-                                    <span x-text="transaction.wallet.account_type_display + ' ••••' + transaction.wallet.account_number.slice(-4)"></span>
+
+                                <!-- Transaction Info -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <p class="text-sm font-semibold text-gray-900 truncate" x-text="transaction.description"></p>
+                                        <p class="text-base font-bold ml-3 whitespace-nowrap"
+                                           :class="{
+                                               'text-green-600': transaction.transaction_type === 'CREDIT',
+                                               'text-red-600': transaction.transaction_type === 'DEBIT',
+                                               'text-gecu-navy': transaction.transaction_type === 'TRANSFER'
+                                           }"
+                                           x-text="`${transaction.transaction_type === 'CREDIT' ? '+' : '-'}$${transaction.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`"></p>
+                                    </div>
+
+                                    <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                                        <div class="flex items-center bg-gray-50 px-2 py-1 rounded-lg">
+                                            <i class="far fa-calendar mr-1.5 text-gray-400"></i>
+                                            <span x-text="new Date(transaction.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })"></span>
+                                        </div>
+                                        <div class="flex items-center bg-gray-50 px-2 py-1 rounded-lg">
+                                            <i class="far fa-credit-card mr-1.5 text-gray-400"></i>
+                                            <span x-text="transaction.wallet.account_type_display + ' ••' + transaction.wallet.account_number.slice(-4)"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Chevron -->
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-chevron-right text-gray-300 text-sm"></i>
                                 </div>
                             </div>
                         </div>
+                    </a>
+                </li>
+            </template>
 
-                        <!-- Chevron -->
-                        <div class="ml-4 flex-shrink-0">
-                            <i class="fas fa-chevron-right text-gray-400"></i>
-                        </div>
-                    </div>
+            <!-- Loading -->
+            <li x-show="loading" class="px-5 py-8 text-center">
+                <div class="inline-flex items-center space-x-3">
+                    <div class="w-8 h-8 border-4 border-gecu-blue border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-sm font-medium text-gray-600">Loading more transactions...</span>
                 </div>
-            </a>
-        </li>
-    </template>
+            </li>
 
-    <!-- Loading -->
-    <li x-show="loading" class="px-4 py-6 text-center">
-        <i class="fas fa-circle-notch fa-spin text-indigo-600"></i>
-        <span class="ml-2 text-gray-500">Loading more transactions...</span>
-    </li>
-
-    <!-- No transactions -->
-    <li x-show="!loading && transactions.length === 0" class="px-4 py-6 text-center text-gray-500">
-        <i class="far fa-folder-open text-2xl mb-2"></i>
-        <p class="text-sm">No transactions found</p>
-        <p x-show="searchTerm || transactionType" class="text-xs mt-1">Try adjusting your filters</p>
-    </li>
-</ul>
-
+            <!-- No transactions -->
+            <li x-show="!loading && transactions.length === 0" class="px-5 py-12 text-center">
+                <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gecu-light flex items-center justify-center">
+                    <i class="far fa-folder-open text-3xl text-gecu-gray"></i>
+                </div>
+                <p class="text-base font-medium text-gray-900 mb-1">No transactions found</p>
+                <p x-show="searchTerm || transactionType" class="text-sm text-gray-500">Try adjusting your filters</p>
+            </li>
+        </ul>
     </div>
 </div>
 
 <style>
     [x-cloak] { display: none !important; }
-    .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
-        border-color: rgba(243, 244, 246, 1);
-    }
 </style>
 {% endblock %}
