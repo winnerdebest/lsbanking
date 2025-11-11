@@ -72,8 +72,7 @@ Requires core.js and SelectBox.js.
                 selector_available,
                 interpolate(gettext('Choose all %s'), [field_name]),
                 'id', field_id + '_add_all',
-                'class', 'selector-chooseall',
-                'type', 'button'
+                'class', 'selector-chooseall'
             );
 
             // <ul class="selector-chooser">
@@ -84,16 +83,14 @@ Requires core.js and SelectBox.js.
                 quickElement('li', selector_chooser),
                 interpolate(gettext('Choose selected %s'), [field_name]),
                 'id', field_id + '_add',
-                'class', 'selector-add',
-                'type', 'button'
+                'class', 'selector-add'
             );
             const remove_button = quickElement(
                 'button',
                 quickElement('li', selector_chooser),
                 interpolate(gettext('Remove selected %s'), [field_name]),
                 'id', field_id + '_remove',
-                'class', 'selector-remove',
-                'type', 'button'
+                'class', 'selector-remove'
             );
 
             // <div class="selector-chosen">
@@ -145,8 +142,7 @@ Requires core.js and SelectBox.js.
                 selector_chosen,
                 interpolate(gettext('Remove all %s'), [field_name]),
                 'id', field_id + '_remove_all',
-                'class', 'selector-clearall',
-                'type', 'button'
+                'class', 'selector-clearall'
             );
 
             from_box.name = from_box.name + '_old';
