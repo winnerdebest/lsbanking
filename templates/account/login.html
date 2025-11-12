@@ -1,340 +1,222 @@
 {% load i18n allauth account %}
-{% load static %}
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "Secure Login" %} - GECU | Modern Banking Reimagined</title>
+    <title>{% trans "Secure Login" %} - GECU Online Banking</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'gecu-navy': '#2c4c7e',
-                        'gecu-blue': '#3d5a80',
-                        'gecu-gray': '#98a8b8',
-                        'gecu-light': '#e8ecf1',
-                    }
-                }
-            }
-        }
-    </script>
     <script src="//unpkg.com/alpinejs" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         [x-cloak] { display: none !important; }
-        .gradient-bg {
-            background: linear-gradient(135deg, #2c4c7e 0%, #3d5a80 50%, #98a8b8 100%);
+        body {
+            background-color: #f0f2f5;
+            background-image: url('https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
-        .card-hover {
+        .bank-header {
+            background-color: #0054a6;
+            color: white;
+        }
+        .btn-primary {
+            background-color: #0054a6;
             transition: all 0.3s ease;
         }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        .btn-primary:hover {
+            background-color: #003d7a;
+            transform: translateY(-1px);
+        }
+        .security-tip {
+            border-left: 3px solid #0054a6;
         }
         .input-field {
             transition: all 0.3s ease;
         }
         .input-field:focus {
-            border-color: #3d5a80;
-            box-shadow: 0 0 0 3px rgba(61, 90, 128, 0.1);
+            border-color: #0054a6;
+            box-shadow: 0 0 0 3px rgba(0, 84, 166, 0.1);
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        .float-animation { animation: float 6s ease-in-out infinite; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center gradient-bg text-gray-900 p-4" x-data="{ showPassword: false }">
-    <div class="w-full max-w-6xl">
-        <!-- Header -->
-        <nav class="flex justify-between items-center mb-8">
-            <div class="flex items-center space-x-3">
-                 <div
-              class="w-12 h-12 rounded-full gradient-bg flex items-center justify-center"
-            >
-              <img
-                src="{% static 'images/logo.png' %}"
-                alt="Logo"
-                class="w-10 h-10 object-contain"
-              />
+<body class="flex items-center justify-center min-h-screen p-4" x-data="{ showPassword: false }">
+    <div class="w-full max-w-md">
+        <!-- Bank Logo Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center bg-white p-4 rounded-full shadow-md mb-4">
+                <i class="fas fa-university text-3xl text-blue-800"></i>
             </div>
-                <div>
-                    <span class="text-2xl font-bold text-white">GECU</span>
-                    <p class="text-xs text-blue-100">Banking Reimagined</p>
-                </div>
+            <h1 class="text-2xl font-bold text-gray-800">GECU ONLINE BANKING</h1>
+            <p class="text-sm text-gray-600 mt-1">Secure Login Portal</p>
+        </div>
+        
+        <!-- Login Card -->
+        <div class="login-container">
+            <!-- Security Header -->
+            <div class="bank-header px-6 py-4 rounded-t-lg flex items-center">
+                <i class="fas fa-lock mr-2"></i>
+                <span class="font-medium">SECURE SERVER</span>
+                <span class="ml-auto text-xs bg-blue-900 px-2 py-1 rounded">HTTPS</span>
             </div>
-            <div class="text-white">
-                <a href="/" class="text-sm hover:text-blue-100 transition">← Back to Home</a>
-            </div>
-        </nav>
-
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
-            <!-- Left Column - Login Form -->
-            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden card-hover">
-                <!-- Security Header -->
-                <div class="bg-gecu-navy px-6 py-4 text-white flex items-center">
-                    <i class="fas fa-lock mr-2"></i>
-                    <span class="font-medium">SECURE LOGIN PORTAL</span>
-                    <span class="ml-auto text-xs bg-white/20 px-2 py-1 rounded-full">HTTPS</span>
-                </div>
-                
-                <!-- Login Form -->
-                <div class="px-6 sm:px-8 py-8">
-                    <div class="text-center mb-8">
-                        <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-                        <p class="text-gray-600">Sign in to your GECU online banking account</p>
-                    </div>
-                    
-                    {% if messages %}
-                        <div class="mb-6 space-y-3">
-                            {% for message in messages %}
-                                <div class="p-4 rounded-xl 
-                                            {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% endif %}
-                                            {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% endif %}
-                                            {% if message.tags == 'warning' %}bg-yellow-50 text-yellow-800 border border-yellow-200{% endif %}
-                                            {% if message.tags == 'info' %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}
-                                            " role="alert">
-                                    <div class="flex items-center">
-                                        <i class="fas 
-                                            {% if message.tags == 'success' %}fa-check-circle{% endif %}
-                                            {% if message.tags == 'error' %}fa-exclamation-circle{% endif %}
-                                            {% if message.tags == 'warning' %}fa-exclamation-triangle{% endif %}
-                                            {% if message.tags == 'info' %}fa-info-circle{% endif %}
-                                            mr-3"></i>
-                                        <span class="font-medium">{{ message }}</span>
-                                    </div>
+            
+            <!-- Login Form -->
+            <div class="px-6 py-6">
+                {% if messages %}
+                    <div class="mb-6 space-y-2">
+                        {% for message in messages %}
+                            <div class="p-3 rounded-lg 
+                                        {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% endif %}
+                                        {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% endif %}
+                                        {% if message.tags == 'warning' %}bg-yellow-50 text-yellow-800 border border-yellow-200{% endif %}
+                                        {% if message.tags == 'info' %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}
+                                        " role="alert">
+                                <div class="flex items-center">
+                                    <i class="fas 
+                                        {% if message.tags == 'success' %}fa-check-circle{% endif %}
+                                        {% if message.tags == 'error' %}fa-exclamation-circle{% endif %}
+                                        {% if message.tags == 'warning' %}fa-exclamation-triangle{% endif %}
+                                        {% if message.tags == 'info' %}fa-info-circle{% endif %}
+                                        mr-2"></i>
+                                    {{ message }}
                                 </div>
-                            {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <form method="POST" action="{% url 'account_login' %}" class="space-y-4">
+                    {% csrf_token %}
+                    
+                    <!-- Username/Email Field -->
+                    <div>
+                        <label for="{{ form.login.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            Online Banking Email
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                name="{{ form.login.name }}"
+                                id="{{ form.login.id_for_label }}"
+                                value="{{ form.login.value|default_if_none:'' }}"
+                                class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg input-field {% if form.login.errors %}border-red-500{% endif %}"
+                                placeholder="Enter your Online Banking ID"
+                                required
+                            >
+                        </div>
+                        {% if form.login.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.login.errors|first }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-key text-gray-400"></i>
+                            </div>
+                            <input 
+                                :type="showPassword ? 'text' : 'password'"
+                                name="{{ form.password.name }}"
+                                id="{{ form.password.id_for_label }}"
+                                class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg input-field {% if form.password.errors %}border-red-500{% endif %}"
+                                placeholder="Enter your password"
+                                required
+                            >
+                            <button 
+                                type="button" 
+                                @click="showPassword = !showPassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                                title="Show Password"
+                            >
+                                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                            </button>
+                        </div>
+                        {% if form.password.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.password.errors|first }}</p>
+                        {% endif %}
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="bg-red-50 text-red-800 p-3 rounded-lg border border-red-200">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                {{ form.non_field_errors|first }}
+                            </div>
                         </div>
                     {% endif %}
-                    
-                    <form method="POST" action="{% url 'account_login' %}" class="space-y-6">
-                        {% csrf_token %}
-                        
-                        <!-- Email Field -->
-                        <div>
-                            <label for="{{ form.login.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-envelope mr-2 text-gecu-blue"></i>Email Address
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                name="{{ form.remember.name }}"
+                                id="{{ form.remember.id_for_label }}"
+                                class="h-4 w-4 text-blue-800 focus:ring-blue-800 border-gray-300 rounded"
+                            >
+                            <label for="{{ form.remember.id_for_label }}" class="ml-2 block text-sm text-gray-700">
+                                Remember my ID
                             </label>
-                            <div class="relative">
-                                <input 
-                                    type="text" 
-                                    name="{{ form.login.name }}"
-                                    id="{{ form.login.id_for_label }}"
-                                    value="{{ form.login.value|default_if_none:'' }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl input-field {% if form.login.errors %}border-red-500{% endif %}"
-                                    placeholder="Enter your email address"
-                                    required
-                                >
-                                <div class="absolute right-3 top-3 text-gray-400">
-                                    <i class="fas fa-user-circle"></i>
-                                </div>
-                            </div>
-                            {% if form.login.errors %}
-                                <p class="mt-2 text-sm text-red-600 flex items-center">
-                                    <i class="fas fa-exclamation-circle mr-1"></i>
-                                    {{ form.login.errors|first }}
-                                </p>
-                            {% endif %}
                         </div>
-
-                        <!-- Password Field -->
-                        <div>
-                            <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-key mr-2 text-gecu-blue"></i>Password
-                            </label>
-                            <div class="relative">
-                                <input 
-                                    :type="showPassword ? 'text' : 'password'"
-                                    name="{{ form.password.name }}"
-                                    id="{{ form.password.id_for_label }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl input-field {% if form.password.errors %}border-red-500{% endif %}"
-                                    placeholder="Enter your password"
-                                    required
-                                >
-                                <button 
-                                    type="button" 
-                                    @click="showPassword = !showPassword"
-                                    class="absolute right-3 top-3 text-gray-500 hover:text-gecu-blue transition"
-                                    title="Show Password"
-                                >
-                                    <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-                                </button>
-                            </div>
-                            {% if form.password.errors %}
-                                <p class="mt-2 text-sm text-red-600 flex items-center">
-                                    <i class="fas fa-exclamation-circle mr-1"></i>
-                                    {{ form.password.errors|first }}
-                                </p>
-                            {% endif %}
-                        </div>
-
-                        {% if form.non_field_errors %}
-                            <div class="bg-red-50 text-red-800 p-4 rounded-xl border border-red-200">
-                                <div class="flex items-center">
-                                    <i class="fas fa-exclamation-circle mr-3"></i>
-                                    <span class="font-medium">{{ form.non_field_errors|first }}</span>
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        <!-- Remember Me & Forgot Password -->
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <input 
-                                    type="checkbox" 
-                                    name="{{ form.remember.name }}"
-                                    id="{{ form.remember.id_for_label }}"
-                                    class="h-4 w-4 text-gecu-blue focus:ring-gecu-blue border-gray-300 rounded"
-                                >
-                                <label for="{{ form.remember.id_for_label }}" class="ml-2 block text-sm text-gray-700">
-                                    Remember me
-                                </label>
-                            </div>
-                            <div class="text-sm">
-                                <a href="{% url 'account_reset_password' %}" class="font-medium text-gecu-blue hover:text-gecu-navy transition">
-                                    Forgot Password?
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button 
-                            type="submit" 
-                            class="w-full py-4 px-4 rounded-xl shadow-lg text-white font-semibold bg-gradient-to-r from-gecu-navy to-gecu-blue hover:shadow-xl transition transform hover:scale-[1.02]"
-                        >
-                            <i class="fas fa-sign-in-alt mr-2"></i>
-                            SECURE LOGIN
-                        </button>
-                    </form>
-
-                    <!-- Security Features -->
-                    <div class="mt-8 grid grid-cols-3 gap-4 text-center">
-                        <div class="p-3 bg-gecu-light rounded-lg">
-                            <i class="fas fa-shield-alt text-gecu-blue text-xl mb-2"></i>
-                            <div class="text-xs font-medium text-gray-700">256-bit SSL</div>
-                        </div>
-                        <div class="p-3 bg-gecu-light rounded-lg">
-                            <i class="fas fa-fingerprint text-gecu-blue text-xl mb-2"></i>
-                            <div class="text-xs font-medium text-gray-700">2FA Ready</div>
-                        </div>
-                        <div class="p-3 bg-gecu-light rounded-lg">
-                            <i class="fas fa-user-shield text-gecu-blue text-xl mb-2"></i>
-                            <div class="text-xs font-medium text-gray-700">FDIC Insured</div>
-                        </div>
-                    </div>
-
-                    <!-- Sign Up Link -->
-                    <div class="mt-8 text-center border-t border-gray-200 pt-6">
-                        <p class="text-sm text-gray-600">
-                            Don't have an account? 
-                            <a href="{{ signup_url }}" class="font-semibold text-gecu-blue hover:text-gecu-navy transition">
-                                Enroll in Online Banking
+                        <div class="text-sm">
+                            <a href="{% url 'account_reset_password' %}" class="font-medium text-blue-800 hover:text-blue-600">
+                                Forgot Password?
                             </a>
-                        </p>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Right Column - Info & Features -->
-            <div class="text-white">
-                <div class="glass-effect rounded-3xl p-8 backdrop-blur-lg">
-                    <div class="float-animation mb-8">
-                        <i class="fas fa-mobile-alt text-6xl opacity-80"></i>
-                    </div>
-                    
-                    <h2 class="text-3xl font-bold mb-6">Banking Made Simple & Secure</h2>
-                    
-                    <div class="space-y-6 mb-8">
+                    <!-- Security Notice -->
+                    <div class="bg-blue-50 p-3 rounded-lg security-tip">
                         <div class="flex items-start">
-                            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                <i class="fas fa-bolt text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-lg mb-1">Instant Access</h3>
-                                <p class="text-blue-100">Check balances, transfer funds, and pay bills in real-time</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start">
-                            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                <i class="fas fa-chart-line text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-lg mb-1">Financial Insights</h3>
-                                <p class="text-blue-100">Track spending and set savings goals with our smart tools</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start">
-                            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                <i class="fas fa-lock text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-lg mb-1">Advanced Security</h3>
-                                <p class="text-blue-100">Your data is protected with bank-level encryption</p>
-                            </div>
+                            <i class="fas fa-shield-alt text-blue-800 mt-1 mr-2"></i>
+                            <p class="text-xs text-gray-700">For your security, please do not use public computers to access online banking.</p>
                         </div>
                     </div>
-                    
-                    <!-- Trust Indicators -->
-                    <div class="bg-white/10 backdrop-blur rounded-2xl p-6">
-                        <h4 class="font-bold mb-4 text-center">Trusted By Over 250,000 Members</h4>
-                        <div class="grid grid-cols-3 gap-4 text-center">
-                            <div>
-                                <div class="text-2xl font-bold">$12B+</div>
-                                <div class="text-xs text-blue-200">Assets</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold">4.8★</div>
-                                <div class="text-xs text-blue-200">Rating</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold">99.9%</div>
-                                <div class="text-xs text-blue-200">Uptime</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Security Notice -->
-                <div class="mt-6 bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/20">
-                    <div class="flex items-start">
-                        <i class="fas fa-info-circle text-yellow-300 mt-1 mr-3"></i>
-                        <div>
-                            <h4 class="font-bold mb-2">Security Notice</h4>
-                            <p class="text-sm text-blue-100">
-                                Always verify you're on our official website before entering your credentials. 
-                                GECU will never ask for your password via email or phone.
-                            </p>
-                        </div>
-                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full py-3 px-4 rounded-lg shadow text-white font-medium btn-primary"
+                    >
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        SECURE LOGIN
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Footer Links -->
+            <div class="px-6 py-4 bg-gray-50 text-center border-t border-gray-200 rounded-b-lg">
+                <p class="text-sm text-gray-600">
+                    New to GECU Online Banking? <a href="{{ signup_url }}" class="font-medium text-blue-800 hover:text-blue-600">Enroll Now</a>
+                </p>
+                <div class="mt-2 flex justify-center space-x-4">
+                    <a href="#" class="text-xs text-gray-500 hover:text-gray-700">Security</a>
+                    <a href="#" class="text-xs text-gray-500 hover:text-gray-700">Help</a>
+                    <a href="#" class="text-xs text-gray-500 hover:text-gray-700">Privacy</a>
                 </div>
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="mt-12 text-center text-white">
-            <div class="flex flex-wrap justify-center gap-6 mb-4 text-sm">
-                <a href="#" class="hover:text-blue-100 transition">Security Center</a>
-                <a href="#" class="hover:text-blue-100 transition">Privacy Policy</a>
-                <a href="#" class="hover:text-blue-100 transition">Terms of Service</a>
-                <a href="#" class="hover:text-blue-100 transition">Contact Support</a>
-            </div>
-            <p class="text-xs text-blue-200 opacity-80">
-                © {% now "Y" %} GECU Financial. All rights reserved. Member FDIC. Equal Housing Lender.
+        <!-- Bank Footer -->
+        <div class="mt-6 text-center">
+            <p class="text-xs text-gray-500">
+                © {% now "Y" %} GECU. All rights reserved. Member FDIC. Equal Housing Lender.
             </p>
-        </footer>
+        </div>
     </div>
 </body>
 </html>

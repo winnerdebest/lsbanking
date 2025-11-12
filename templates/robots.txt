@@ -8,3 +8,5 @@ Disallow: /profile/
 Disallow: /investments/
 Disallow: /investments/login/
 Disallow: /investments/signup/
+
+Sitemap: https://grandelitecreditunion.com/sitemap.xml
